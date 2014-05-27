@@ -17,6 +17,9 @@ fancybox: true
 # 友言评论
 UYUserId:
 
+# DISQUS
+DisqusId: blastmannonscriptogram
+
 # cnzz统计
 cnzzId:
 
