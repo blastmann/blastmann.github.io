@@ -34,20 +34,28 @@ WP 8.1发布了，并且官方也宣布了Universal App的开发方式。可以�
 那回到这次的主题，我们想在`ScrollViewer`上对它作水平方向的平移该怎么做呢？本来我以为只要在ScrollViewer上修改它的`ManipulationMode`就可以了，结果修改之后，并没有任何反应，绑定的`ManipulationDelta`事件并不会响应：
 
 ``` xaml
-// 这里有个坑要填
-
-
-
+<ScrollViewer x:Name="sv" Height="200" ManipulationMode="TranslateX" ManipulationDelta="UIElement_OnManipulationDelta">
+    <Border Height="600" Background="Red">
+        <TextBlock>1</TextBlock>
+    </Border>
+</ScrollViewer>
 ```
 
+```csharp
+private void UIElement_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+{
+    Debug.WriteLine(e.Delta.Translation.X);
+}
+```
 
 后面想了一下，会不会是因为它的子控件`Border`上的事件被截获了呢？于是我又改了一下，在`Border`上绑定了一个`ManipulationDelta`事件，结果还是没有响应：
 
 ``` xaml
-// 这里有个坑2要填
-
-
-
+<ScrollViewer x:Name="sv" Height="200" ManipulationMode="TranslateX" ManipulationDelta="UIElement_OnManipulationDelta">
+    <Border Height="600" Background="Red" ManipulationDelta="BorderOnManipulationDelta">
+        <TextBlock>1</TextBlock>
+    </Border>
+</ScrollViewer>
 ```
 
 于是我决定修改一下`Border`的`ManipulationMode`。发现如果修改成`All`，那`ScrollViewer`就无法正常滚动了，坑大发了。再次研读上面关于`ManipulationMode`的备注，发现这个属性的比较神奇，如果修改成非`System`外的值，那将由开发者自己去处理对应的触摸事件（这不就跟IE10开始使用那个坑爹属性`-ms-touch-action`一样吗？！）。不过XAML App里面对这个属性提供了一个神奇的使用方法：属性组合。也就是`ManipulationMode`这个属性里面，可以将多个模式组合使用。
@@ -63,10 +71,11 @@ ManipulationMode = "TranslateX,TranslateY,Rotate,Scale"
 回到主题：这属性跟`ScrollViewer`有什么关系啊？还是有点关系哈，看示例代码：
 
 ``` xaml
-// 这里有个坑3要填
-
-
-
+<ScrollViewer x:Name="sv" Height="200" ManipulationDelta="UIElement_OnManipulationDelta">
+    <Border Height="600" Background="Red" ManipulationMode="System, TranslateX">
+        <TextBlock>1</TextBlock>
+    </Border>
+</ScrollViewer>
 ```
 
 如果我对`ScrollViewer`的子控件添加`ManipulationMode="System,TranslateX`，那就相当于告诉系统：子控件的触摸事件除了水平方向之外，其它的都按照系统默认的响应处理。
