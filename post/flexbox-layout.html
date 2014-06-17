@@ -1,0 +1,324 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Flexbox 布局简述 | @chaoming.edc blog</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="track my learning">
+  
+  
+  <meta name="keywords" content="windowsphone,windows,xaml,developer,iOS,OSX,productive">
+  
+  
+  <meta property="og:title" content="Flexbox 布局简述"/>
+  <meta name="title" content="Flexbox 布局简述"/>
+
+  <meta property="displaydate" content="2013-08-29T08:10:00.000Z"/>
+
+  <meta property="og:site_name" content="@chaoming.edc blog"/>
+  <meta name="copyright" content="@chaoming.edc blog"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="apple-touch-icon" href="/icon.png" />
+   <link rel="shortcut icon" href="/favicon.png" >
+   <link rel="alternate" href="http://blog.edi-c.com/atom.xml" title="@chaoming.edc blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">@chaoming.edc blog</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/archives/">Archives</a><li>
+    
+      <li class="cell"><a class="next" href="/about/">About</a><li>
+    
+      <li class="cell"><a class="next" href="/atom.xml">Subscribe</a><li>
+    
+    </ul>
+</nav>
+
+  <div class="widget weibo">
+<iframe width="100%" height="100" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=110&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=0&isWeibo=0&isFans=0&uid=newdings&verifier=78e1ee4d&colors=ffffff,ffffff,999,000,ecfbfd&dpc=1"></iframe>
+</div>
+
+  
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/IE/" style="font-size: 10.00px;">IE</a><a href="/tags/WPF/" style="font-size: 10.00px;">WPF</a><a href="/tags/alfred/" style="font-size: 10.00px;">alfred</a><a href="/tags/aspnet/" style="font-size: 10.00px;">aspnet</a><a href="/tags/browser/" style="font-size: 10.00px;">browser</a><a href="/tags/csharp/" style="font-size: 10.00px;">csharp</a><a href="/tags/css3/" style="font-size: 12.00px;">css3</a><a href="/tags/dev/" style="font-size: 10.00px;">dev</a><a href="/tags/diary/" style="font-size: 10.00px;">diary</a><a href="/tags/directx/" style="font-size: 10.00px;">directx</a><a href="/tags/fiddler/" style="font-size: 12.00px;">fiddler</a><a href="/tags/google/" style="font-size: 10.00px;">google</a><a href="/tags/ie/" style="font-size: 10.00px;">ie</a><a href="/tags/ie11/" style="font-size: 10.00px;">ie11</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/mac/" style="font-size: 10.00px;">mac</a><a href="/tags/markdown/" style="font-size: 10.00px;">markdown</a><a href="/tags/mvc/" style="font-size: 10.00px;">mvc</a><a href="/tags/note/" style="font-size: 10.00px;">note</a><a href="/tags/notes/" style="font-size: 16.00px;">notes</a><a href="/tags/plugin/" style="font-size: 10.00px;">plugin</a><a href="/tags/productivity/" style="font-size: 10.00px;">productivity</a><a href="/tags/programming/" style="font-size: 12.00px;">programming</a><a href="/tags/python/" style="font-size: 10.00px;">python</a><a href="/tags/reflow/" style="font-size: 10.00px;">reflow</a><a href="/tags/st2/" style="font-size: 16.00px;">st2</a><a href="/tags/summaries/" style="font-size: 10.00px;">summaries</a><a href="/tags/system/" style="font-size: 10.00px;">system</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/vs2012/" style="font-size: 10.00px;">vs2012</a><a href="/tags/web/" style="font-size: 10.00px;">web</a><a href="/tags/webdev/" style="font-size: 20.00px;">webdev</a><a href="/tags/windows/" style="font-size: 14.00px;">windows</a><a href="/tags/winrt/" style="font-size: 10.00px;">winrt</a><a href="/tags/workflow/" style="font-size: 10.00px;">workflow</a><a href="/tags/wp8/" style="font-size: 18.00px;">wp8</a><a href="/tags/wp8.1/" style="font-size: 10.00px;">wp8.1</a><a href="/tags/wpf/" style="font-size: 12.00px;">wpf</a><a href="/tags/xaml/" style="font-size: 10.00px;">xaml</a>
+  </div>
+</div>
+
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2014 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">@chaoming.edc blog</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+<article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+  <header>
+      
+      
+  
+    <h1 class="title">Flexbox 布局简述</h1>
+  
+
+      <time datetime="2013-08-29T08:10:00.000Z"><a href="/post/flexbox-layout.html">8月 29 2013</a></time>
+      
+  </header>
+    <div class="entry">
+      
+        <h1 id="Flexbox_布局简述">Flexbox 布局简述</h1>
+<p>Flexbox 布局将有下面一系列的属性设置：</p>
+<ul>
+<li>flex-basis</li>
+<li>flex-grow</li>
+<li>flex-shrink</li>
+<li>flex</li>
+<li>align-items</li>
+<li>align-self</li>
+<li>align-content</li>
+<li>order</li>
+<li>justify-content</li>
+<li>flex-wrap</li>
+</ul>
+<h2 id="flex\flex-grow\flex-shrink\flex-basis">flex\flex-grow\flex-shrink\flex-basis</h2>
+<p><code>flex</code> 属性是 <code>flex-grow</code>\<code>flex-shrink</code>\<code>flex-basis</code> 的速写。下面先讲述一下这一系列的属性。</p>
+<h3 id="flex-basis">flex-basis</h3>
+<blockquote>
+<p>作用：设置弹性项目的初始宽度。<br>初始值：auto<br>可接受的值：非负数，单位可以为CSS提供的长度单位</p>
+</blockquote>
+<p>效果图如下：</p>
+<p><a href="http://d.pr/i/mluE" target="_blank"><img src="http://d.pr/i/mluE.png" alt="flex-basis"></a></p>
+<h3 id="flex-grow">flex-grow</h3>
+<blockquote>
+<p>作用：设置弹性项目宽度比例系数。<em>flex grow</em>设置后将根据外容器剩余宽度和弹性项目的数量来分配对应弹性项目的宽度。<br>初始值：0<br>可接受的值：非负数</p>
+</blockquote>
+<p>效果图如下：</p>
+<p><a href="http://d.pr/i/8Uie" target="_blank"><img src="http://d.pr/i/8Uie.png" alt="flex-grow"></a></p>
+<p>外层 flex 容器宽度为 600px，<code>.dodgerBlue</code>的系数设置为2，<code>.limeGreen</code>的系数设置为1。则布局后<code>.dodgerBlue</code>的宽度为200px，<code>.limeGreen</code>宽度为100px。弹性项目按比例均分外层容器的宽度。</p>
+<p>值得一提的是，如果弹性项目设置有宽度或者<code>flex-basis</code>，布局时顺序将变化为：先按项目本身设定的宽度或 flex-basis 进行布局，再在剩余空间中根据 flex-grow 系数进行剩余空间分配（在元素内包含文字时弹性项目的大小也会发生变化，具体分配规则暂时还不清楚）。效果图如下（<code>.dodgerBlue</code>的初始宽度为200px，<code>.limeGreen</code>没有设置初始宽度）：</p>
+<p><a href="http://d.pr/i/iaDC" target="_blank"><img src="http://d.pr/i/iaDC.png" alt="flex-grow-and-flex-basis"></a></p>
+<h3 id="flex-shrink">flex-shrink</h3>
+<blockquote>
+<p>作用：设置弹性项目压缩比例系数。<em>flex shrink</em>设置后将根据外容器本身宽度和弹性项目的数量来分配对应弹性项目的宽度。<br>初始值：0<br>可接受的值：非负数</p>
+</blockquote>
+<p>与 <code>flex-grow</code> 相反，<code>flex-shrink</code>在基于弹性项目本身的宽度上再对其宽度按系数进行压缩，具体分配规则暂时确定是：在 <code>flex-basis</code> 存在的情况下，按照 <code>flex-shrink</code> 的值确定弹性项目的分配比例，如外层容器为100px，<code>.dodgerBlue</code> 宽度为100%、压缩系数为3，<code>limeGreen</code> 宽度也为100%、压缩系数为1。此时按照压缩系数对弹性项目的宽度进行重新分配，则 <code>.dodgerBlue</code> 需要压缩100px/4*3=75px，最终宽度为25px。</p>
+<p>需要注意的是，在 IE10 下，弹性项目的表现与 <code>flex-shrink:0</code> 效果相同，即 <code>flex-shrink:0</code> 时项目本身不进行宽度压缩。</p>
+<p>示例代码：</p>
+<pre><code><span class="class">.dodgerBlue</span><span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> dodgerBlue</span></span>;
+    <span class="rule"><span class="attribute">flex-basis</span>:<span class="value"><span class="number">100</span>%</span></span>;
+    <span class="rule"><span class="attribute">flex-shrink</span>:<span class="value"><span class="number">3</span></span></span>;
+<span class="rule">}</span></span>
+
+<span class="class">.limeGreen</span><span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> limeGreen</span></span>;
+    <span class="rule"><span class="attribute">flex-basis</span>:<span class="value"><span class="number">100</span>%</span></span>;
+<span class="rule">}</span></span>
+</code></pre><p>效果图如下：</p>
+<p><a href="http://d.pr/i/pjvM" target="_blank"><img src="http://d.pr/i/pjvM.png" alt="flex-shrink"></a></p>
+<p>需要注意的是，<code>flex-shrink</code> 只在弹性项目充满外层容器后才会生效，而 <code>flex-grow</code> 则在外层容器空间尚未完全分配时起效。</p>
+<h3 id="flex">flex</h3>
+<p>此属性是上述三个属性的速写属性，可授受的值为：</p>
+<pre><code>flex: <span class="constant">none</span> |[&lt;<span class="string">'flex-grow'</span>&gt; &lt;<span class="string">'flex-shrink'</span>&gt;?||&lt;<span class="string">'flex-basis'</span>&gt;]
+</code></pre><h2 id="order">order</h2>
+<blockquote>
+<p>作用：设置弹性项目在弹性容器中的显示顺序，一般来说弹性项目的显示顺序与源代码中的元素声明顺序相同，除非特别声明 <code>order</code> 属性。<br>初始值：0<br>可接受的值：整数</p>
+</blockquote>
+<p><strong>注意</strong>：在<code>order</code>相同的情况下，顺序将以元素声明顺序确定。</p>
+<p>示例代码：</p>
+<pre><code><span class="id">#flex</span><span class="rules">{
+    <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">300</span>px</span></span>;
+    <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">200</span>px</span></span>;
+    <span class="rule"><span class="attribute">overflow</span>:<span class="value"> hidden</span></span>;
+    <span class="rule"><span class="attribute">display</span>:<span class="value"> flex</span></span>;
+<span class="rule">}</span></span>
+
+<span class="class">.dodgerBlue</span><span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> dodgerBlue</span></span>;
+    <span class="rule"><span class="attribute">flex-basis</span>:<span class="value"><span class="number">100</span>%</span></span>;
+    <span class="rule"><span class="attribute">order</span>:<span class="value"><span class="number">2</span></span></span>;
+<span class="rule">}</span></span>
+
+<span class="class">.limeGreen</span><span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> limeGreen</span></span>;
+    <span class="rule"><span class="attribute">flex-basis</span>:<span class="value"><span class="number">100</span>%</span></span>;
+    <span class="rule"><span class="attribute">order</span>:<span class="value"><span class="number">0</span></span></span>;
+<span class="rule">}</span></span>
+
+<span class="class">.yellowGreen</span><span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> yellowGreen</span></span>;
+    <span class="rule"><span class="attribute">flex-basis</span>:<span class="value"><span class="number">100</span>%</span></span>;
+    <span class="rule"><span class="attribute">order</span>:<span class="value"><span class="number">1</span></span></span>;
+<span class="rule">}</span></span>
+</code></pre><p>效果图：</p>
+<p><a href="http://d.pr/i/n8LP" target="_blank"><img src="http://d.pr/i/n8LP.png" alt="flex-order"></a></p>
+<h2 id="flex-direction">flex-direction</h2>
+<blockquote>
+<p>作用：设置弹性项目的显示方向<br>初始值：row<br>可接受的值：row | row-reverse | column | column-reverse</p>
+</blockquote>
+<p>属性比较容易理解，不截图了。</p>
+<h2 id="flex-wrap">flex-wrap</h2>
+<blockquote>
+<p>作用：设置弹性项目在分配空间时横向空间到分配完后是否进行换行分配，此时纵向空间将结合弹性项目本身的高度和弹性盒本身的高度来确定。<br>初始值：nowrap<br>可接受的值：nowrap | wrap | wrap-reverse</p>
+</blockquote>
+<p>属性比较容易理解，不截图了。</p>
+<h2 id="flex-flow">flex-flow</h2>
+<p>即 <code>flex-direction</code> 和 <code>flex-wrap</code>　的速写属性，可授受的值为：</p>
+<pre><code>flex-<span class="keyword">flow</span>: &lt;<span class="string">'flex-direction'</span>&gt; &lt;<span class="string">'flex-wrap'</span>&gt;
+</code></pre><h2 id="align-items/align-self/align-content/justify-content">align-items/align-self/align-content/justify-content</h2>
+<h3 id="align-items">align-items</h3>
+<blockquote>
+<p>作用：对弹性盒设置弹性项目的对齐方式<br>初始值：stretch<br>可接受的值：flex-start | flex-end | center | stretch | baseline</p>
+</blockquote>
+<h3 id="align-self">align-self</h3>
+<blockquote>
+<p>作用：对弹性项目本身设置其对齐方式<br>初始值：auto<br>可接受的值：auto | flex-start | flex-end | center | baseline | stretch</p>
+</blockquote>
+<p><code>auto</code>：如果弹性项目的父元素是一个弹性容器，<code>align-self</code>与弹性容器的<code>align-items</code>属性的值一致。否则其值为<strong>stretch</strong>。</p>
+<h3 id="align-content">align-content</h3>
+<blockquote>
+<p>作用：让弹性项目之间的行间距按照设置的值进行分布，分布方向与 <code>flex-direction</code> 中设置的方向相同<br>初始值：stretch<br>可接受的值：flex-start | flex-end | center | space-between | space-around | stretch</p>
+</blockquote>
+<p>两个特别的值说明：</p>
+<ul>
+<li>space-between：弹性项目在 <code>flex-direction</code> 设置的方向上进行两端对齐</li>
+<li>space-around：弹性项目在行间距中间的位置进行对齐</li>
+</ul>
+<p>效果图：</p>
+<p><a href="http://d.pr/i/X3il" target="_blank"><img src="http://d.pr/i/X3il.png" alt="align-content"></a></p>
+<h3 id="justify-content">justify-content</h3>
+<blockquote>
+<p>作用：设置弹性项目在主分布轴上的对齐方式（与文字对齐方式类似）<br>初始值：flex-start<br>可接受的值：flex-start | flex-end | center | space-between | space-around</p>
+</blockquote>
+<p>直接看图比较好理解：</p>
+<p><a href="http://d.pr/i/yXgF" target="_blank"><img src="http://d.pr/i/yXgF.png" alt="justify-content"></a></p>
+
+	 
+	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
+<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm要给力</strong></a> - 8月 29 2013</span><br />
+<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
+</p>
+       	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+  
+  <div class="tags">
+    <a href="/tags/webdev/">webdev</a>, <a href="/tags/css3/">css3</a>, <a href="/tags/ie11/">ie11</a>
+  </div>
+
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'blastmannonscriptogram'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/archives/">Archives</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/about/">About</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/atom.xml">Subscribe</a></div>
+    
+</div>
+
+
+  </div>
+
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+</body>
+</html>

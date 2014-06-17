@@ -1,0 +1,340 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>如何编写一个 Sublime Text 2 插件 | @chaoming.edc blog</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="track my learning">
+  
+  
+  <meta name="keywords" content="windowsphone,windows,xaml,developer,iOS,OSX,productive">
+  
+  
+  <meta property="og:title" content="如何编写一个 Sublime Text 2 插件"/>
+  <meta name="title" content="如何编写一个 Sublime Text 2 插件"/>
+
+  <meta property="displaydate" content="2013-02-05T01:35:00.000Z"/>
+
+  <meta property="og:site_name" content="@chaoming.edc blog"/>
+  <meta name="copyright" content="@chaoming.edc blog"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="apple-touch-icon" href="/icon.png" />
+   <link rel="shortcut icon" href="/favicon.png" >
+   <link rel="alternate" href="http://blog.edi-c.com/atom.xml" title="@chaoming.edc blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">@chaoming.edc blog</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/archives/">Archives</a><li>
+    
+      <li class="cell"><a class="next" href="/about/">About</a><li>
+    
+      <li class="cell"><a class="next" href="/atom.xml">Subscribe</a><li>
+    
+    </ul>
+</nav>
+
+  <div class="widget weibo">
+<iframe width="100%" height="100" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=110&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=0&isWeibo=0&isFans=0&uid=newdings&verifier=78e1ee4d&colors=ffffff,ffffff,999,000,ecfbfd&dpc=1"></iframe>
+</div>
+
+  
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/IE/" style="font-size: 10.00px;">IE</a><a href="/tags/WPF/" style="font-size: 10.00px;">WPF</a><a href="/tags/alfred/" style="font-size: 10.00px;">alfred</a><a href="/tags/aspnet/" style="font-size: 10.00px;">aspnet</a><a href="/tags/browser/" style="font-size: 10.00px;">browser</a><a href="/tags/csharp/" style="font-size: 10.00px;">csharp</a><a href="/tags/css3/" style="font-size: 12.00px;">css3</a><a href="/tags/dev/" style="font-size: 10.00px;">dev</a><a href="/tags/diary/" style="font-size: 10.00px;">diary</a><a href="/tags/directx/" style="font-size: 10.00px;">directx</a><a href="/tags/fiddler/" style="font-size: 12.00px;">fiddler</a><a href="/tags/google/" style="font-size: 10.00px;">google</a><a href="/tags/ie/" style="font-size: 10.00px;">ie</a><a href="/tags/ie11/" style="font-size: 10.00px;">ie11</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/mac/" style="font-size: 10.00px;">mac</a><a href="/tags/markdown/" style="font-size: 10.00px;">markdown</a><a href="/tags/mvc/" style="font-size: 10.00px;">mvc</a><a href="/tags/note/" style="font-size: 10.00px;">note</a><a href="/tags/notes/" style="font-size: 16.00px;">notes</a><a href="/tags/plugin/" style="font-size: 10.00px;">plugin</a><a href="/tags/productivity/" style="font-size: 10.00px;">productivity</a><a href="/tags/programming/" style="font-size: 12.00px;">programming</a><a href="/tags/python/" style="font-size: 10.00px;">python</a><a href="/tags/reflow/" style="font-size: 10.00px;">reflow</a><a href="/tags/st2/" style="font-size: 16.00px;">st2</a><a href="/tags/summaries/" style="font-size: 10.00px;">summaries</a><a href="/tags/system/" style="font-size: 10.00px;">system</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/vs2012/" style="font-size: 10.00px;">vs2012</a><a href="/tags/web/" style="font-size: 10.00px;">web</a><a href="/tags/webdev/" style="font-size: 20.00px;">webdev</a><a href="/tags/windows/" style="font-size: 14.00px;">windows</a><a href="/tags/winrt/" style="font-size: 10.00px;">winrt</a><a href="/tags/workflow/" style="font-size: 10.00px;">workflow</a><a href="/tags/wp8/" style="font-size: 18.00px;">wp8</a><a href="/tags/wp8.1/" style="font-size: 10.00px;">wp8.1</a><a href="/tags/wpf/" style="font-size: 12.00px;">wpf</a><a href="/tags/xaml/" style="font-size: 10.00px;">xaml</a>
+  </div>
+</div>
+
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2014 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">@chaoming.edc blog</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+<article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+  <header>
+      
+      
+  
+    <h1 class="title">如何编写一个 Sublime Text 2 插件</h1>
+  
+
+      <time datetime="2013-02-05T01:35:00.000Z"><a href="/post/how-to-create-a-st2-plugin.html">2月 5 2013</a></time>
+      
+  </header>
+    <div class="entry">
+      
+        <p>最近折腾了一个调用 ScriptOgr.am 的 API 发布博客文章的小插件，主要是参考了 Prefixr 这个插件编写而成的。在编写过程中算是把 Python 这东西入门了一点，下面总结一点东西，分享。</p>
+<p>网上关于如何编写 ST2 插件的文章：<a href="http://net.tutsplus.com/tutorials/python-tutorials/how-to-create-a-sublime-text-2-plugin/" target="_blank">点击进入</a></p>
+<p>下面的代码内容托管在我的 Github 上，有兴趣可以<a href="https://github.com/blastmann/ScriptOgrSender" target="_blank">点击这里</a>。</p>
+<h2 id="Step_1:_创建一个新的插件">Step 1: 创建一个新的插件</h2>
+<p>创建新插件的步骤很简单，只需要点击菜单栏上的 Tools-&gt;New Plugin.. 即可，ST2将自动创建一个简单的插件模板，代码如下：</p>
+<pre><code><span class="keyword">import</span> sublime, sublime_plugin
+<span class="class"><span class="keyword">class</span> <span class="title">ExampleCommand</span><span class="params">(sublime_plugin.TextCommand)</span>:</span>
+    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self, edit)</span>:</span>
+        self.view.insert(edit, <span class="number">0</span>, <span class="string">"Hello, World!"</span>)
+</code></pre><p>在 Packages 文件夹里面，创建一个属于你自己的插件名字的文件夹，然后将代码保存到其中，即可以在 Console 中运行下面的命令：</p>
+<pre><code>view.run_command(<span class="string">'example'</span>)
+</code></pre><p>命令运行完成后，当前窗口将自动插入一行字符 “Hello, World!”。恭喜你，插件的编写就是这么简单。</p>
+<h2 id="Step_2:_命令类型及其命名">Step 2: 命令类型及其命名</h2>
+<p>关于 Sublime Text 2 中的命令类型，本人通过查找 <code>sublime_plugin.py</code> 中定义的类，大概知道有下面几种：</p>
+<ul>
+<li>Application Command - 调用 ST2 本身的程序命令</li>
+<li>Window Command - 对应当前窗口的命令</li>
+<li>Text Command - 文字处理型命令</li>
+</ul>
+<p>在创建属于我们自己的插件时，我们可能需要继承上面列出的几种命令中的其中一种或多种来实现我们自己的功能。</p>
+<p>关于插件中的命令命名，我们在定义自己的插件命令时，需要注意以下格式：</p>
+<ul>
+<li>命令需要通过定义类来声明，命令类至少需要继承上面的三种命令这一</li>
+<li>类的名称中以 <code>Command</code> 来结尾，<code>Command</code> 前的名称即为命令的名称</li>
+<li>命令名称需要注意使用驼峰式命名，在 Sublime Text 2 中，驼峰式命名将转换为通过下划线 <code>_</code> 分隔的命名。例如：<code>TextSelectCommand</code> 最后将转换为 <code>text_select</code>。</li>
+</ul>
+<h2 id="Step_3:_线程">Step 3: 线程</h2>
+<p>在我的插件里面，需要通过 HTTP 来提交属于博客文章内容。如果在主线程中创建 HTTP Post 请求的话，整个 Sublime Text 将会失去响应，直到请求完成。因此我们需要将请求代码放到另外一个单独的线程中进行。</p>
+<pre><code><span class="keyword">thread</span> <span class="subst">=</span> ScriptOgrApiCall(filename, content, <span class="string">'post'</span>, <span class="built_in">self</span><span class="built_in">.</span>user_id, <span class="built_in">self</span><span class="built_in">.</span>proxy_server, <span class="number">500</span>)
+threads<span class="built_in">.</span>append(<span class="keyword">thread</span>)
+<span class="keyword">thread</span><span class="built_in">.</span>start()
+</code></pre><p>创建线程后，HTTP 请求将在后台进行，减轻对主界面的影响。</p>
+<h2 id="Step_4:_创建线程">Step 4: 创建线程</h2>
+<p>为了将我们需要提交的内容放置到单独的线程中，我创建了一个单独的 ApiCall 类，负责接收请求的内容。</p>
+<p>线程初始化时，我定义了好几个参数以传入线程中进行处理，参数基本对应 ScriptOgr.am 中的 API 请求而制定的：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">ScriptOgrApiCall</span><span class="params">(threading.Thread)</span>:</span>
+    <span class="string">"""docstring for ScriptOgrApiCall"""</span>
+    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, filename, filedata, operation, user_id, proxy_server, timeout)</span>:</span>
+        threading.Thread.__init__(self)
+        self.filename  = filename
+        self.filedata  = filedata
+        self.operation = operation
+        self.timeout   = timeout
+        self.user_id   = user_id
+        self.proxy     = proxy_server
+        self.response  = <span class="keyword">None</span>
+        self.result    = <span class="keyword">None</span>
+</code></pre><p>下面就是在此类中创建不同函数以适应调用需要，具体代码不再列出。</p>
+<h2 id="Step_5:_结果处理">Step 5: 结果处理</h2>
+<p>线程执行完毕后，我将服务器返回的 JSON 解析后输出赋予线程中的 response 属性。解析 JSON 时使用的是 Python 自带的 JSON 模块。</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">parse_response</span><span class="params">(self)</span>:</span>
+    response = json.loads(self.response)
+    <span class="keyword">if</span> response[<span class="string">'status'</span>] == <span class="string">'success'</span>:
+        <span class="keyword">if</span> self.operation == <span class="string">'post'</span>:
+            self.response = <span class="string">'Successfully post your article'</span>
+        <span class="keyword">elif</span> self.operation == <span class="string">'delete'</span>:
+            self.response = <span class="string">'Successfully delete your article'</span>
+    <span class="keyword">elif</span> response[<span class="string">'status'</span>] == <span class="string">'failed'</span>:
+        self.response = response[<span class="string">'reason'</span>]
+</code></pre><h2 id="Step_6:_管理线程">Step 6: 管理线程</h2>
+<p>在创建自己的命令时，我先行创建一个命令基类，定义一些需要重复使用的函数：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">ScriptOgrCommandBase</span><span class="params">(sublime_plugin.TextCommand)</span>:</span>
+    <span class="string">"""docstring for CommandBase"""</span>
+    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, view)</span>:</span>
+        <span class="comment"># Inherit from class TextCommand</span>
+        sublime_plugin.TextCommand.__init__(self, view)
+</code></pre><p>创建好基类后，定义一个线程管理类，负责监控线程的运行情况，如线程完成后，则打印出服务器返回的信息：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">handle_threads</span><span class="params">(self, threads, i=<span class="number">0</span>, dir=<span class="number">0</span>)</span>:</span>
+    next_threads = []
+    <span class="keyword">for</span> thread <span class="keyword">in</span> threads:
+        <span class="keyword">if</span> thread.is_alive():
+            next_threads.append(thread)
+        <span class="keyword">else</span>:
+            <span class="keyword">print</span> <span class="string">'\nScriptOgr.am api response: '</span> + thread.get_response() + <span class="string">'\n'</span>
+            sublime.status_message(<span class="string">'ScriptOgr.am api response: '</span> + thread.get_response())
+        <span class="keyword">if</span> thread.result == <span class="keyword">False</span>:
+            <span class="keyword">continue</span>
+    threads = next_threads
+
+    <span class="keyword">if</span> len(threads):
+        before = i % <span class="number">8</span>
+        after = (<span class="number">7</span>) - before
+        <span class="keyword">if</span> <span class="keyword">not</span> after:
+            dir = -<span class="number">1</span>
+        <span class="keyword">if</span> <span class="keyword">not</span> before:
+            dir = <span class="number">1</span>
+        i += dir
+        self.view.set_status(<span class="string">'operating'</span>, <span class="string">'ScriptOgrSender is opearting [%s=%s]'</span> % \
+            (<span class="string">' '</span> * before, <span class="string">' '</span> * after))
+
+        sublime.set_timeout(<span class="keyword">lambda</span>: self.handle_threads(threads, i, dir), <span class="number">100</span>)
+        <span class="keyword">return</span>
+    self.view.erase_status(<span class="string">'operating'</span>)
+</code></pre><p>其中调用了一些 ST2 本身提供的 API，如 <code>set_status</code>、<code>erase_status</code> 等，用于将信息更新至 ST2 窗口下方的状态栏中。</p>
+<h2 id="Step_7:_插件配置文件">Step 7: 插件配置文件</h2>
+<p>很多插件都会自带一个配置文件（以 <code>.sublime-settings</code> 后缀结尾的文件），用以配置用户的参数，我们也可以将一些有可能修改的字段定义在插件配置文件中，日后便不用修改代码，直接修改配置文件即可。</p>
+<p>下面是我的配置文件示例（JSON格式）：</p>
+<pre><code>/* <span class="type">ScriptOgr</span> <span class="default"><span class="keyword">default</span> setting */</span>
+{
+    <span class="string">"proxy_server"</span> : <span class="string">""</span>,
+    <span class="string">"user_id"</span> : <span class="string">""</span>,
+    <span class="string">"base_url"</span>: <span class="string">"http://scriptogr.am/api/article/"</span>
+}
+</code></pre><p>读取文件配置的代码如下，调用一下 Sublime Text 2 提供的 API 即可。</p>
+<pre><code>settings = sublime.load_settings(<span class="string">'ScriptOgrSender.sublime-settings'</span>)
+base_url = settings.<span class="keyword">get</span>(<span class="string">'base_url'</span>)
+self.user_id = settings.<span class="keyword">get</span>(<span class="string">'user_id'</span>)
+self.proxy_server = settings.<span class="keyword">get</span>(<span class="string">'proxy_server'</span>)
+</code></pre><h2 id="Step_8:_快捷键绑定">Step 8: 快捷键绑定</h2>
+<p>ST2 中的快捷键绑定可以说是最强大的功能之一了，其可定义性极高，只需要稍微理解一下示例中的定义即可创建出属于自己的快捷键绑定了。</p>
+<p>ScriptOgrSender 中的快捷键绑定如下：</p>
+<pre><code>[
+    {
+        "<span class="attribute">keys</span>": <span class="value">[<span class="string">"shift+alt+p"</span>]</span>,
+        "<span class="attribute">command</span>": <span class="value"><span class="string">"post_scr"</span></span>,
+        "<span class="attribute">context</span>":
+            <span class="value">[
+                { "<span class="attribute">key</span>": <span class="value"><span class="string">"selector"</span></span>, "<span class="attribute">operator</span>": <span class="value"><span class="string">"equal"</span></span>, "<span class="attribute">operand</span>": <span class="value"><span class="string">"text.html.markdown"</span> </span>}
+            ]
+    </span>},
+    {
+        "<span class="attribute">keys</span>": <span class="value">[<span class="string">"shift+alt+d"</span>]</span>,
+        "<span class="attribute">command</span>": <span class="value"><span class="string">"del_post_scr"</span></span>,
+        "<span class="attribute">context</span>":
+            <span class="value">[
+                { "<span class="attribute">key</span>": <span class="value"><span class="string">"selector"</span></span>, "<span class="attribute">operator</span>": <span class="value"><span class="string">"equal"</span></span>, "<span class="attribute">operand</span>": <span class="value"><span class="string">"text.html.markdown"</span> </span>}
+            ]
+    </span>}
+]
+</code></pre><p>其中， <code>keys</code> 即需要绑定的快捷键组合，ST2 提供了 Ctrl\Alt\Shift\Super 等常用的辅助键定义（<code>Super</code> 即键盘上的 Windows 键，或者是 Mac OS X 中的 Command 键）， <code>command</code> 即快捷键对应的命令，其定义请参考本文第一步。 <code>context</code> 字段定义了一个快捷键启用的上下文，即只有在 <code>text.html.markdown</code> 格式中才启用上面的快捷键。</p>
+<h2 id="Step_9:_添加菜单选项">Step 9: 添加菜单选项</h2>
+<p>下面说一下菜单选项，如果需要在 <code>Preferences</code> 菜单中添加插件相关的配置菜单项，请自行添加一个 <code>Main.sublime-menu</code> 文件，用于定义主菜单项目。内容太长在文章中就不贴出来了，具体可以参考其他插件中的文件。</p>
+<p>另外，需要在右键菜单中添加快捷选项的话，请添加一个 <code>Context.sublime-menu</code>，简单内容如下：</p>
+<pre><code>[
+    { "<span class="attribute">command</span>": <span class="value"><span class="string">"post_scr"</span></span>, "<span class="attribute">caption</span>": <span class="value"><span class="string">"Post to ScriptOgr.am"</span> </span>},
+    { "<span class="attribute">command</span>": <span class="value"><span class="string">"del_post_scr"</span></span>, "<span class="attribute">caption</span>": <span class="value"><span class="string">"Delete this post on ScriptOgr.am"</span> </span>}
+]
+</code></pre><h2 id="Step_10:_发布你的插件包">Step 10: 发布你的插件包</h2>
+<p>如果需要将你亲自编写的插件发布到 Package Control 上，可以参照官网上的说明（<a href="http://wbond.net/sublime_packages/package_control/package_developers" target="_blank">点击查看</a>）。</p>
+<h2 id="开始编写属于你自己的插件吧！">开始编写属于你自己的插件吧！</h2>
+<p>上面的内容都是兴趣使然的结果，本来对 Python 这语言也有一点点兴趣的我，由于没有什么实质的需求，一直没有怎么学习。通过自己编写这样的一个简单的小插件，感觉除了对 Python 语言本身熟悉一点点之外，还在过程中感受到之前的编程中没有使用过的小技巧的好处。感觉自己逐渐地对编程有点感觉了，不然也不会不停地去思考如何去增强代码的复用程度，精简代码中的冗余部分。</p>
+<p>总的来说，自行去编写一个属于自己的插件这件事情，还是一件挺有意义的事情来的。一方面可以满足到自己的需求，另外一方面也可以锻炼到自己。另外， Sublime Text 3 已经发布测试版本了，平台也切换到 Python 3 了，到时还需要检查插件运行是否正常。</p>
+
+	 
+	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
+<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm要给力</strong></a> - 2月 5 2013</span><br />
+<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
+</p>
+       	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+  
+  <div class="tags">
+    <a href="/tags/st2/">st2</a>, <a href="/tags/plugin/">plugin</a>
+  </div>
+
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'blastmannonscriptogram'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/archives/">Archives</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/about/">About</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/atom.xml">Subscribe</a></div>
+    
+</div>
+
+
+  </div>
+
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+</body>
+</html>

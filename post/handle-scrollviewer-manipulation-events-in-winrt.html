@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>WinRT下ScrollViewer的Manipulation事件如何响应 | @chaoming.edc blog</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="track my learning">
+  
+  
+  <meta name="keywords" content="windowsphone,windows,xaml,developer,iOS,OSX,productive">
+  
+  
+  <meta property="og:title" content="WinRT下ScrollViewer的Manipulation事件如何响应"/>
+  <meta name="title" content="WinRT下ScrollViewer的Manipulation事件如何响应"/>
+
+  <meta property="displaydate" content="2014-06-06T04:44:13.000Z"/>
+
+  <meta property="og:site_name" content="@chaoming.edc blog"/>
+  <meta name="copyright" content="@chaoming.edc blog"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="apple-touch-icon" href="/icon.png" />
+   <link rel="shortcut icon" href="/favicon.png" >
+   <link rel="alternate" href="http://blog.edi-c.com/atom.xml" title="@chaoming.edc blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">@chaoming.edc blog</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/archives/">Archives</a><li>
+    
+      <li class="cell"><a class="next" href="/about/">About</a><li>
+    
+      <li class="cell"><a class="next" href="/atom.xml">Subscribe</a><li>
+    
+    </ul>
+</nav>
+
+  <div class="widget weibo">
+<iframe width="100%" height="100" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=110&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=0&isWeibo=0&isFans=0&uid=newdings&verifier=78e1ee4d&colors=ffffff,ffffff,999,000,ecfbfd&dpc=1"></iframe>
+</div>
+
+  
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/IE/" style="font-size: 10.00px;">IE</a><a href="/tags/WPF/" style="font-size: 10.00px;">WPF</a><a href="/tags/alfred/" style="font-size: 10.00px;">alfred</a><a href="/tags/aspnet/" style="font-size: 10.00px;">aspnet</a><a href="/tags/browser/" style="font-size: 10.00px;">browser</a><a href="/tags/csharp/" style="font-size: 10.00px;">csharp</a><a href="/tags/css3/" style="font-size: 12.00px;">css3</a><a href="/tags/dev/" style="font-size: 10.00px;">dev</a><a href="/tags/diary/" style="font-size: 10.00px;">diary</a><a href="/tags/directx/" style="font-size: 10.00px;">directx</a><a href="/tags/fiddler/" style="font-size: 12.00px;">fiddler</a><a href="/tags/google/" style="font-size: 10.00px;">google</a><a href="/tags/ie/" style="font-size: 10.00px;">ie</a><a href="/tags/ie11/" style="font-size: 10.00px;">ie11</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/mac/" style="font-size: 10.00px;">mac</a><a href="/tags/markdown/" style="font-size: 10.00px;">markdown</a><a href="/tags/mvc/" style="font-size: 10.00px;">mvc</a><a href="/tags/note/" style="font-size: 10.00px;">note</a><a href="/tags/notes/" style="font-size: 16.00px;">notes</a><a href="/tags/plugin/" style="font-size: 10.00px;">plugin</a><a href="/tags/productivity/" style="font-size: 10.00px;">productivity</a><a href="/tags/programming/" style="font-size: 12.00px;">programming</a><a href="/tags/python/" style="font-size: 10.00px;">python</a><a href="/tags/reflow/" style="font-size: 10.00px;">reflow</a><a href="/tags/st2/" style="font-size: 16.00px;">st2</a><a href="/tags/summaries/" style="font-size: 10.00px;">summaries</a><a href="/tags/system/" style="font-size: 10.00px;">system</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/vs2012/" style="font-size: 10.00px;">vs2012</a><a href="/tags/web/" style="font-size: 10.00px;">web</a><a href="/tags/webdev/" style="font-size: 20.00px;">webdev</a><a href="/tags/windows/" style="font-size: 14.00px;">windows</a><a href="/tags/winrt/" style="font-size: 10.00px;">winrt</a><a href="/tags/workflow/" style="font-size: 10.00px;">workflow</a><a href="/tags/wp8/" style="font-size: 18.00px;">wp8</a><a href="/tags/wp8.1/" style="font-size: 10.00px;">wp8.1</a><a href="/tags/wpf/" style="font-size: 12.00px;">wpf</a><a href="/tags/xaml/" style="font-size: 10.00px;">xaml</a>
+  </div>
+</div>
+
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2014 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">@chaoming.edc blog</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+<article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+  <header>
+      
+      
+  
+    <h1 class="title">WinRT下ScrollViewer的Manipulation事件如何响应</h1>
+  
+
+      <time datetime="2014-06-06T04:44:13.000Z"><a href="/post/handle-scrollviewer-manipulation-events-in-winrt.html">6月 6 2014</a></time>
+      
+  </header>
+    <div class="entry">
+      
+        <h2 id="前言">前言</h2>
+<p>WP 8.1发布了，并且官方也宣布了Universal App的开发方式。可以针对Windows 8.1和Windows Phone 8.1的同时开发一个项目。UI部分只需要简单适配一下就可以了，大部分API都是共用的（个人对8.1研究不大深入，这里说的只是个大概的理解，有错误请指正）。</p>
+<h2 id="XAML_App和Silverlight_8-1">XAML App和Silverlight 8.1</h2>
+<p>8.1环境下面，有个概念要搞清楚：XAML App和Silverlight App不是一回事。虽然大家都用XAML，但8.1 XAML App的UI模型和Silverlight的模型不大一样，而且XAML App支持使用C/C++进行UI编程，这样做起来好像是会对内存控制上好一点。</p>
+<p>可惜的是，XAML App暂时还不能完全替代掉Silverlight App，但这肯定是一个趋势。而且看Silverlight App中控件的API在8.1下面基本没有增加（其实我也觉得XAML App里面的控件用起来更爽）。</p>
+<h2 id="正题">正题</h2>
+<p>说了那么多，下面讲一下这次的正题。在XAML App下，<code>UIElement</code>引入了<code>ManipulationMode</code>的概念。下面是官方解释：</p>
+<blockquote>
+<p>如果要处理操作事件（例如从您应用程序代码中 UI 元素的 ManipulationStarted），则必须将 ManipulationMode 设置为其他值，而不是 System 或 None。</p>
+<p>ManipulationMode 的典型默认值为 System 而不是 None。该值为 System 时，源自该元素的操作可以由根据 直接操作API 的 Windows </p>
+<p>]运行时基础结构处理。例如，ScrollViewer 按其控件逻辑处理用户操作，并将它们作为控件的滚动事件处理。System 值还可启用响应操作事件的个性动画。<br>Slider 和 ToggleSwitch 具有默认模板，将 ManipulationMode 值设置为 None，因此，None 将是在设计时所看到的默认值。</p>
+<p>指定相关的操作模式<br>你可以在代码或 XAML 中使用所示的逗号语法将多个按标志的 ManipulationModes 值指定为 ManipulationMode 属性的值。例如，可以合并 TranslateX、TranslateY、Rotate 和 Scale，或者它们的任意组合。但是，并非所有组合都有效。仅当特定控件使用 ManipulationModes 后，才会强制实施有效性，因此设置存在的问题（ManipulationModes 的无效组合）不到运行时可能不会出现。不要合并 Translate<em> 值与 TranslateRails</em> 值，因为它们被视为独占值，不合并惯性值与非惯性值。All 值不是所有标志的实际附加值，因此，All 不一定表示所有值的组合有效，或已设置任何特定值。<br>在 Windows 8 上，如果将 ManipulationMode 设置为一个将 System 与其他值组合的值，将会引发异常。从 Windows 8.1 开始，你可以将 System 与其他值结合使用。</p>
+</blockquote>
+<p>简单理解为：如果我们想要使用<code>Manipulation**</code>事件的话，在使用时必须将该控件的<code>ManipulationMode</code>修改为非<code>System</code>和<code>None</code>，否则系统将会接管触摸事件。</p>
+<p>那回到这次的主题，我们想在<code>ScrollViewer</code>上对它作水平方向的平移该怎么做呢？本来我以为只要在ScrollViewer上修改它的<code>ManipulationMode</code>就可以了，结果修改之后，并没有任何反应，绑定的<code>ManipulationDelta</code>事件并不会响应：</p>
+<figure class="highlight xaml"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="tag">&lt;<span class="title">ScrollViewer</span> <span class="attribute">x:Name</span>=<span class="value">"sv"</span> <span class="attribute">Height</span>=<span class="value">"200"</span> <span class="attribute">ManipulationMode</span>=<span class="value">"TranslateX"</span> <span class="attribute">ManipulationDelta</span>=<span class="value">"UIElement_OnManipulationDelta"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Border</span> <span class="attribute">Height</span>=<span class="value">"600"</span> <span class="attribute">Background</span>=<span class="value">"Red"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">TextBlock</span>&gt;</span>1<span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">Border</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">ScrollViewer</span>&gt;</span>
+</pre></td></tr></table></figure>
+
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">UIElement_OnManipulationDelta</span>(<span class="keyword">object</span> sender, ManipulationDeltaRoutedEventArgs e)
+{
+    Debug.WriteLine(e.Delta.Translation.X);
+}
+</pre></td></tr></table></figure>
+
+<p>后面想了一下，会不会是因为它的子控件<code>Border</code>上的事件被截获了呢？于是我又改了一下，在<code>Border</code>上绑定了一个<code>ManipulationDelta</code>事件，结果还是没有响应：</p>
+<figure class="highlight xaml"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="tag">&lt;<span class="title">ScrollViewer</span> <span class="attribute">x:Name</span>=<span class="value">"sv"</span> <span class="attribute">Height</span>=<span class="value">"200"</span> <span class="attribute">ManipulationMode</span>=<span class="value">"TranslateX"</span> <span class="attribute">ManipulationDelta</span>=<span class="value">"UIElement_OnManipulationDelta"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Border</span> <span class="attribute">Height</span>=<span class="value">"600"</span> <span class="attribute">Background</span>=<span class="value">"Red"</span> <span class="attribute">ManipulationDelta</span>=<span class="value">"BorderOnManipulationDelta"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">TextBlock</span>&gt;</span>1<span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">Border</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">ScrollViewer</span>&gt;</span>
+</pre></td></tr></table></figure>
+
+<p>于是我决定修改一下<code>Border</code>的<code>ManipulationMode</code>。发现如果修改成<code>All</code>，那<code>ScrollViewer</code>就无法正常滚动了，坑大发了。再次研读上面关于<code>ManipulationMode</code>的备注，发现这个属性的比较神奇，如果修改成非<code>System</code>外的值，那将由开发者自己去处理对应的触摸事件（这不就跟IE10开始使用那个坑爹属性<code>-ms-touch-action</code>一样吗？！）。不过XAML App里面对这个属性提供了一个神奇的使用方法：属性组合。也就是<code>ManipulationMode</code>这个属性里面，可以将多个模式组合使用。</p>
+<p>也就是说<code>ManipulationMode</code>可以接受以下的设置方式：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="setting">ManipulationMode = <span class="value"><span class="string">"TranslateX,TranslateY,Rotate,Scale"</span></span></span>
+</pre></td></tr></table></figure>
+
+<p>那这时候<code>Manipulation**</code>事件会在响应的参数里面给出TranslateX\TranslateY\Rotate\Scale等相应的响应值。</p>
+<p>回到主题：这属性跟<code>ScrollViewer</code>有什么关系啊？还是有点关系哈，看示例代码：</p>
+<figure class="highlight xaml"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="tag">&lt;<span class="title">ScrollViewer</span> <span class="attribute">x:Name</span>=<span class="value">"sv"</span> <span class="attribute">Height</span>=<span class="value">"200"</span> <span class="attribute">ManipulationDelta</span>=<span class="value">"UIElement_OnManipulationDelta"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Border</span> <span class="attribute">Height</span>=<span class="value">"600"</span> <span class="attribute">Background</span>=<span class="value">"Red"</span> <span class="attribute">ManipulationMode</span>=<span class="value">"System, TranslateX"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">TextBlock</span>&gt;</span>1<span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">Border</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">ScrollViewer</span>&gt;</span>
+</pre></td></tr></table></figure>
+
+<p>如果我对<code>ScrollViewer</code>的子控件添加<code>ManipulationMode=&quot;System,TranslateX</code>，那就相当于告诉系统：子控件的触摸事件除了水平方向之外，其它的都按照系统默认的响应处理。</p>
+<p>这样一来，子控件就不会截获掉水平方向的触摸事件，而我在上层<code>ScrollViewer</code>的触摸事件绑定也可以正常响应了！</p>
+<h3 id="备注">备注</h3>
+<p>WinRT下面对触摸事件的处理感觉是怪怪的，没有以前直观。像<code>ScrollViewer</code>的触摸事件响应，如果按照此文的方法做处理，只能针对非滚动方向做截获。意思就是：如果你的<code>ScrollViewer</code>需要水平方向的滚动，那你加上对应的<code>ManipulationMode</code>之后，水平方向的触摸就会交给你自己做处理了，也就是！如果你什么都不处理，你的<code>ScrollViewer</code>就没有办法做水平滚动啦！</p>
+<p>所以说，此法只适合在非滚动方向上的触摸事件响应。PS：有用过IE上那个<code>touch-action</code>属性的同学应该挺好理解这问题的。</p>
+
+	 
+	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
+<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm要给力</strong></a> - 6月 6 2014</span><br />
+<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
+</p>
+       	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+  
+  <div class="tags">
+    <a href="/tags/winrt/">winrt</a>, <a href="/tags/wp8.1/">wp8.1</a>, <a href="/tags/xaml/">xaml</a>
+  </div>
+
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'blastmannonscriptogram'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/archives/">Archives</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/about/">About</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/atom.xml">Subscribe</a></div>
+    
+</div>
+
+
+  </div>
+
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>WP8 上的 IE10 对 @font-face 属性的支持程度 | @chaoming.edc blog</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="track my learning">
+  
+  
+  <meta name="keywords" content="windowsphone,windows,xaml,developer,iOS,OSX,productive">
+  
+  
+  <meta property="og:title" content="WP8 上的 IE10 对 @font-face 属性的支持程度"/>
+  <meta name="title" content="WP8 上的 IE10 对 @font-face 属性的支持程度"/>
+
+  <meta property="displaydate" content="2013-07-03T09:19:00.000Z"/>
+
+  <meta property="og:site_name" content="@chaoming.edc blog"/>
+  <meta name="copyright" content="@chaoming.edc blog"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="apple-touch-icon" href="/icon.png" />
+   <link rel="shortcut icon" href="/favicon.png" >
+   <link rel="alternate" href="http://blog.edi-c.com/atom.xml" title="@chaoming.edc blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">@chaoming.edc blog</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/archives/">Archives</a><li>
+    
+      <li class="cell"><a class="next" href="/about/">About</a><li>
+    
+      <li class="cell"><a class="next" href="/atom.xml">Subscribe</a><li>
+    
+    </ul>
+</nav>
+
+  <div class="widget weibo">
+<iframe width="100%" height="100" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=110&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=0&isWeibo=0&isFans=0&uid=newdings&verifier=78e1ee4d&colors=ffffff,ffffff,999,000,ecfbfd&dpc=1"></iframe>
+</div>
+
+  
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/IE/" style="font-size: 10.00px;">IE</a><a href="/tags/WPF/" style="font-size: 10.00px;">WPF</a><a href="/tags/alfred/" style="font-size: 10.00px;">alfred</a><a href="/tags/aspnet/" style="font-size: 10.00px;">aspnet</a><a href="/tags/browser/" style="font-size: 10.00px;">browser</a><a href="/tags/csharp/" style="font-size: 10.00px;">csharp</a><a href="/tags/css3/" style="font-size: 12.00px;">css3</a><a href="/tags/dev/" style="font-size: 10.00px;">dev</a><a href="/tags/diary/" style="font-size: 10.00px;">diary</a><a href="/tags/directx/" style="font-size: 10.00px;">directx</a><a href="/tags/fiddler/" style="font-size: 12.00px;">fiddler</a><a href="/tags/google/" style="font-size: 10.00px;">google</a><a href="/tags/ie/" style="font-size: 10.00px;">ie</a><a href="/tags/ie11/" style="font-size: 10.00px;">ie11</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/mac/" style="font-size: 10.00px;">mac</a><a href="/tags/markdown/" style="font-size: 10.00px;">markdown</a><a href="/tags/mvc/" style="font-size: 10.00px;">mvc</a><a href="/tags/note/" style="font-size: 10.00px;">note</a><a href="/tags/notes/" style="font-size: 16.00px;">notes</a><a href="/tags/plugin/" style="font-size: 10.00px;">plugin</a><a href="/tags/productivity/" style="font-size: 10.00px;">productivity</a><a href="/tags/programming/" style="font-size: 12.00px;">programming</a><a href="/tags/python/" style="font-size: 10.00px;">python</a><a href="/tags/reflow/" style="font-size: 10.00px;">reflow</a><a href="/tags/st2/" style="font-size: 16.00px;">st2</a><a href="/tags/summaries/" style="font-size: 10.00px;">summaries</a><a href="/tags/system/" style="font-size: 10.00px;">system</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/vs2012/" style="font-size: 10.00px;">vs2012</a><a href="/tags/web/" style="font-size: 10.00px;">web</a><a href="/tags/webdev/" style="font-size: 20.00px;">webdev</a><a href="/tags/windows/" style="font-size: 14.00px;">windows</a><a href="/tags/winrt/" style="font-size: 10.00px;">winrt</a><a href="/tags/workflow/" style="font-size: 10.00px;">workflow</a><a href="/tags/wp8/" style="font-size: 18.00px;">wp8</a><a href="/tags/wp8.1/" style="font-size: 10.00px;">wp8.1</a><a href="/tags/wpf/" style="font-size: 12.00px;">wpf</a><a href="/tags/xaml/" style="font-size: 10.00px;">xaml</a>
+  </div>
+</div>
+
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2014 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">@chaoming.edc blog</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+<article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+  <header>
+      
+      
+  
+    <h1 class="title">WP8 上的 IE10 对 @font-face 属性的支持程度</h1>
+  
+
+      <time datetime="2013-07-03T09:19:00.000Z"><a href="/post/wp8-ie10-font-face-support.html">7月 3 2013</a></time>
+      
+  </header>
+    <div class="entry">
+      
+        <p>现在的前端都流行把一些小图标转换成字体，然后利用 <code>@font-face</code> 这个 CSS 属性来定义一个页面专有的字体，从而达到把小图标转换成字符显示的效果。这样做除了可以省流量，图标的显示效果也很好，放大缩小都不怎么会影响效果，确实是一个不错的的手段。</p>
+<p>关于 CSS3 中的 <code>@font-face</code> 属性，可以参阅<a href="http://www.w3cplus.com/content/css3-font-face" target="_blank">这篇文章</a>，里面有很详细的属性应用介绍。</p>
+<p>但是，在 PC 的 IE10 下面尝试嵌入 ttf 格式的字体时，会提示这样的信息：</p>
+<blockquote>
+<p>CSS3114: @font-face 未能完成 OpenType 嵌入权限检查。权限必须是可安装的。 </p>
+</blockquote>
+<p>原因可能是自制的 ttf 格式没有正确的安装权限造成的。因此，有必要对 ttf 格式进行转换，PC 上的 IE10 支持多种字体格式，如 Embedded-Opentype(eot)、Web Open Font Format(woff)、TrueType(ttf) 和 Scalable Vector Graphics(SVG)，具体可以参考上面文章。</p>
+<p>但 WP8 上的 IE10 对字体格式的要求更严格，转换成 IE 专用的 eot 格式之后还是不能正常显示。于是又查了一下资料，发现还是能用的（<a href="http://stackoverflow.com/questions/15819717/font-awesome-not-displayed-on-windows-phone-8" target="_blank">点击这里</a>）。于是把格式换成 woff 之后就没有问题了，ttf 转 woff 的工具在网上都有，可以在线转换（<a href="http://everythingfonts.com/" target="_blank">点击这里有一个网站可以试试</a>）。</p>
+<p>PS：最好还是在引用的 url 后面声明一下字体的格式。</p>
+<pre><code><span class="at_rule">@<span class="keyword">font-face</span></span> <span class="rules">{
+    <span class="rule"><span class="attribute">font-family</span>:<span class="value"> <span class="string">'Test'</span></span></span>;
+    <span class="rule"><span class="attribute">src</span>:<span class="value"><span class="function">url(font/font.woff)</span> <span class="function">format(<span class="string">'woff'</span>)</span></span></span>;
+<span class="rule">}</span></span>
+</code></pre>
+	 
+	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
+<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm要给力</strong></a> - 7月 3 2013</span><br />
+<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
+</p>
+       	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+  
+  <div class="tags">
+    <a href="/tags/webdev/">webdev</a>, <a href="/tags/wp8/">wp8</a>
+  </div>
+
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'blastmannonscriptogram'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/archives/">Archives</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/about/">About</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/atom.xml">Subscribe</a></div>
+    
+</div>
+
+
+  </div>
+
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>《浏览器工作原理》学习笔记 | @chaoming.edc blog</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="track my learning">
+  
+  
+  <meta name="keywords" content="windowsphone,windows,xaml,developer,iOS,OSX,productive">
+  
+  
+  <meta property="og:title" content="《浏览器工作原理》学习笔记"/>
+  <meta name="title" content="《浏览器工作原理》学习笔记"/>
+
+  <meta property="displaydate" content="2012-12-26T00:00:00.000Z"/>
+
+  <meta property="og:site_name" content="@chaoming.edc blog"/>
+  <meta name="copyright" content="@chaoming.edc blog"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="apple-touch-icon" href="/icon.png" />
+   <link rel="shortcut icon" href="/favicon.png" >
+   <link rel="alternate" href="http://blog.edi-c.com/atom.xml" title="@chaoming.edc blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">@chaoming.edc blog</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/archives/">Archives</a><li>
+    
+      <li class="cell"><a class="next" href="/about/">About</a><li>
+    
+      <li class="cell"><a class="next" href="/atom.xml">Subscribe</a><li>
+    
+    </ul>
+</nav>
+
+  <div class="widget weibo">
+<iframe width="100%" height="100" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=110&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=0&isWeibo=0&isFans=0&uid=newdings&verifier=78e1ee4d&colors=ffffff,ffffff,999,000,ecfbfd&dpc=1"></iframe>
+</div>
+
+  
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/IE/" style="font-size: 10.00px;">IE</a><a href="/tags/WPF/" style="font-size: 10.00px;">WPF</a><a href="/tags/alfred/" style="font-size: 10.00px;">alfred</a><a href="/tags/aspnet/" style="font-size: 10.00px;">aspnet</a><a href="/tags/browser/" style="font-size: 10.00px;">browser</a><a href="/tags/csharp/" style="font-size: 10.00px;">csharp</a><a href="/tags/css3/" style="font-size: 12.00px;">css3</a><a href="/tags/dev/" style="font-size: 10.00px;">dev</a><a href="/tags/diary/" style="font-size: 10.00px;">diary</a><a href="/tags/directx/" style="font-size: 10.00px;">directx</a><a href="/tags/fiddler/" style="font-size: 12.00px;">fiddler</a><a href="/tags/google/" style="font-size: 10.00px;">google</a><a href="/tags/ie/" style="font-size: 10.00px;">ie</a><a href="/tags/ie11/" style="font-size: 10.00px;">ie11</a><a href="/tags/javascript/" style="font-size: 10.00px;">javascript</a><a href="/tags/mac/" style="font-size: 10.00px;">mac</a><a href="/tags/markdown/" style="font-size: 10.00px;">markdown</a><a href="/tags/mvc/" style="font-size: 10.00px;">mvc</a><a href="/tags/note/" style="font-size: 10.00px;">note</a><a href="/tags/notes/" style="font-size: 16.00px;">notes</a><a href="/tags/plugin/" style="font-size: 10.00px;">plugin</a><a href="/tags/productivity/" style="font-size: 10.00px;">productivity</a><a href="/tags/programming/" style="font-size: 12.00px;">programming</a><a href="/tags/python/" style="font-size: 10.00px;">python</a><a href="/tags/reflow/" style="font-size: 10.00px;">reflow</a><a href="/tags/st2/" style="font-size: 16.00px;">st2</a><a href="/tags/summaries/" style="font-size: 10.00px;">summaries</a><a href="/tags/system/" style="font-size: 10.00px;">system</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/vs2012/" style="font-size: 10.00px;">vs2012</a><a href="/tags/web/" style="font-size: 10.00px;">web</a><a href="/tags/webdev/" style="font-size: 20.00px;">webdev</a><a href="/tags/windows/" style="font-size: 14.00px;">windows</a><a href="/tags/winrt/" style="font-size: 10.00px;">winrt</a><a href="/tags/workflow/" style="font-size: 10.00px;">workflow</a><a href="/tags/wp8/" style="font-size: 18.00px;">wp8</a><a href="/tags/wp8.1/" style="font-size: 10.00px;">wp8.1</a><a href="/tags/wpf/" style="font-size: 12.00px;">wpf</a><a href="/tags/xaml/" style="font-size: 10.00px;">xaml</a>
+  </div>
+</div>
+
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2014 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">@chaoming.edc blog</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+<article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+  <header>
+      
+      
+  
+    <h1 class="title">《浏览器工作原理》学习笔记</h1>
+  
+
+      <time datetime="2012-12-26T00:00:00.000Z"><a href="/post/my-notes-about-how-browsers-work.html">12月 26 2012</a></time>
+      
+  </header>
+    <div class="entry">
+      
+        <p>学习内容来自于HTML5Rocks网站，<a href="http://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/" target="_blank">《浏览器的工作原理：现代浏览器幕后揭秘》</a>，简单输入输出一下读后笔记。</p>
+<h2 id="解析">解析</h2>
+<p>解析文档是指将文档转化成有意义的结构，也就是可让代码理解和使用的结构。</p>
+<p>解析得到的结果通常是代表了文档结构的节点树，它称作解析树或者语法树。</p>
+<h3 id="HTML解析">HTML解析</h3>
+<h4 id="HTML语法定义">HTML语法定义</h4>
+<p>常规解析器都不适用于HTML，HTML并不能很容易地用解析器所需的的上下文无关的语法来定义。</p>
+<p>有一种可以定义HTML的正规格式：DTD（Document Type Definition，文档类型定义），但它还是与上下文无关的语法。原因是HTML的语法处理很宽容，允许省略某些隐匿添加的标记，有时还能省略一些起始或者结束标记等等。</p>
+<h4 id="DOM">DOM</h4>
+<p>解析器输出的“解析树”是由DOM元素与属性节点构成的树结构。DOM是文档对象模型（Document Object Model）的缩写。它是HTML文档的对象表示，同时也是外部内容与HTML元素之间的接口。</p>
+<p><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html" target="_blank">HTML5规范详细地打描述了解析算法</a>。此算法由两个阶段组成：标记化和树构建。</p>
+<p><img src="http://1-ps.googleusercontent.com/x/s.html5rocks-hrd.appspot.com/www.html5rocks.com/zh/tutorials/internals/howbrowserswork/308x400ximage017.png.pagespeed.ic.BGy2jYmiQr.jpg" alt="HTML解析流程" title="HTML5规范中的解析流程"></p>
+<h4 id="解析算法">解析算法</h4>
+<p>我们在之前章节已经说过，HTML 无法用常规的自上而下或自下而上的解析器进行解析。</p>
+<p>原因在于：</p>
+<ul>
+<li>语言的宽容本质。</li>
+<li>浏览器历来对一些常见的无效 HTML 用法采取包容态度。</li>
+<li>解析过程需要不断地反复。源内容在解析过程中通常不会改变，但是在 HTML 中，脚本标记如果包含 document.write，就会添加额外的标记，这样解析过程实际上就更改了输入内容。</li>
+</ul>
+<p>HTML的解析算法由两个阶段组成：标记化和树构建</p>
+<h5 id="标记化算法">标记化算法</h5>
+<pre><code><span class="tag">&lt;<span class="title">html</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">body</span>&gt;</span>
+        Hello world
+    <span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span>
+</code></pre><p>初始状态是数据状态，当遇到字符<code>&lt;</code>时，状态更改为“标记打开状态”。接收一个<code>a-z</code>字符会创建“起始标记”，状态更改为“标记名称状态”。这个状态会一直保持到接收<code>&gt;</code>。在此期间接收的每个字符都会附加到新的标记名称上。在本例中，我们创建的标记是<code>html</code>标记。</p>
+<p>遇到<code>&gt;</code>标记时，会发送当前的标记，状态发回“数据状态”。<code>&lt;body&gt;</code>标记也会进行同样的处理。目前<code>html</code>和<code>body</code>标记均已发出。现在我们回到“数据状态”。接收到<code>Hello world</code>中的<code>H</code>字符时，将创建并发送字符标记，直到接收<code>&lt;/body&gt;</code>中的<code>&lt;</code>。我们将为<code>Hello world</code>中的每个字符都发送一个字符标记。</p>
+<p>现在我们回到“标记打开状态”。接收下一个输入字符<code>/</code>时，会创建<code>end tag token</code>并改为“标记名称状态”。我们会再次保持这个状态，直到接收<code>&gt;</code>。然后将发送新的标记，并回到“数据状态”。<code>&lt;/html&gt;</code>输入也会进行同样的处理。</p>
+<p><img src="http://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/image019.png" alt="标记化算法"></p>
+<h5 id="树构建算法">树构建算法</h5>
+<p>树构建阶段的输入是一个来自标记化阶段的标记序列。第一个模式是<strong>“initial mode”</strong>。接收HTML标记后转为<strong>“before html”</strong>模式，并在这个模式下重新处理此标记。这样会创建一个HTMLHtmlElement元素，并奖其附加到Document根对象上。</p>
+<p>后续状态：</p>
+<ol>
+<li><strong>“before head”</strong>，接收“body”标记，创建HTMLHeadElement，添加到树中。</li>
+<li><strong>“in head”</strong>模式，然后转入<strong>“after head”</strong>模式。创建并插入HTMLBodyElement，然后模式转变为<strong>“body”</strong>。</li>
+<li>接收body中的字符串，然后创建并插入<strong>“text”</strong>节点，其他字符也将附加到该节点</li>
+<li>接收body结束标记，触发<strong>after body</strong>模式，接收剩余的HTML结束标记。解析过程结束。</li>
+</ol>
+<p><img src="http://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/image022.gif" alt="树构建算法"></p>
+<h4 id="解析结束后的操作">解析结束后的操作</h4>
+<p>文档标记为交互状态，可以解析处于“deferred”模式的脚本。</p>
+<h4 id="浏览器容错机制">浏览器容错机制</h4>
+<p>浏览器会纠正任何无效内容，然后继续工作。Webkit在HTML解析器类的形状注释中对此做了相应的概括：</p>
+<p>解析器对标记化输入内容进行解析，以构建文档树。如果文档的格式正确，就直接进行解析。遗憾的是，我们不得不处理很多格式错误的 HTML 文档，所以解析器必须具备一定的容错性。</p>
+<p>我们至少要能够处理以下错误情况：</p>
+<ol>
+<li>明显不能在某些外部标记中添加的元素。在此情况下，我们应该关闭所有标记，直到出现禁止添加的元素，然后再加入该元素。</li>
+<li>我们不能直接添加的元素。这很可能是网页作者忘记添加了其中的一些标记（或者其中的标记是可选的）。这些标签可能包括：HTML HEAD BODY TBODY TR TD LI（还有遗漏的吗？）。</li>
+<li>向 inline 元素内添加 block 元素。关闭所有 inline 元素，直到出现下一个较高级的 block 元素。</li>
+<li>如果这样仍然无效，可关闭所有元素，直到可以添加元素为止，或者忽略该标记。</li>
+</ol>
+<h3 id="CSS解析">CSS解析</h3>
+<p>词法语法（词汇）是针对各个标记用正则表达式定义的：</p>
+<pre><code>comment   \/\<span class="emphasis">*[^*</span>]<span class="emphasis">*\*</span>+([<span class="link_label">^/*</span>][<span class="link_reference">^*</span>]<span class="emphasis">*\*</span>+)*\/
+num   [0-9]+|[0-9]*"."[0-9]+
+nonascii  [\200-\377]
+nmstart   [_a-z]|{nonascii}|{escape}
+nmchar    [_a-z0-9-]|{nonascii}|{escape}
+name    {nmchar}+
+ident   {nmstart}{nmchar}*
+</code></pre><p>语法是采用BNF格式描述的。<a href="http://www.douban.com/group/topic/7580567/" target="_blank">什么是BNF格式</a>？豆瓣里面有解释。</p>
+<h4 id="Webkit_CSS_解析器">Webkit CSS 解析器</h4>
+<p><img src="http://1-ps.googleusercontent.com/x/s.html5rocks-hrd.appspot.com/www.html5rocks.com/zh/tutorials/internals/howbrowserswork/image023.png.pagespeed.ce.uVfINk36yE.png" alt="Webkit CSS解析"></p>
+<h2 id="呈现树构建（Render_Tree）">呈现树构建（Render Tree）</h2>
+<p>在 DOM 树构建的同时，浏览器还会构建另一个树结构：呈现树。这是由可视化元素按照其显示顺序而组成的树，也是文档的可视化表示。它的作用是让您按照正确的顺序绘制内容。</p>
+<p>在Webkit中，如果一个元素需要创建特殊的呈现器，就会替换<code>createRenderer</code>方法。呈现器所指向的样式对象中包含了一些和几何无关的信息。</p>
+<h3 id="呈现树与DOM树的关系">呈现树与DOM树的关系</h3>
+<p><img src="http://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/image025.png" alt="呈现树与DOM树的关系"></p>
+<h3 id="样式计算">样式计算</h3>
+<h4 id="共享样式数据">共享样式数据</h4>
+<p>Webkit 节点会引用样式对象 (RenderStyle)。这些对象在某些情况下可以由不同节点共享。这些节点是同级关系，并且：</p>
+<ul>
+<li>这些元素必须处于相同的鼠标状态（例如，不允许其中一个是“:hover”状态，而另一个不是）</li>
+<li>任何元素都没有 ID</li>
+<li>标记名称应匹配</li>
+<li>类属性应匹配</li>
+<li>映射属性的集合必须是完全相同的</li>
+<li>链接状态必须匹配</li>
+<li>焦点状态必须匹配</li>
+<li>任何元素都不应受属性选择器的影响，这里所说的“影响”是指在选择器中的任何位置有任何使用了属性选择器的选择器匹配</li>
+<li>元素中不能有任何 inline 样式属性</li>
+<li>不能使用任何同级选择器。WebCore 在遇到任何同级选择器时，只会引发一个全局开关，并停用整个文档的样式共享（如果存在）。这包括 + 选择器以及 :first-child 和 :last-child 等选择器。</li>
+</ul>
+
+	 
+	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
+<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm要给力</strong></a> - 12月 26 2012</span><br />
+<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
+</p>
+       	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+  
+  <div class="tags">
+    <a href="/tags/notes/">notes</a>, <a href="/tags/browser/">browser</a>
+  </div>
+
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'blastmannonscriptogram'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/archives/">Archives</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/about/">About</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/atom.xml">Subscribe</a></div>
+    
+</div>
+
+
+  </div>
+
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+</body>
+</html>

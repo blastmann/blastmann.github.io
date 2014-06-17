@@ -1,0 +1,1389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[@chaoming.edc blog]]></title>
+  
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://blog.edi-c.com/"/>
+  <updated>2014-06-17T14:04:04.095Z</updated>
+  <id>http://blog.edi-c.com/</id>
+  
+  <author>
+    <name><![CDATA[chaoming.edc|blastmann]]></name>
+    <email><![CDATA[chaoming.edc@outlook.com]]></email>
+  </author>
+  
+  <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[WP8如何引用自定义字体]]></title>
+    <link href="http://blog.edi-c.com/post/how-to-import-custom-font-in-wp8.html"/>
+    <id>http://blog.edi-c.com/post/how-to-import-custom-font-in-wp8.html</id>
+    <published>2014-06-14T15:34:42.000Z</published>
+    <updated>2014-06-14T15:52:01.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="前言">前言</h2>
+<p>最近重操故业，拿起了PS认真做了个App的设计图，然后就是把设计稿转化成App了。由于设计的时候使用了一些系统不存在的字体，所以只好研究怎么引入自定义的字体。</p>
+<h2 id="说一下WP里面对字体的一个特殊处理">说一下WP里面对字体的一个特殊处理</h2>
+<p>其实刚开始的时候也没有想着使用自定义字体的，毕竟也只是把Segoe这个字体压缩了一下，在PS里面将它设置成了Condensed。结果发现WP开发的时候，把<code>FontStretch</code>设置成<code>Condensed</code>是没有作用的。原因是：设置字体拉伸这个属性，对应的字体必须支持该样式（即需要Segoe Condensed这个字体），如果不支持，则不应用该属性。</p>
+<p>于是，只能想想别的方法：把字体打包到应用里面吧。</p>
+<h2 id="引入自定义字体">引入自定义字体</h2>
+<p>有这么特殊的处理也就算了，在WP7开始可以正常使用的引用自定义字体的方法，在WP8下面竟然不适用。引用方法如下：</p>
+<ol>
+<li>将字体复制到工程中，建议使用”Fonts”目录存放</li>
+<li>将字体文件在工程中的属性设置为Contents</li>
+<li>在XAML文件中需要定义字体的地方，使用”Fonts/MyCustomFont.tff#MyCustomFont”这种语法进行引用</li>
+</ol>
+<p>需要注意的是：#后面的字体名需要自行打开该字体进行查看，字体名不等于文件名。</p>
+<p>本来到这里，这文章也就完了，结果引用完了之后发现没有任何效果。于是继续Google，在<a href="http://nicksnettravels.builttoroam.com/post/2013/06/22/TTF-Font-with-Windows-Phone-8.aspx" target="_blank">TTF Font with Windows Phone 8</a>这文章里面，作者也遇到这个问题。他的最终解决方法是：使用<a href="http://birdfont.org/" target="_blank">BirdFont</a>软件修改字体，换个名字之后重新导出就可以正常引用了。该同学也不明白这是为什么。</p>
+<p>PS：该文章里面使用的BirdFont原来是不需要收费的，但最新的版本已经是需要购买才能正常使用（不购买的话只能修改SIL协议下的字体）。不过费用也不贵，是以捐赠的形式进行购买的，最低只需要捐赠1美元就可以买到了。</p>
+<p>PPS：这样修改过的字体不知道能不能在商业用途中使用，有这样的风险。</p>
+]]></content>
+    
+    
+      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[测试一下Google的索引]]></title>
+    <link href="http://blog.edi-c.com/post/test-for-google.html"/>
+    <id>http://blog.edi-c.com/post/test-for-google.html</id>
+    <published>2014-06-07T14:50:45.000Z</published>
+    <updated>2014-06-07T14:52:33.000Z</updated>
+    <content type="html"><![CDATA[<p>最近把Blog迁移到Github Pages之后，发现好几篇Post都没有及时收录。研究了一下，说是建议添加Sitemap都Google站长工具里面。</p>
+<p>添加完之后，发布一篇post测试一下。</p>
+]]></content>
+    
+    
+      <category term="web" scheme="http://blog.edi-c.com/tags/web/"/>
+    
+      <category term="google" scheme="http://blog.edi-c.com/tags/google/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[WinRT下ScrollViewer的Manipulation事件如何响应]]></title>
+    <link href="http://blog.edi-c.com/post/handle-scrollviewer-manipulation-events-in-winrt.html"/>
+    <id>http://blog.edi-c.com/post/handle-scrollviewer-manipulation-events-in-winrt.html</id>
+    <published>2014-06-06T04:44:13.000Z</published>
+    <updated>2014-06-07T14:36:31.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="前言">前言</h2>
+<p>WP 8.1发布了，并且官方也宣布了Universal App的开发方式。可以针对Windows 8.1和Windows Phone 8.1的同时开发一个项目。UI部分只需要简单适配一下就可以了，大部分API都是共用的（个人对8.1研究不大深入，这里说的只是个大概的理解，有错误请指正）。</p>
+<h2 id="XAML_App和Silverlight_8-1">XAML App和Silverlight 8.1</h2>
+<p>8.1环境下面，有个概念要搞清楚：XAML App和Silverlight App不是一回事。虽然大家都用XAML，但8.1 XAML App的UI模型和Silverlight的模型不大一样，而且XAML App支持使用C/C++进行UI编程，这样做起来好像是会对内存控制上好一点。</p>
+<p>可惜的是，XAML App暂时还不能完全替代掉Silverlight App，但这肯定是一个趋势。而且看Silverlight App中控件的API在8.1下面基本没有增加（其实我也觉得XAML App里面的控件用起来更爽）。</p>
+<h2 id="正题">正题</h2>
+<p>说了那么多，下面讲一下这次的正题。在XAML App下，<code>UIElement</code>引入了<code>ManipulationMode</code>的概念。下面是官方解释：</p>
+<blockquote>
+<p>如果要处理操作事件（例如从您应用程序代码中 UI 元素的 ManipulationStarted），则必须将 ManipulationMode 设置为其他值，而不是 System 或 None。</p>
+<p>ManipulationMode 的典型默认值为 System 而不是 None。该值为 System 时，源自该元素的操作可以由根据 直接操作API 的 Windows </p>
+<p>]运行时基础结构处理。例如，ScrollViewer 按其控件逻辑处理用户操作，并将它们作为控件的滚动事件处理。System 值还可启用响应操作事件的个性动画。<br>Slider 和 ToggleSwitch 具有默认模板，将 ManipulationMode 值设置为 None，因此，None 将是在设计时所看到的默认值。</p>
+<p>指定相关的操作模式<br>你可以在代码或 XAML 中使用所示的逗号语法将多个按标志的 ManipulationModes 值指定为 ManipulationMode 属性的值。例如，可以合并 TranslateX、TranslateY、Rotate 和 Scale，或者它们的任意组合。但是，并非所有组合都有效。仅当特定控件使用 ManipulationModes 后，才会强制实施有效性，因此设置存在的问题（ManipulationModes 的无效组合）不到运行时可能不会出现。不要合并 Translate<em> 值与 TranslateRails</em> 值，因为它们被视为独占值，不合并惯性值与非惯性值。All 值不是所有标志的实际附加值，因此，All 不一定表示所有值的组合有效，或已设置任何特定值。<br>在 Windows 8 上，如果将 ManipulationMode 设置为一个将 System 与其他值组合的值，将会引发异常。从 Windows 8.1 开始，你可以将 System 与其他值结合使用。</p>
+</blockquote>
+<p>简单理解为：如果我们想要使用<code>Manipulation**</code>事件的话，在使用时必须将该控件的<code>ManipulationMode</code>修改为非<code>System</code>和<code>None</code>，否则系统将会接管触摸事件。</p>
+<p>那回到这次的主题，我们想在<code>ScrollViewer</code>上对它作水平方向的平移该怎么做呢？本来我以为只要在ScrollViewer上修改它的<code>ManipulationMode</code>就可以了，结果修改之后，并没有任何反应，绑定的<code>ManipulationDelta</code>事件并不会响应：</p>
+<figure class="highlight xaml"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="tag">&lt;<span class="title">ScrollViewer</span> <span class="attribute">x:Name</span>=<span class="value">"sv"</span> <span class="attribute">Height</span>=<span class="value">"200"</span> <span class="attribute">ManipulationMode</span>=<span class="value">"TranslateX"</span> <span class="attribute">ManipulationDelta</span>=<span class="value">"UIElement_OnManipulationDelta"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Border</span> <span class="attribute">Height</span>=<span class="value">"600"</span> <span class="attribute">Background</span>=<span class="value">"Red"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">TextBlock</span>&gt;</span>1<span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">Border</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">ScrollViewer</span>&gt;</span>
+</pre></td></tr></table></figure>
+
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">UIElement_OnManipulationDelta</span>(<span class="keyword">object</span> sender, ManipulationDeltaRoutedEventArgs e)
+{
+    Debug.WriteLine(e.Delta.Translation.X);
+}
+</pre></td></tr></table></figure>
+
+<p>后面想了一下，会不会是因为它的子控件<code>Border</code>上的事件被截获了呢？于是我又改了一下，在<code>Border</code>上绑定了一个<code>ManipulationDelta</code>事件，结果还是没有响应：</p>
+<figure class="highlight xaml"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="tag">&lt;<span class="title">ScrollViewer</span> <span class="attribute">x:Name</span>=<span class="value">"sv"</span> <span class="attribute">Height</span>=<span class="value">"200"</span> <span class="attribute">ManipulationMode</span>=<span class="value">"TranslateX"</span> <span class="attribute">ManipulationDelta</span>=<span class="value">"UIElement_OnManipulationDelta"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Border</span> <span class="attribute">Height</span>=<span class="value">"600"</span> <span class="attribute">Background</span>=<span class="value">"Red"</span> <span class="attribute">ManipulationDelta</span>=<span class="value">"BorderOnManipulationDelta"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">TextBlock</span>&gt;</span>1<span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">Border</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">ScrollViewer</span>&gt;</span>
+</pre></td></tr></table></figure>
+
+<p>于是我决定修改一下<code>Border</code>的<code>ManipulationMode</code>。发现如果修改成<code>All</code>，那<code>ScrollViewer</code>就无法正常滚动了，坑大发了。再次研读上面关于<code>ManipulationMode</code>的备注，发现这个属性的比较神奇，如果修改成非<code>System</code>外的值，那将由开发者自己去处理对应的触摸事件（这不就跟IE10开始使用那个坑爹属性<code>-ms-touch-action</code>一样吗？！）。不过XAML App里面对这个属性提供了一个神奇的使用方法：属性组合。也就是<code>ManipulationMode</code>这个属性里面，可以将多个模式组合使用。</p>
+<p>也就是说<code>ManipulationMode</code>可以接受以下的设置方式：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="setting">ManipulationMode = <span class="value"><span class="string">"TranslateX,TranslateY,Rotate,Scale"</span></span></span>
+</pre></td></tr></table></figure>
+
+<p>那这时候<code>Manipulation**</code>事件会在响应的参数里面给出TranslateX\TranslateY\Rotate\Scale等相应的响应值。</p>
+<p>回到主题：这属性跟<code>ScrollViewer</code>有什么关系啊？还是有点关系哈，看示例代码：</p>
+<figure class="highlight xaml"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="tag">&lt;<span class="title">ScrollViewer</span> <span class="attribute">x:Name</span>=<span class="value">"sv"</span> <span class="attribute">Height</span>=<span class="value">"200"</span> <span class="attribute">ManipulationDelta</span>=<span class="value">"UIElement_OnManipulationDelta"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">Border</span> <span class="attribute">Height</span>=<span class="value">"600"</span> <span class="attribute">Background</span>=<span class="value">"Red"</span> <span class="attribute">ManipulationMode</span>=<span class="value">"System, TranslateX"</span>&gt;</span>
+        <span class="tag">&lt;<span class="title">TextBlock</span>&gt;</span>1<span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+    <span class="tag">&lt;/<span class="title">Border</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">ScrollViewer</span>&gt;</span>
+</pre></td></tr></table></figure>
+
+<p>如果我对<code>ScrollViewer</code>的子控件添加<code>ManipulationMode=&quot;System,TranslateX</code>，那就相当于告诉系统：子控件的触摸事件除了水平方向之外，其它的都按照系统默认的响应处理。</p>
+<p>这样一来，子控件就不会截获掉水平方向的触摸事件，而我在上层<code>ScrollViewer</code>的触摸事件绑定也可以正常响应了！</p>
+<h3 id="备注">备注</h3>
+<p>WinRT下面对触摸事件的处理感觉是怪怪的，没有以前直观。像<code>ScrollViewer</code>的触摸事件响应，如果按照此文的方法做处理，只能针对非滚动方向做截获。意思就是：如果你的<code>ScrollViewer</code>需要水平方向的滚动，那你加上对应的<code>ManipulationMode</code>之后，水平方向的触摸就会交给你自己做处理了，也就是！如果你什么都不处理，你的<code>ScrollViewer</code>就没有办法做水平滚动啦！</p>
+<p>所以说，此法只适合在非滚动方向上的触摸事件响应。PS：有用过IE上那个<code>touch-action</code>属性的同学应该挺好理解这问题的。</p>
+]]></content>
+    
+    
+      <category term="winrt" scheme="http://blog.edi-c.com/tags/winrt/"/>
+    
+      <category term="wp8.1" scheme="http://blog.edi-c.com/tags/wp8.1/"/>
+    
+      <category term="xaml" scheme="http://blog.edi-c.com/tags/xaml/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[一个在Mac上用于快速切换Function Key的Alfred Workflow]]></title>
+    <link href="http://blog.edi-c.com/post/functionkey-swithcher-workflow.html"/>
+    <id>http://blog.edi-c.com/post/functionkey-swithcher-workflow.html</id>
+    <published>2014-06-03T05:37:51.000Z</published>
+    <updated>2014-06-07T14:36:31.000Z</updated>
+    <content type="html"><![CDATA[<p>最近切换到iOS开发上，每天都在忍受着Xcode和VS之间的异同。Mac上有一些比较脑残的设置（虽然有时候会觉得挺方便）。不过对开发者影响比较大的还是Debug的时候，键盘顶部的Function Keys默认被设置成了OS X上的一些快捷方式。</p>
+<p>虽然，MAS（Mac App Store）上有一款可以自动切换Function Key的软件（叫Puala），有兴趣可以自行下载（￥6）。不过Apple提供了AppleScript，可以对OS X系统、GUI等进行编程，快速实现想要的功能。本来是想自己写一个简单的脚本做处理的，结果查阅了一下各大网站，有人已经写过了。我就简单封装成Alfred Workflow，需要的同学自行下载安装。</p>
+<p>使用方法：呼出Alfred之后，输入swfn回车即可将按钮功能切换成标准的Function Key。</p>
+<p><a href="https://www.dropbox.com/s/ptdtvpsoa1gwzm2/Switch%20FunctionKeys.alfredworkflow" target="_blank">点击下载</a>。</p>
+]]></content>
+    
+    
+      <category term="mac" scheme="http://blog.edi-c.com/tags/mac/"/>
+    
+      <category term="alfred" scheme="http://blog.edi-c.com/tags/alfred/"/>
+    
+      <category term="workflow" scheme="http://blog.edi-c.com/tags/workflow/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Effective Objective-C 阅读记录]]></title>
+    <link href="http://blog.edi-c.com/post/effective-objetive-c-note.html"/>
+    <id>http://blog.edi-c.com/post/effective-objetive-c-note.html</id>
+    <published>2014-05-24T04:31:59.000Z</published>
+    <updated>2014-06-07T14:36:31.000Z</updated>
+    <content type="html"><![CDATA[<p>关键的最佳实践：</p>
+<h2 id="第一章：了解OC">第一章：了解OC</h2>
+<ol>
+<li>Item 2: 减少头文件的引用：在.h文件中添加#import的时候，其它文件引用此.h文件时也会导入其它的头文件。此时可以使用@class转发声明，然后在.m中再引入该类的头文件。简单地说就是只在Implementation中进行头文件的引用，减少多重引用。使用这种方法声明的时候，如果外部需要访问该类的方法/属性，则需要再引用该类的头文件，否则会报错。</li>
+<li>Item 4: 常量使用类型常量定义更好，减少使用宏定义。因为在头文件中定义宏的话，所有引用它的地方都会进行宏替换，相当于添加了一些不必要的暴露。</li>
+</ol>
+<h2 id="第二章：对象、消息和运行时">第二章：对象、消息和运行时</h2>
+<ol>
+<li>Item 9: 学会使用类簇，更好地 封装不同的数据和逻辑（书中介绍的是抽象类的使用）</li>
+<li>Item 11: 理解objc_msgSend的作用<ul>
+<li>OC中函数调用的流程中会应用到动态绑定</li>
+<li>OC中的函数调用声明，最终都是使用objc_msgSend()函数进行消息发送的。</li>
+</ul>
+</li>
+<li><p>Item 12: 理解消息转发的过程</p>
+<ul>
+<li>当一个对象接收一个它不明白的方法，对象会开始消息转发，根据对象的继承关系进行消息转发，最终传递至根对象（一般是NSObject）。如果找不到实现的方法，则Runtime最终会抛出异常。</li>
+<li>消息转发有两种途径。<ul>
+<li>动态方法解析：当一个对接收到了一个未知的类方法 调用时，对象会执行resolveInstanceMethod进行方法的动态解析，此时会在类中查找已经实现的接口。（必须注意，调用的方法一定要有实现，否则会失败进入第二阶段的查找）</li>
+<li>接收者替换：当动态查找无法找到指定Selector方法时，接收者可以指定一个方法替换者进行消息转发。具体会使用forwardingTargetForSelector这个方法。</li>
+<li>完全转发机制（Full Forwarding Mechanism）：触发此机制时，Runtime会创建一个NSInvocation对象（内含Selector\Object\Arguments），使用forwardInvocation进行对象的转发，最终成功调用时可以直接对NSInvocation对象进行Invoke</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Item 12: 消息转发过程中，Selector对应的名字有可能发生改变。</p>
+</li>
+<li>Item 14: 理解OC中的Class Object：OC中的对象声明基本都是使用指针，对象比较时优先使用内省函数，避免部分对象重写了消息转发流程引发错误的消息转发。</li>
+</ol>
+<h3 id="第三章：接口和API设计">第三章：接口和API设计</h3>
+<ol>
+<li>Item 15: 使用正确的前缀，避免使用命名空间。因为OC中并不存在命名空间的概念，因此如果前缀使用不正确，将会导致程序链接出错（函数符号名称有可能发生重复，导致链接错误）。即使是没有在头文件中声明的函数，也会出现在符号表中的（本来就没有private的概念）。</li>
+<li>Item 17: 重写description方法可以方便输出对象的信息</li>
+<li>Item 21: 理解OC的异常模型：即使使用ARC的情况下，应用执行时如果抛出异常信息，则异常对象前的资源不会正常释放，容易造成内存泄漏。建议是使用NSError进行普通异常信息传递，出现严重异常时才向外抛出NSException。使用NSError时，需要在API中传入NSError对象。</li>
+<li>Item 22: 理解NSCopying协议：实现NSCopying协议时，建议都是重写copyWithZone:，而且需要仔细检查对象内部的变量是需要浅复制还是深复制。</li>
+</ol>
+<h2 id="第四章：协议和分类">第四章：协议和分类</h2>
+<ol>
+<li>Item 23: 对象间通信请使用Delegate或Data Source Protocols：使用delegate时，注意声明过程中必须将delegate声明为weak，否则会造成循环引用。</li>
+<li>Item 27: 使用class-continuation category来隐藏实现细节。</li>
+<li>Item 28: 使用协议来提供匿名对象（暂时未明白怎么做）</li>
+</ol>
+<h2 id="第五章：内存管理">第五章：内存管理</h2>
+<ol>
+<li>Item 29: 理解引用计数。</li>
+<li>Item 31: 只在dealloc中进行引用解除和KVO清理。如果一个对象持有了系统资源（如文件描述符），则此类对象应该有一个统一的cleanup\close接口，便于调用它的对象在使用完成后释放相关的系统资源。另外，不建议在dealloc方法中调用当前对象的方法，因为当前对象在进入dealloc时一般处于生命周期要结束的时候，调用其它方法有可能在方法未完成调用的时候出现对象被回收的情况，导致应用crash。</li>
+<li>Item 32: 注意异常处理流程时的内存管理。在ARC下，我们会以为try/catch语句在使用时，系统会自动处理掉异常抛出前的对象释放，实际不会！而且在ARC下，我们不能在finally语句中手动调用release方法，这样会导致明显的内存泄漏（这不是Bug吗？！）。EOC建议是使用NSError代替大部分NSException，如果真的需要捕获异常，则建议打开-fobjc-arc-exceptions。</li>
+<li>Item 33: 使用弱引用避免发生循环引用。</li>
+<li>Item 35: 使用僵尸对象来帮助调试内存问题。Cocoa框架有一个“僵尸”特性，当调试启用时，</li>
+</ol>
+<h2 id="第六章：block和GCD">第六章：block和GCD</h2>
+<ol>
+<li>Item 37: 理解block。block跟C#里面的委托差不多，定义之后会引用作用域外的变量。需要注意的是：<ul>
+<li>block中引用的外部变量不能在block中进行修改（除非变量声明为__block）。</li>
+<li>block的声明一般是分配在栈上，如果在if/else语句（即不同的作用域中）进行block的赋值，则有可能造成函数调用出错。如果真要这样使用，建议在赋值时添加copy，将block分配到堆中（此时则需要注意block的生命周期）。</li>
+<li>如果block在定义的时候没有捕获到任何外部变量，则block会转化成全局block。全局block永远不会回收（单例对象）。</li>
+</ul>
+</li>
+<li>Item 38: 使用typedefs来定义常用block类型。例子：<figure class="highlight objective-c"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="keyword">typedef</span> <span class="keyword">int</span>(^EOCSomeBlock)(<span class="built_in">BOOL</span> flag, <span class="keyword">int</span> value);  
+EOCSomeBlock block = ^(<span class="built_in">BOOL</span> flag, <span class="keyword">int</span> value){ <span class="comment">// implementation };</span>
+</pre></td></tr></table></figure></li>
+<li>Item 42: 使用GCD替代performSelector及其相关。在if/else语句中为selector进行赋值，有可能会导致在ARC环境下面出现内存泄漏。原因是在if/else中使用selector时，编译器不确定selector的类型，进而无法确定performSelector能否正常执行，使得ARC不知道该 对象能否正常释放导致编译时没有添加release语句，导致了泄漏。</li>
+<li>Item 43: 合理使用GCD和Operation Queue。原因：<ul>
+<li>使用NSOperation的时候，可以通过设置内部的标识来中止任务，但GCD只要加入队列后就无法取消（Fire and Forget）。</li>
+<li>任务间依赖。NSOperation可以设置不同的任务间有依赖关系。</li>
+<li>Key-Value观察。</li>
+<li>任务优先级。NSOperation可以设置优先级，通过优先级的设置来调整任务的顺序。GCD没有现成的方法来达到这一目的，它的优先级设置是面对整个任务队列的，无法设置队列内每个block独自的优先级。</li>
+<li>重用性。除非你使用了SDK提供的NSOperation子类（如NSBlockOperation），否则你需要自己实现一个子类。</li>
+</ul>
+</li>
+<li>Item 44: 使用Dispatch Group。（未明白到底有什么具体好处）</li>
+<li>Item 45: 使用dispatch_once 来进行线程安全一次性代码执行。具体应用在单例模式中。</li>
+<li>Item 46: 避免使用dispatch_get_current_queue。原因是在使用dispatch_sync的时候如果发生dispatch_get_current_queue，将会导致死锁。（不知道理解得对不对，因为书里面介绍的情况比较多）。</li>
+</ol>
+<h2 id="第7章_-_系统框架">第7章 - 系统框架</h2>
+<ol>
+<li>Item 48: 使用迭代器块取代for循环。<ul>
+<li>快速迭代。类似C#里面的foreach，只要使用for-in语法即可，用来遍历NSArray比较方便。</li>
+<li>使用block进行遍历。内建的几个集合类都支持使用block进行遍历，这样遍历的时候有时会比使用for-in更方便。还支持使用NSEnumerationOptions进行反向遍历或并行遍历。</li>
+</ul>
+</li>
+<li>Item 49: Use toll-free bridging for collections with custom memory-management semantics（不是很明白在说什么）<ul>
+<li>__bridge：ARC仍然对该OC对象有拥有权。</li>
+<li>__bridge_retained：ARC将拥有权交出（后续处理需要用户自行释放，使用CFRelease）</li>
+<li>__bridge_transfer：将拥有权交给ARC</li>
+</ul>
+</li>
+<li>Item 50: 使用NSCache代替NSDictionary作为缓存。</li>
+<li>Item 51: 让initialize和load的函数实现保持简洁。</li>
+<li>Item 52: NSTimer会保持对象的引用。如果一个对象内建NSTimer，Timer本身对该对象有引用，则会引发循环引用。导致对象本身在外部引用移除后，仍然不能被释放。使用block可以一定程度上解决这问题。使用Category拓展NSTimer，添加一个使用block的静态方法。</li>
+</ol>
+]]></content>
+    
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[将我的Blog迁移到Github Pages上了]]></title>
+    <link href="http://blog.edi-c.com/post/move-my-blog-to-github.html"/>
+    <id>http://blog.edi-c.com/post/move-my-blog-to-github.html</id>
+    <published>2014-05-23T17:35:02.000Z</published>
+    <updated>2014-06-07T14:36:31.000Z</updated>
+    <content type="html"><![CDATA[<p>一直觉得Scriptogr.am的服务很不稳定，特别是使用了DNSPod的提示之后，经常收到DNSPod发来的宕机提醒。最近受附近的小哥影响，终于下决心把Blog迁移到Github上了。</p>
+<p>使用的静态博客程序是Hexo，生成速度不错。暂时还是使用别人制作的博客主题，过段时间慢慢修改吧。</p>
+<p>不早了，该睡觉了。</p>
+]]></content>
+    
+    
+      <category term="diary" scheme="http://blog.edi-c.com/tags/diary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[使用mklink迁移Windows Phone SDK的模拟器镜像]]></title>
+    <link href="http://blog.edi-c.com/post/using-mklink-to-migrate-windows-phone-emulator-images.html"/>
+    <id>http://blog.edi-c.com/post/using-mklink-to-migrate-windows-phone-emulator-images.html</id>
+    <published>2014-02-27T03:47:00.000Z</published>
+    <updated>2014-05-23T17:13:58.000Z</updated>
+    <content type="html"><![CDATA[<p>自从Windows 7引入mklink命令后，再也不用担心系统盘的空间不足了。本来我个人对所有要安装的软件的态度都是放在系统盘里面的，毕竟系统重装之后软件基本都要重装，而且即使安装的时候使用别的盘，安装程序仍然会把部分数据放到系统盘内。但是后来却出现了开发环境占用硬盘空间太多的问题（还是因为系统分区分得太小了），于是开始把部分开发环境的数据迁移到另外的分区里面。</p>
+<p>模拟器镜像的位置在<code>C:\Program Files (x86)\Microsoft SDKs\Windows Phone</code>，主要占空间的几个大头都是v8.x里面的Emulator目录。迁移的时候只需把目录剪切到别的分区中，然后运行下面的命令建立对应目录的符号链接即可。由于GDR2和GDR3目录下面都只存放了模拟器镜像，所以下面的命令中是直接对这两个目录进行符号链接。</p>
+<p>示例（请使用管理员权限运行）：</p>
+<pre><code>mklink /D "C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> SDKs<span class="command">\Windows</span> Phone<span class="command">\v</span>8.0<span class="command">\Emulator</span>" "D:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> SDKs<span class="command">\Windows</span> Phone<span class="command">\v</span>8.0<span class="command">\Emulator</span>"
+mklink /D "C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> SDKs<span class="command">\Windows</span> Phone<span class="command">\v</span>8.0GDR2" "D:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> SDKs<span class="command">\Windows</span> Phone<span class="command">\v</span>8.0GDR2"
+mklink /D "C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> SDKs<span class="command">\Windows</span> Phone<span class="command">\v</span>8.0GDR3" "D:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> SDKs<span class="command">\Windows</span> Phone<span class="command">\v</span>8.0GDR3"
+mklink /D "C:<span class="command">\Users</span><span class="command">\xxx</span><span class="command">\AppData</span><span class="command">\Local</span><span class="command">\Microsoft</span><span class="command">\XDE</span>" "D:<span class="command">\AppData</span><span class="command">\Local</span><span class="command">\Microsoft</span><span class="command">\XDE</span>"
+</code></pre><p>相关资料：</p>
+<ol>
+<li><a href="http://technet.microsoft.com/zh-cn/library/cc753194(v=ws.10" target="_blank">关于mklink命令</a>.aspx)</li>
+<li><a href="http://technet.microsoft.com/zh-cn/library/cc754077(v=WS.10" target="_blank">关于符号链接</a>.aspx)</li>
+</ol>
+]]></content>
+    
+    
+      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[几个C#单例模式的Snippet]]></title>
+    <link href="http://blog.edi-c.com/post/some-csharp-singleton-snippets.html"/>
+    <id>http://blog.edi-c.com/post/some-csharp-singleton-snippets.html</id>
+    <published>2014-01-23T10:31:00.000Z</published>
+    <updated>2014-05-23T17:03:28.000Z</updated>
+    <content type="html"><![CDATA[<p>其实本来不大想做这几个Snippet，但是看了一下ReSharper里面的Template Explorer实在是用起来怪怪的，官方文档又说得不清不楚的。只好先从VS里面自带的模板弄出几个Snippet，模仿着写了四个Singleton，下面贴一下吧。</p>
+<ol>
+<li><p>静态初始化单例</p>
+<pre><code> <span class="pi">&lt;?xml version="1.0" encoding="utf-8" ?&gt;</span>
+ <span class="tag">&lt;<span class="title">CodeSnippets</span>  <span class="attribute">xmlns</span>=<span class="value">"http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet"</span>&gt;</span>
+     <span class="tag">&lt;<span class="title">CodeSnippet</span> <span class="attribute">Format</span>=<span class="value">"1.0.0"</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">Header</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Title</span>&gt;</span>Static Singleton<span class="tag">&lt;/<span class="title">Title</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Shortcut</span>&gt;</span>ston<span class="tag">&lt;/<span class="title">Shortcut</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Description</span>&gt;</span>Code snippet for singleton<span class="tag">&lt;/<span class="title">Description</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Author</span>&gt;</span>chaoming.edc<span class="tag">&lt;/<span class="title">Author</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">SnippetTypes</span>&gt;</span>
+                 <span class="tag">&lt;<span class="title">SnippetType</span>&gt;</span>Expansion<span class="tag">&lt;/<span class="title">SnippetType</span>&gt;</span>
+             <span class="tag">&lt;/<span class="title">SnippetTypes</span>&gt;</span>
+         <span class="tag">&lt;/<span class="title">Header</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">Snippet</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Declarations</span>&gt;</span>
+                 <span class="tag">&lt;<span class="title">Literal</span> <span class="attribute">Editable</span>=<span class="value">"false"</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">ID</span>&gt;</span>classname<span class="tag">&lt;/<span class="title">ID</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">ToolTip</span>&gt;</span>Class name<span class="tag">&lt;/<span class="title">ToolTip</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">Function</span>&gt;</span>ClassName()<span class="tag">&lt;/<span class="title">Function</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">Default</span>&gt;</span>ClassNamePlaceholder<span class="tag">&lt;/<span class="title">Default</span>&gt;</span>
+                 <span class="tag">&lt;/<span class="title">Literal</span>&gt;</span>
+             <span class="tag">&lt;/<span class="title">Declarations</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Code</span> <span class="attribute">Language</span>=<span class="value">"csharp"</span>&gt;</span><span class="cdata">&lt;![CDATA[/// &lt;summary&gt;
+     /// 静态初始化，依赖CLR实现线程安全的实例初始化
+     /// &lt;/summary&gt;
+     private static readonly $classname$ instance = new $classname$();
+     private $classname$() { }
+     public static $classname$ Instance
+     {
+         get
+         {
+             return instance;
+         }
+     }
+     $end$]]&gt;</span>
+             <span class="tag">&lt;/<span class="title">Code</span>&gt;</span>
+         <span class="tag">&lt;/<span class="title">Snippet</span>&gt;</span>
+     <span class="tag">&lt;/<span class="title">CodeSnippet</span>&gt;</span>
+ <span class="tag">&lt;/<span class="title">CodeSnippets</span>&gt;</span>
+</code></pre></li>
+<li><p>Double-Check单例</p>
+<pre><code> <span class="pi">&lt;?xml version="1.0" encoding="utf-8" ?&gt;</span>
+ <span class="tag">&lt;<span class="title">CodeSnippets</span>  <span class="attribute">xmlns</span>=<span class="value">"http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet"</span>&gt;</span>
+     <span class="tag">&lt;<span class="title">CodeSnippet</span> <span class="attribute">Format</span>=<span class="value">"1.0.0"</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">Header</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Title</span>&gt;</span>Double-Check Singleton<span class="tag">&lt;/<span class="title">Title</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Shortcut</span>&gt;</span>dston<span class="tag">&lt;/<span class="title">Shortcut</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Description</span>&gt;</span>Code snippet for singleton<span class="tag">&lt;/<span class="title">Description</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Author</span>&gt;</span>chaoming.edc<span class="tag">&lt;/<span class="title">Author</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">SnippetTypes</span>&gt;</span>
+                 <span class="tag">&lt;<span class="title">SnippetType</span>&gt;</span>Expansion<span class="tag">&lt;/<span class="title">SnippetType</span>&gt;</span>
+             <span class="tag">&lt;/<span class="title">SnippetTypes</span>&gt;</span>
+         <span class="tag">&lt;/<span class="title">Header</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">Snippet</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Declarations</span>&gt;</span>
+                 <span class="tag">&lt;<span class="title">Literal</span> <span class="attribute">Editable</span>=<span class="value">"false"</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">ID</span>&gt;</span>classname<span class="tag">&lt;/<span class="title">ID</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">ToolTip</span>&gt;</span>Class name<span class="tag">&lt;/<span class="title">ToolTip</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">Function</span>&gt;</span>ClassName()<span class="tag">&lt;/<span class="title">Function</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">Default</span>&gt;</span>ClassNamePlaceholder<span class="tag">&lt;/<span class="title">Default</span>&gt;</span>
+                 <span class="tag">&lt;/<span class="title">Literal</span>&gt;</span>
+             <span class="tag">&lt;/<span class="title">Declarations</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Code</span> <span class="attribute">Language</span>=<span class="value">"csharp"</span>&gt;</span><span class="cdata">&lt;![CDATA[private static object syncRoot = new object();
+     private static $classname$ instance;
+     private $classname$() { }
+
+     /// &lt;summary&gt;
+     /// Double-Check Singleton
+     /// &lt;/summary&gt;
+     public static $classname$ Instance
+     {
+         get
+         {
+             if(instance == null)
+             {
+                 lock(syncRoot)
+                 {
+                     if(instance == null)
+                     {
+                         instance = new $classname$();
+                     }
+                 }
+             }
+             return instance;
+         }
+     }
+     $end$]]&gt;</span>
+             <span class="tag">&lt;/<span class="title">Code</span>&gt;</span>
+         <span class="tag">&lt;/<span class="title">Snippet</span>&gt;</span>
+     <span class="tag">&lt;/<span class="title">CodeSnippet</span>&gt;</span>
+ <span class="tag">&lt;/<span class="title">CodeSnippets</span>&gt;</span>
+</code></pre></li>
+<li><p>Nested单例</p>
+<pre><code> <span class="pi">&lt;?xml version="1.0" encoding="utf-8" ?&gt;</span>
+ <span class="tag">&lt;<span class="title">CodeSnippets</span>  <span class="attribute">xmlns</span>=<span class="value">"http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet"</span>&gt;</span>
+     <span class="tag">&lt;<span class="title">CodeSnippet</span> <span class="attribute">Format</span>=<span class="value">"1.0.0"</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">Header</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Title</span>&gt;</span>Nested Singleton<span class="tag">&lt;/<span class="title">Title</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Shortcut</span>&gt;</span>nston<span class="tag">&lt;/<span class="title">Shortcut</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Description</span>&gt;</span>Code snippet for singleton<span class="tag">&lt;/<span class="title">Description</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Author</span>&gt;</span>chaoming.edc<span class="tag">&lt;/<span class="title">Author</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">SnippetTypes</span>&gt;</span>
+                 <span class="tag">&lt;<span class="title">SnippetType</span>&gt;</span>Expansion<span class="tag">&lt;/<span class="title">SnippetType</span>&gt;</span>
+             <span class="tag">&lt;/<span class="title">SnippetTypes</span>&gt;</span>
+         <span class="tag">&lt;/<span class="title">Header</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">Snippet</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Declarations</span>&gt;</span>
+                 <span class="tag">&lt;<span class="title">Literal</span> <span class="attribute">Editable</span>=<span class="value">"false"</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">ID</span>&gt;</span>classname<span class="tag">&lt;/<span class="title">ID</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">ToolTip</span>&gt;</span>Class name<span class="tag">&lt;/<span class="title">ToolTip</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">Function</span>&gt;</span>ClassName()<span class="tag">&lt;/<span class="title">Function</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">Default</span>&gt;</span>ClassNamePlaceholder<span class="tag">&lt;/<span class="title">Default</span>&gt;</span>
+                 <span class="tag">&lt;/<span class="title">Literal</span>&gt;</span>
+             <span class="tag">&lt;/<span class="title">Declarations</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Code</span> <span class="attribute">Language</span>=<span class="value">"csharp"</span>&gt;</span><span class="cdata">&lt;![CDATA[private $classname$() { }
+     public static $classname$ Instance
+     {
+         get
+         {
+             return Nested.instance;
+         }
+     }
+
+     private class Nested
+     {
+         // Explicit static constructor to tell C# compiler
+         // not to mark type as before field init
+         static Nested()
+         {
+         }
+
+         internal static readonly $classname$ instance = new $classname$();
+     }
+     $end$]]&gt;</span>
+             <span class="tag">&lt;/<span class="title">Code</span>&gt;</span>
+         <span class="tag">&lt;/<span class="title">Snippet</span>&gt;</span>
+     <span class="tag">&lt;/<span class="title">CodeSnippet</span>&gt;</span>
+ <span class="tag">&lt;/<span class="title">CodeSnippets</span>&gt;</span>
+</code></pre></li>
+<li><p>Lazy<T>单例</p>
+<pre><code> <span class="pi">&lt;?xml version="1.0" encoding="utf-8" ?&gt;</span>
+ <span class="tag">&lt;<span class="title">CodeSnippets</span>  <span class="attribute">xmlns</span>=<span class="value">"http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet"</span>&gt;</span>
+     <span class="tag">&lt;<span class="title">CodeSnippet</span> <span class="attribute">Format</span>=<span class="value">"1.0.0"</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">Header</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Title</span>&gt;</span>Lazy Static Singleton<span class="tag">&lt;/<span class="title">Title</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Shortcut</span>&gt;</span>lston<span class="tag">&lt;/<span class="title">Shortcut</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Description</span>&gt;</span>Code snippet for singleton<span class="tag">&lt;/<span class="title">Description</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Author</span>&gt;</span>chaoming.edc<span class="tag">&lt;/<span class="title">Author</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">SnippetTypes</span>&gt;</span>
+                 <span class="tag">&lt;<span class="title">SnippetType</span>&gt;</span>Expansion<span class="tag">&lt;/<span class="title">SnippetType</span>&gt;</span>
+             <span class="tag">&lt;/<span class="title">SnippetTypes</span>&gt;</span>
+         <span class="tag">&lt;/<span class="title">Header</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">Snippet</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Declarations</span>&gt;</span>
+                 <span class="tag">&lt;<span class="title">Literal</span> <span class="attribute">Editable</span>=<span class="value">"false"</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">ID</span>&gt;</span>classname<span class="tag">&lt;/<span class="title">ID</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">ToolTip</span>&gt;</span>Class name<span class="tag">&lt;/<span class="title">ToolTip</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">Function</span>&gt;</span>ClassName()<span class="tag">&lt;/<span class="title">Function</span>&gt;</span>
+                     <span class="tag">&lt;<span class="title">Default</span>&gt;</span>ClassNamePlaceholder<span class="tag">&lt;/<span class="title">Default</span>&gt;</span>
+                 <span class="tag">&lt;/<span class="title">Literal</span>&gt;</span>
+             <span class="tag">&lt;/<span class="title">Declarations</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Code</span> <span class="attribute">Language</span>=<span class="value">"csharp"</span>&gt;</span><span class="cdata">&lt;![CDATA[/// &lt;summary&gt;
+     /// 静态初始化，依赖CLR实现线程安全的实例初始化，利用Lazy&lt;T&gt;实现懒初始化，但需要.NET4以上支持
+     /// &lt;/summary&gt;
+     private static readonly Lazy&lt;$classname$&gt; instance = new Lazy&lt;$classname$&gt;(() =&gt; new $classname$());
+     private $classname$() { }
+     public static $classname$ Instance
+     {
+         get
+         {
+             return instance.Value;
+         }
+     }
+     $end$]]&gt;</span>
+             <span class="tag">&lt;/<span class="title">Code</span>&gt;</span>
+         <span class="tag">&lt;/<span class="title">Snippet</span>&gt;</span>
+     <span class="tag">&lt;/<span class="title">CodeSnippet</span>&gt;</span>
+ <span class="tag">&lt;/<span class="title">CodeSnippets</span>&gt;</span>
+</code></pre></li>
+</ol>
+<p>下载链接：<a href="https://www.dropbox.com/s/nfreaxro1jzsb80/Singleton%20Snippets.7z" target="_blank">https://www.dropbox.com/s/nfreaxro1jzsb80/Singleton%20Snippets.7z</a></p>
+]]></content>
+    
+    
+      <category term="csharp" scheme="http://blog.edi-c.com/tags/csharp/"/>
+    
+      <category term="dev" scheme="http://blog.edi-c.com/tags/dev/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Windows 8.1与镁光M4 SSD固件Bug]]></title>
+    <link href="http://blog.edi-c.com/post/windows8-and-micron-m4-ssd-firmware-bug.html"/>
+    <id>http://blog.edi-c.com/post/windows8-and-micron-m4-ssd-firmware-bug.html</id>
+    <published>2014-01-20T07:20:00.000Z</published>
+    <updated>2014-05-23T17:03:57.000Z</updated>
+    <content type="html"><![CDATA[<p>最近家里的机器经常出现休眠之后无法开机的问题，刚开始的时候以为BIOS里面设置有问题，重置了一下发现还是会出现类似的问题。于是开始怀疑是不是硬盘的问题，然后想起上次刷SSD固件时候已经大半年之前了。查了一下镁光官网的固件更新，发现M4的固件又更新了好几次。最近一次更新说明里面有这么一段：</p>
+<blockquote>
+<p>该固件解决了一个电源时序问题，该问题可能会导致电脑从休眠会睡眠状态唤醒时引起固态硬盘挂起，导致无法与主机进行通信（丢盘现象）。</p>
+</blockquote>
+<p>于是去<a href="http://www.crucial.com/support/firmware.aspx" target="_blank">镁光官网查找一下新的固件</a>，下载更新程序之后在Windows下直接更新即可。</p>
+<p>PS：但是更新程序在更新过程里面有可能提示更新失败，然后重启之后却发现固件版本号变了。只能当作更新成功了吧~</p>
+<p>更新完固件之后还以为Bug已经修复了，结果后面又出现了两次死机，关机之后系统就出问题了。本来想重装系统，但手上又没有完整的安装盘，于是只能跑一下<code>sfc</code>尝试修复。相关链接：<a href="http://support.microsoft.com/kb/929833" target="_blank">使用系统文件检查器工具修复丢失或损坏的系统文件</a>。</p>
+<p>在运行<code>sfc /scannow</code>之后，提示<code>urlmon.dll</code>无法修复（有的时候需要打开C:\Windows\Logs\CBS\CBS.log，搜索文件中记录文件无法修复的日志项，查出损坏的文件）。在Windows 8.1下面，如果这个文件损坏了，系统里面很多程序都会出现无法启动的情况，像IE、搜索、Metro系统设置等。按照文章里面的修复方法，关键的三个命令是：</p>
+<ul>
+<li>取得损坏系统文件的管理权：<code>takeown /f Path_And_File_Name</code></li>
+<li>授予管理员对已损坏系统文件的完全访问权限：<code>icacls Path_And_File_Name /GRANT ADMINISTRATORS:F</code></li>
+<li>将损坏的系统文件替换为已知完好的文件副本：<code>Copy Source_File Destination</code></li>
+</ul>
+<p>远程控制之后终于修复了，在此记录一下。</p>
+]]></content>
+    
+    
+      <category term="system" scheme="http://blog.edi-c.com/tags/system/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Flexbox 布局简述]]></title>
+    <link href="http://blog.edi-c.com/post/flexbox-layout.html"/>
+    <id>http://blog.edi-c.com/post/flexbox-layout.html</id>
+    <published>2013-08-29T08:10:00.000Z</published>
+    <updated>2014-05-23T17:04:33.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="Flexbox_布局简述">Flexbox 布局简述</h1>
+<p>Flexbox 布局将有下面一系列的属性设置：</p>
+<ul>
+<li>flex-basis</li>
+<li>flex-grow</li>
+<li>flex-shrink</li>
+<li>flex</li>
+<li>align-items</li>
+<li>align-self</li>
+<li>align-content</li>
+<li>order</li>
+<li>justify-content</li>
+<li>flex-wrap</li>
+</ul>
+<h2 id="flex\flex-grow\flex-shrink\flex-basis">flex\flex-grow\flex-shrink\flex-basis</h2>
+<p><code>flex</code> 属性是 <code>flex-grow</code>\<code>flex-shrink</code>\<code>flex-basis</code> 的速写。下面先讲述一下这一系列的属性。</p>
+<h3 id="flex-basis">flex-basis</h3>
+<blockquote>
+<p>作用：设置弹性项目的初始宽度。<br>初始值：auto<br>可接受的值：非负数，单位可以为CSS提供的长度单位</p>
+</blockquote>
+<p>效果图如下：</p>
+<p><a href="http://d.pr/i/mluE" target="_blank"><img src="http://d.pr/i/mluE.png" alt="flex-basis"></a></p>
+<h3 id="flex-grow">flex-grow</h3>
+<blockquote>
+<p>作用：设置弹性项目宽度比例系数。<em>flex grow</em>设置后将根据外容器剩余宽度和弹性项目的数量来分配对应弹性项目的宽度。<br>初始值：0<br>可接受的值：非负数</p>
+</blockquote>
+<p>效果图如下：</p>
+<p><a href="http://d.pr/i/8Uie" target="_blank"><img src="http://d.pr/i/8Uie.png" alt="flex-grow"></a></p>
+<p>外层 flex 容器宽度为 600px，<code>.dodgerBlue</code>的系数设置为2，<code>.limeGreen</code>的系数设置为1。则布局后<code>.dodgerBlue</code>的宽度为200px，<code>.limeGreen</code>宽度为100px。弹性项目按比例均分外层容器的宽度。</p>
+<p>值得一提的是，如果弹性项目设置有宽度或者<code>flex-basis</code>，布局时顺序将变化为：先按项目本身设定的宽度或 flex-basis 进行布局，再在剩余空间中根据 flex-grow 系数进行剩余空间分配（在元素内包含文字时弹性项目的大小也会发生变化，具体分配规则暂时还不清楚）。效果图如下（<code>.dodgerBlue</code>的初始宽度为200px，<code>.limeGreen</code>没有设置初始宽度）：</p>
+<p><a href="http://d.pr/i/iaDC" target="_blank"><img src="http://d.pr/i/iaDC.png" alt="flex-grow-and-flex-basis"></a></p>
+<h3 id="flex-shrink">flex-shrink</h3>
+<blockquote>
+<p>作用：设置弹性项目压缩比例系数。<em>flex shrink</em>设置后将根据外容器本身宽度和弹性项目的数量来分配对应弹性项目的宽度。<br>初始值：0<br>可接受的值：非负数</p>
+</blockquote>
+<p>与 <code>flex-grow</code> 相反，<code>flex-shrink</code>在基于弹性项目本身的宽度上再对其宽度按系数进行压缩，具体分配规则暂时确定是：在 <code>flex-basis</code> 存在的情况下，按照 <code>flex-shrink</code> 的值确定弹性项目的分配比例，如外层容器为100px，<code>.dodgerBlue</code> 宽度为100%、压缩系数为3，<code>limeGreen</code> 宽度也为100%、压缩系数为1。此时按照压缩系数对弹性项目的宽度进行重新分配，则 <code>.dodgerBlue</code> 需要压缩100px/4*3=75px，最终宽度为25px。</p>
+<p>需要注意的是，在 IE10 下，弹性项目的表现与 <code>flex-shrink:0</code> 效果相同，即 <code>flex-shrink:0</code> 时项目本身不进行宽度压缩。</p>
+<p>示例代码：</p>
+<pre><code><span class="class">.dodgerBlue</span><span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> dodgerBlue</span></span>;
+    <span class="rule"><span class="attribute">flex-basis</span>:<span class="value"><span class="number">100</span>%</span></span>;
+    <span class="rule"><span class="attribute">flex-shrink</span>:<span class="value"><span class="number">3</span></span></span>;
+<span class="rule">}</span></span>
+
+<span class="class">.limeGreen</span><span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> limeGreen</span></span>;
+    <span class="rule"><span class="attribute">flex-basis</span>:<span class="value"><span class="number">100</span>%</span></span>;
+<span class="rule">}</span></span>
+</code></pre><p>效果图如下：</p>
+<p><a href="http://d.pr/i/pjvM" target="_blank"><img src="http://d.pr/i/pjvM.png" alt="flex-shrink"></a></p>
+<p>需要注意的是，<code>flex-shrink</code> 只在弹性项目充满外层容器后才会生效，而 <code>flex-grow</code> 则在外层容器空间尚未完全分配时起效。</p>
+<h3 id="flex">flex</h3>
+<p>此属性是上述三个属性的速写属性，可授受的值为：</p>
+<pre><code>flex: <span class="constant">none</span> |[&lt;<span class="string">'flex-grow'</span>&gt; &lt;<span class="string">'flex-shrink'</span>&gt;?||&lt;<span class="string">'flex-basis'</span>&gt;]
+</code></pre><h2 id="order">order</h2>
+<blockquote>
+<p>作用：设置弹性项目在弹性容器中的显示顺序，一般来说弹性项目的显示顺序与源代码中的元素声明顺序相同，除非特别声明 <code>order</code> 属性。<br>初始值：0<br>可接受的值：整数</p>
+</blockquote>
+<p><strong>注意</strong>：在<code>order</code>相同的情况下，顺序将以元素声明顺序确定。</p>
+<p>示例代码：</p>
+<pre><code><span class="id">#flex</span><span class="rules">{
+    <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">300</span>px</span></span>;
+    <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">200</span>px</span></span>;
+    <span class="rule"><span class="attribute">overflow</span>:<span class="value"> hidden</span></span>;
+    <span class="rule"><span class="attribute">display</span>:<span class="value"> flex</span></span>;
+<span class="rule">}</span></span>
+
+<span class="class">.dodgerBlue</span><span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> dodgerBlue</span></span>;
+    <span class="rule"><span class="attribute">flex-basis</span>:<span class="value"><span class="number">100</span>%</span></span>;
+    <span class="rule"><span class="attribute">order</span>:<span class="value"><span class="number">2</span></span></span>;
+<span class="rule">}</span></span>
+
+<span class="class">.limeGreen</span><span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> limeGreen</span></span>;
+    <span class="rule"><span class="attribute">flex-basis</span>:<span class="value"><span class="number">100</span>%</span></span>;
+    <span class="rule"><span class="attribute">order</span>:<span class="value"><span class="number">0</span></span></span>;
+<span class="rule">}</span></span>
+
+<span class="class">.yellowGreen</span><span class="rules">{
+    <span class="rule"><span class="attribute">background</span>:<span class="value"> yellowGreen</span></span>;
+    <span class="rule"><span class="attribute">flex-basis</span>:<span class="value"><span class="number">100</span>%</span></span>;
+    <span class="rule"><span class="attribute">order</span>:<span class="value"><span class="number">1</span></span></span>;
+<span class="rule">}</span></span>
+</code></pre><p>效果图：</p>
+<p><a href="http://d.pr/i/n8LP" target="_blank"><img src="http://d.pr/i/n8LP.png" alt="flex-order"></a></p>
+<h2 id="flex-direction">flex-direction</h2>
+<blockquote>
+<p>作用：设置弹性项目的显示方向<br>初始值：row<br>可接受的值：row | row-reverse | column | column-reverse</p>
+</blockquote>
+<p>属性比较容易理解，不截图了。</p>
+<h2 id="flex-wrap">flex-wrap</h2>
+<blockquote>
+<p>作用：设置弹性项目在分配空间时横向空间到分配完后是否进行换行分配，此时纵向空间将结合弹性项目本身的高度和弹性盒本身的高度来确定。<br>初始值：nowrap<br>可接受的值：nowrap | wrap | wrap-reverse</p>
+</blockquote>
+<p>属性比较容易理解，不截图了。</p>
+<h2 id="flex-flow">flex-flow</h2>
+<p>即 <code>flex-direction</code> 和 <code>flex-wrap</code>　的速写属性，可授受的值为：</p>
+<pre><code>flex-<span class="keyword">flow</span>: &lt;<span class="string">'flex-direction'</span>&gt; &lt;<span class="string">'flex-wrap'</span>&gt;
+</code></pre><h2 id="align-items/align-self/align-content/justify-content">align-items/align-self/align-content/justify-content</h2>
+<h3 id="align-items">align-items</h3>
+<blockquote>
+<p>作用：对弹性盒设置弹性项目的对齐方式<br>初始值：stretch<br>可接受的值：flex-start | flex-end | center | stretch | baseline</p>
+</blockquote>
+<h3 id="align-self">align-self</h3>
+<blockquote>
+<p>作用：对弹性项目本身设置其对齐方式<br>初始值：auto<br>可接受的值：auto | flex-start | flex-end | center | baseline | stretch</p>
+</blockquote>
+<p><code>auto</code>：如果弹性项目的父元素是一个弹性容器，<code>align-self</code>与弹性容器的<code>align-items</code>属性的值一致。否则其值为<strong>stretch</strong>。</p>
+<h3 id="align-content">align-content</h3>
+<blockquote>
+<p>作用：让弹性项目之间的行间距按照设置的值进行分布，分布方向与 <code>flex-direction</code> 中设置的方向相同<br>初始值：stretch<br>可接受的值：flex-start | flex-end | center | space-between | space-around | stretch</p>
+</blockquote>
+<p>两个特别的值说明：</p>
+<ul>
+<li>space-between：弹性项目在 <code>flex-direction</code> 设置的方向上进行两端对齐</li>
+<li>space-around：弹性项目在行间距中间的位置进行对齐</li>
+</ul>
+<p>效果图：</p>
+<p><a href="http://d.pr/i/X3il" target="_blank"><img src="http://d.pr/i/X3il.png" alt="align-content"></a></p>
+<h3 id="justify-content">justify-content</h3>
+<blockquote>
+<p>作用：设置弹性项目在主分布轴上的对齐方式（与文字对齐方式类似）<br>初始值：flex-start<br>可接受的值：flex-start | flex-end | center | space-between | space-around</p>
+</blockquote>
+<p>直接看图比较好理解：</p>
+<p><a href="http://d.pr/i/yXgF" target="_blank"><img src="http://d.pr/i/yXgF.png" alt="justify-content"></a></p>
+]]></content>
+    
+    
+      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
+    
+      <category term="css3" scheme="http://blog.edi-c.com/tags/css3/"/>
+    
+      <category term="ie11" scheme="http://blog.edi-c.com/tags/ie11/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[IE11 兼容性小指南]]></title>
+    <link href="http://blog.edi-c.com/post/ie11-compatibility-guide.html"/>
+    <id>http://blog.edi-c.com/post/ie11-compatibility-guide.html</id>
+    <published>2013-08-29T03:20:00.000Z</published>
+    <updated>2014-05-23T17:04:24.000Z</updated>
+    <content type="html"><![CDATA[<p>手贱升级了 Windows 8.1 之后，发现 IE11 在 HTML5 兼容性又有变化，感觉十分蛋疼，写篇文章记录一下遇到的两个比较明显的问题。</p>
+<p>关于“增强的保护模式”和代理问题，大家可以看一下<a href="http://blog.edi-c.com/post/local-proxy-and-ie-enhanced-protected-mode" target="_blank">这篇文章</a>。</p>
+<h2 id="文档模式的变化">文档模式的变化</h2>
+<p><a href="http://d.pr/i/tbnI" target="_blank"><img src="http://d.pr/i/tbnI.png" alt="ie11-dev-tool"></a></p>
+<p>IE11 中默认使用两种文档模式：IE7 和 Edge。IE7 的文档模式跟兼容模式类似，而 Edge 模式则是指当前版本的 IE 下可以使用的最高的文档模式。IE 开发者工具中只能选这两种模式，如果要使用指定的文档模式（如 IE10 或者 IE9），则需要在页面中添加指定的 <code>meta</code> 标签，如下（按需选择添加）：</p>
+<pre><code><span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"x-ua-compatible"</span> <span class="attribute">content</span>=<span class="value">"IE=10"</span> &gt;</span>
+<span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"x-ua-compatible"</span> <span class="attribute">content</span>=<span class="value">"IE=9"</span> &gt;</span>
+<span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"x-ua-compatible"</span> <span class="attribute">content</span>=<span class="value">"IE=8"</span> &gt;</span>
+<span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"x-ua-compatible"</span> <span class="attribute">content</span>=<span class="value">"IE=7"</span> &gt;</span>
+</code></pre><p>如果需要测试 Quirks Mode，则可以使用下面的标签之一：</p>
+<pre><code><span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"x-ua-compatible"</span> <span class="attribute">content</span>=<span class="value">"IE=EmulateIE9"</span> &gt;</span>
+<span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"x-ua-compatible"</span> <span class="attribute">content</span>=<span class="value">"IE=EmulateIE8"</span> &gt;</span>
+<span class="tag">&lt;<span class="title">meta</span> <span class="attribute">http-equiv</span>=<span class="value">"x-ua-compatible"</span> <span class="attribute">content</span>=<span class="value">"IE=EmulateIE7"</span> &gt;</span>
+</code></pre><h2 id="Flexbox（弹性框）布局更新">Flexbox（弹性框）布局更新</h2>
+<p>需要更详细的信息的话，可以到<a href="http://msdn.microsoft.com/zh-cn/library/ie/dn265027(v=vs.85" target="_blank">这篇文章</a>.aspx)进行查阅。</p>
+<p>IE11 里面，Flexbox 的更新主要是一些属性名字的变化（表现也有少量变化，考虑到这本来就属于测试性的属性，变化也是正常）。下面根据官网的更新内容简单总结一下：</p>
+<p>下面的属性命名在 IE11 中发生了变化：</p>
+<table>
+<thead>
+<tr>
+<th>IE10</th>
+<th>IE11</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-ms-flex-wrap</code></td>
+<td><code>flex-wrap</code></td>
+</tr>
+<tr>
+<td><code>-ms-flex-order</code>  和 <code>flex-order</code></td>
+<td><code>order</code></td>
+</tr>
+<tr>
+<td><code>-ms-flex-pack</code></td>
+<td><code>justify-content</code></td>
+</tr>
+<tr>
+<td><code>-ms-flex-align</code></td>
+<td><code>align-items</code></td>
+</tr>
+<tr>
+<td><code>-ms-flex-item-align</code></td>
+<td><code>align-self</code></td>
+</tr>
+<tr>
+<td><code>-ms-flex-line-pack</code></td>
+<td><code>align-content</code></td>
+</tr>
+</tbody>
+</table>
+<p>下面的属性所支持的值也发生了变化：</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Old value</th>
+<th>New value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>display</code></td>
+<td><code>-ms-flexbox</code></td>
+<td><code>flex</code></td>
+</tr>
+<tr>
+<td><code>display</code></td>
+<td><code>-ms-inline-flexbox</code></td>
+<td><code>inline-flex</code></td>
+</tr>
+<tr>
+<td><code>flex-wrap</code></td>
+<td><code>none</code></td>
+<td><code>nowrap</code></td>
+</tr>
+<tr>
+<td><code>align-content</code>/<code>align-items</code>/<code>align-self</code>/<code>justify-content</code></td>
+<td><code>start</code></td>
+<td><code>flex-start</code></td>
+</tr>
+<tr>
+<td><code>align-content</code>/<code>align-items</code>/<code>align-self</code>/<code>justify-content</code></td>
+<td><code>end</code></td>
+<td><code>flex-end</code></td>
+</tr>
+</tbody>
+</table>
+<p>当然，部分旧的值仍然有效（如<code>display:-ms-flexbox</code>），但是部分属性变化将有变化，如下面所说的 <code>flex</code> 属性。</p>
+<h3 id="flex_属性">flex 属性</h3>
+<p>官方文档中作了以下的注明：</p>
+<ul>
+<li>已添加 <code>flex</code> 属性，作为 <code>flex-grow</code>、<code>flex-shrink</code> 和 <code>flex-basis</code> 属性的速记属性。</li>
+<li><code>align-content</code> 和 <code>justify-content</code> 属性现在支持值 <code>space-around</code> 与 <code>space-between</code>。</li>
+<li>弹性项目的默认弹性行为已更改。 在 Internet Explorer 10 中，不适合容器的弹性项目将溢出容器边缘或者是被修剪到与容器边缘对齐。 现在，从 IE11 Preview 开始，这些项目将缩小来适应其容器（如果指定，则最小缩至 <code>min-width</code> 值）。 使用 <code>flex-shrink</code> 属性可更改此行为。</li>
+</ul>
+<p>让人蛋疼的是第三点（虽然现在看起来可以理解），下面有个 demo 可以让大家理解一下。</p>
+<pre><code>IE10下：
+<span class="tag">&lt;<span class="title">style</span>&gt;</span><span class="css">
+    <span class="class">.container</span><span class="rules">{
+        <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">400</span>px</span></span>;
+        <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">200</span>px</span></span>;
+        <span class="rule"><span class="attribute">overflow</span>:<span class="value"> hidden</span></span>;
+    <span class="rule">}</span></span>
+
+    <span class="id">#msflexbox</span><span class="rules">{
+        <span class="rule"><span class="attribute">display</span>:<span class="value"> -ms-flexbox</span></span>;
+    <span class="rule">}</span></span>
+
+    <span class="class">.dodgerBlue</span><span class="rules">{
+        <span class="rule"><span class="attribute">background</span>:<span class="value"> dodgerBlue</span></span>;
+        <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">100</span>%</span></span>;
+    <span class="rule">}</span></span>
+
+    <span class="class">.limeGreen</span><span class="rules">{
+        <span class="rule"><span class="attribute">background</span>:<span class="value"> limeGreen</span></span>;
+        <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">100</span>%</span></span>;
+    <span class="rule">}</span></span>
+</span><span class="tag">&lt;/<span class="title">style</span>&gt;</span>
+</code></pre><p>效果图：</p>
+<p><a href="http://d.pr/i/g518" target="_blank"><img src="http://d.pr/i/g518.png" alt="ie10-flexbox-overflow"></a></p>
+<p>此时 <code>container</code> 中的元素将会充满整个 <code>container</code>，溢出的部分则被 <code>overflow:hidden</code> 所隐藏（淡蓝色部分为 Inspector 高亮）。</p>
+<p>而同样的 CSS 在 IE11 下将会表现如下图：</p>
+<p><a href="http://d.pr/i/aOMl" target="_blank"><img src="http://d.pr/i/aOMl.png" alt="ie11-flexbox-shrink"></a></p>
+<p>这样则会造成一定的适配问题，如果需要在 IE11 下展示与 IE10 相同的效果，则可以调节 <code>flex-shrink</code> 此属性（<a href="http://msdn.microsoft.com/en-us/library/ie/dn254948(v=vs.85" target="_blank">相关文档</a>.aspx)）。我们对 <code>.container</code> 下的元素添加一个 CSS <code>flex-shrink: 0;</code>，则两个版本的表现一致。</p>
+<p>关于 Flexbox 的布局，我将在<a href="http://blog.edi-c.com/post/flexbox-layout" target="_blank">另外的一篇文章</a>中进行叙述。</p>
+]]></content>
+    
+    
+      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
+    
+      <category term="css3" scheme="http://blog.edi-c.com/tags/css3/"/>
+    
+      <category term="ie" scheme="http://blog.edi-c.com/tags/ie/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[解决 IE11 无法代理到 Fiddler 进行抓包]]></title>
+    <link href="http://blog.edi-c.com/post/local-proxy-and-ie-enhanced-protected-mode.html"/>
+    <id>http://blog.edi-c.com/post/local-proxy-and-ie-enhanced-protected-mode.html</id>
+    <published>2013-08-28T13:55:00.000Z</published>
+    <updated>2014-05-23T17:05:23.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="解决_IE11_无法代理到_Fiddler_进行抓包">解决 IE11 无法代理到 Fiddler 进行抓包</h1>
+<p>这个问题很诡异，今天尝试更新到 Windows 8.1 RTM 之后，发现开启 Fiddler 后无法对 IE 进行抓包，具体情况如下：</p>
+<ol>
+<li>开启 Fiddler，设置本地代理和出口网关</li>
+<li>在 Chrome 中可以正常抓包，但在 IE 中尝试打开网页时 Fiddler 中没有观察到有任何流量</li>
+<li>运行 Fiddler Tools &gt; Sandbox 选项，网页可以正常打开，但仅限运行过此选项的 IE 实例，关闭网页重新打开，IE 仍然无法正常使用。</li>
+</ol>
+<p>这个问题确实让人很恼火，很神奇的问题。最后是怎么解决的呢？在乱打乱撞之下，在 <strong>Internet 选项 -&gt; 高级 </strong>选项页中，把<strong>增强的保护模式</strong>给关闭之后，Fiddler 又可以正常捕捉到 IE 的流量了。</p>
+<p>后来查了一下 Google，发现有人在使用 GoAgent 的时候也出现过这样的情况。总的来说，就是这个<strong>增强的保护模式</strong>惹的祸。</p>
+]]></content>
+    
+    
+      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
+    
+      <category term="fiddler" scheme="http://blog.edi-c.com/tags/fiddler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[ASP.NET MVC 3 开发过程小记（一）]]></title>
+    <link href="http://blog.edi-c.com/post/aspnet-mvc-3-dev-notes-001.html"/>
+    <id>http://blog.edi-c.com/post/aspnet-mvc-3-dev-notes-001.html</id>
+    <published>2013-08-22T00:48:00.000Z</published>
+    <updated>2014-05-23T17:06:19.000Z</updated>
+    <content type="html"><![CDATA[<p>刚刚新建工程的时候，如果不想用 IIS Express 的话，需要自行开启配置 Windows 8 自带的 IIS 服务。在控制面板-&gt;添加删除程序左边就可以添加 IIS 服务了。</p>
+<h2 id="运行网站时出现“HTTP_错误_500-19_–_内部服务器错误”">运行网站时出现“HTTP 错误 500.19 – 内部服务器错误”</h2>
+<p>出现这个错误时，可以先参考微软的 KB（<a href="http://support.microsoft.com/kb/942055" target="_blank">KB942055</a>），里面很详细地介绍了9种不同的错误码下的处理方法。</p>
+<p>如果出现 <code>0x80070021</code> 的话，可以按下面的方法处理：</p>
+<p>先确定错误信息中提示的是 Handlers 被锁定还是 Modules 被锁定，然后开启 CMD，按需执行命令：</p>
+<pre><code><span class="variable">%windir</span><span class="variable">%\</span>system32\inetsrv\appcmd unlock config -section:<span class="keyword">system</span>.webServer/handlers
+
+<span class="variable">%windir</span><span class="variable">%\</span>system32\inetsrv\appcmd unlock config -section:<span class="keyword">system</span>.webServer/modules
+</code></pre><p>另外，在安装 IIS 的时候，记得选中 ASP.NET，否则也会出现类似的信息。</p>
+]]></content>
+    
+    
+      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
+    
+      <category term="aspnet" scheme="http://blog.edi-c.com/tags/aspnet/"/>
+    
+      <category term="mvc" scheme="http://blog.edi-c.com/tags/mvc/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[WP8 上的 IE10 对 @font-face 属性的支持程度]]></title>
+    <link href="http://blog.edi-c.com/post/wp8-ie10-font-face-support.html"/>
+    <id>http://blog.edi-c.com/post/wp8-ie10-font-face-support.html</id>
+    <published>2013-07-03T09:19:00.000Z</published>
+    <updated>2014-05-23T17:12:03.000Z</updated>
+    <content type="html"><![CDATA[<p>现在的前端都流行把一些小图标转换成字体，然后利用 <code>@font-face</code> 这个 CSS 属性来定义一个页面专有的字体，从而达到把小图标转换成字符显示的效果。这样做除了可以省流量，图标的显示效果也很好，放大缩小都不怎么会影响效果，确实是一个不错的的手段。</p>
+<p>关于 CSS3 中的 <code>@font-face</code> 属性，可以参阅<a href="http://www.w3cplus.com/content/css3-font-face" target="_blank">这篇文章</a>，里面有很详细的属性应用介绍。</p>
+<p>但是，在 PC 的 IE10 下面尝试嵌入 ttf 格式的字体时，会提示这样的信息：</p>
+<blockquote>
+<p>CSS3114: @font-face 未能完成 OpenType 嵌入权限检查。权限必须是可安装的。 </p>
+</blockquote>
+<p>原因可能是自制的 ttf 格式没有正确的安装权限造成的。因此，有必要对 ttf 格式进行转换，PC 上的 IE10 支持多种字体格式，如 Embedded-Opentype(eot)、Web Open Font Format(woff)、TrueType(ttf) 和 Scalable Vector Graphics(SVG)，具体可以参考上面文章。</p>
+<p>但 WP8 上的 IE10 对字体格式的要求更严格，转换成 IE 专用的 eot 格式之后还是不能正常显示。于是又查了一下资料，发现还是能用的（<a href="http://stackoverflow.com/questions/15819717/font-awesome-not-displayed-on-windows-phone-8" target="_blank">点击这里</a>）。于是把格式换成 woff 之后就没有问题了，ttf 转 woff 的工具在网上都有，可以在线转换（<a href="http://everythingfonts.com/" target="_blank">点击这里有一个网站可以试试</a>）。</p>
+<p>PS：最好还是在引用的 url 后面声明一下字体的格式。</p>
+<pre><code><span class="at_rule">@<span class="keyword">font-face</span></span> <span class="rules">{
+    <span class="rule"><span class="attribute">font-family</span>:<span class="value"> <span class="string">'Test'</span></span></span>;
+    <span class="rule"><span class="attribute">src</span>:<span class="value"><span class="function">url(font/font.woff)</span> <span class="function">format(<span class="string">'woff'</span>)</span></span></span>;
+<span class="rule">}</span></span>
+</code></pre>]]></content>
+    
+    
+      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
+    
+      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Package Control 插件发布流程]]></title>
+    <link href="http://blog.edi-c.com/post/a-brief-about-submitting-a-package-to-package-control.html"/>
+    <id>http://blog.edi-c.com/post/a-brief-about-submitting-a-package-to-package-control.html</id>
+    <published>2013-07-02T06:57:00.000Z</published>
+    <updated>2014-05-23T17:12:03.000Z</updated>
+    <content type="html"><![CDATA[<p>Package Control 是 Sublime Text 下的一个插件管理工具，可以很方便地管理需要安装的 Sublime Text 插件。现在已经有不少开发者在上面发布了<a href="http://blog.edi-c.com/post/my-st2-tips" target="_blank">各式各样的插件</a>，对 Sublime Text 本身的扩展还是很有用的。Sublime Text 本身采用了 Python 作为插件编写的语言，因此在插件开发过程中也十分的轻松，可以实时调试插件的效果。</p>
+<p>前两天尝试在上面发布了自己的插件 <a href="https://github.com/blastmann/ScriptOgrSender" target="_blank">ScriptOgrSender</a>，提交过程也十分简单，下面简单整理一下：</p>
+<ol>
+<li><strong>在 <a href="https://github.com/" target="_blank">GitHub</a> 或 <a href="https://bitbucket.org/" target="_blank">BitBucket</a> 中托管你的插件代码。</strong>单个 Repo 只能包含一个插件，同时需要将插件脚本放置于 Repo 的根目录下。</li>
+<li><strong>请勿在你的 Repo 中包含 <code>package-metadata.json</code> 文件。</strong>这个文件会在每台客户端中自行创建，用于跟踪安装包的版本。如需对你的插件包描述进行修改，可以在你的 GitHub 和 BitBucket 仓库中修改相应的描述字段。</li>
+<li><strong>Fork the Package Control Channel:  </strong><br>GitHub: <a href="https://github.com/wbond/package_control_channel" target="_blank">https://github.com/wbond/package_control_channel</a><br>BitBucket: <a href="https://bitbucket.org/wbond/package_control_channel" target="_blank">https://bitbucket.org/wbond/package_control_channel</a></li>
+<li><p><strong>在 <code>repositories.json</code> 文件中添加你的 repo URL。</strong>如果你的插件不是在三个平台（OS X, Windows 和 Linux）下面通用的话，请参阅「<a href="http://wbond.net/sublime_packages/package_control/package_developers#Custom_packages_json_on_GitHub" target="_blank">在 GitHub 上自定义 packages.json</a>」一节。</p>
+<p>添加的 URL 格式请参考下面几种形式：</p>
+<ul>
+<li><a href="https://github.com/user/repo" target="_blank">https://github.com/user/repo</a></li>
+<li><a href="https://github.com/user/repo/tree/branch" target="_blank">https://github.com/user/repo/tree/branch</a></li>
+<li><a href="https://bitbucket.org/user/repo" target="_blank">https://bitbucket.org/user/repo</a></li>
+</ul>
+<p>添加你的 URL 时请注意按字母顺序排列添加，以防产生冲突。同时请注意不要在 URL 尾部添加 <code>.git</code>。</p>
+</li>
+<li><p><strong>在 <code>package_name_map</code> 中添加自己的插件包名字的映射（可选）。</strong>注意，如果你没有自定义 <code>packages.json</code> 文件而且不想用你的 GitHub Repo 的 URL permalink 作为你的插件名字的话，请务必将你想要的插件名字添加到此字段中。如插件托管在 BitBucket 的话，将使用 Repo 的名字，不需要再另外添加映射。</p>
+<p><strong>如果你的插件名中包含 <em>Sublime</em> 这个字眼的话，请考虑映射另外一个名字（去除 <em>Sublime</em>）以减少信息噪音。</strong>这里的映射会在 Community Package 列表、ST 中的安装列表和安装后的文件夹名字中生效。</p>
+</li>
+<li><p><strong>修改时请确保你的修改不会影响其它代码。</strong></p>
+</li>
+<li><strong>发送一个 Pull 请求。</strong></li>
+</ol>
+<p>整个提交过程十分简单，我也是第一次在 GitHub 上对其它代码仓库进行代码提交（其实就加了那么一行），提交时还没有注意到添加的 URL 必须按字母顺序排列，结果被打回来再修改了一次。</p>
+<p>之前做的插件在跨平台方面也没有什么问题，所以整个代码提交过程也十分轻松，不用特别去制件一个专属的 JSON 文件。只要加入 Package Control 之后，就可以继续在自己的 Repo 中进行代码更新。Package Control 会自动拉取新的代码更新插件包，过程大概需要一两个小时吧。</p>
+<p>至于怎么去针对 ST2 和 ST3 进行插件发布呢？这个问题还没有研究清楚，过两天看看怎么处理吧。</p>
+]]></content>
+    
+    
+      <category term="st2" scheme="http://blog.edi-c.com/tags/st2/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[window.external.notify() 与 UglifyJS 压缩优化冲突]]></title>
+    <link href="http://blog.edi-c.com/post/external-notify-cant-use-with-uglifyjs-compressor.html"/>
+    <id>http://blog.edi-c.com/post/external-notify-cant-use-with-uglifyjs-compressor.html</id>
+    <published>2013-06-18T11:14:00.000Z</published>
+    <updated>2014-05-23T17:12:03.000Z</updated>
+    <content type="html"><![CDATA[<p>近期研究了一下 UglifyJs 对 JS 代码的压缩，发现 UglifyJS 压缩后，无法调用 <code>window.external.notify()</code> 方法，JS 代码如下：</p>
+<pre><code><span class="function"><span class="keyword">function</span> <span class="title">MyNotify</span> <span class="params">()</span> {</span>
+    <span class="keyword">try</span>{
+        alert(<span class="string">"Notify"</span>);
+        window.external.notify(<span class="string">"Notify"</span>);
+    } <span class="keyword">catch</span> (e){
+        alert(e.message);
+    }
+}
+
+<span class="function"><span class="keyword">function</span> <span class="title">MyNotifyCompressed</span><span class="params">()</span>{</span>
+    <span class="keyword">try</span> {
+        alert(<span class="string">"Notify"</span>), window.external.notify(<span class="string">"Notify"</span>);
+    } <span class="keyword">catch</span> (e) {
+        alert(e.message);
+    }
+}
+</code></pre><p>UglifyJS 在压缩 JS 代码时，压缩选项（-c)中有这么一个参数：</p>
+<blockquote>
+<p>sequences — join consecutive simple statements using the comma operator</p>
+</blockquote>
+<p>此选项默认是开启状态。当此选项处于开启状态时，UglifyJS 将会把多行代码压缩为一行并使用逗号进行分隔。压缩后，利用 <code>InvokeScript()</code> 调用 <code>MyNotifyCompressed()</code> 函数，系统将提示：</p>
+<blockquote>
+<p>Object doesn’t support this action</p>
+</blockquote>
+<p><code>window.external.notify()</code> 方法无法正常使用，则在程序中的一些逻辑无法正常处理。到底为什么无法调用这个方法呢？暂时也不大明白，可能是作用域出现问题了。</p>
+<p>如果使用逗号相连导致不能直接调用 <code>window.external.notify()</code> 的话，那还是把它单独封装成一个函数好了。</p>
+]]></content>
+    
+    
+      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
+    
+      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
+    
+      <category term="javascript" scheme="http://blog.edi-c.com/tags/javascript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[在 Windows Phone 上利用 weinre 远程调试 HTML5 页面]]></title>
+    <link href="http://blog.edi-c.com/post/remote-html5-debugging-on-windows-phone-with-weinre.html"/>
+    <id>http://blog.edi-c.com/post/remote-html5-debugging-on-windows-phone-with-weinre.html</id>
+    <published>2013-06-14T05:53:00.000Z</published>
+    <updated>2014-05-23T17:12:03.000Z</updated>
+    <content type="html"><![CDATA[<p>参考资料：</p>
+<ul>
+<li><a href="http://blogs.windows.com/windows_phone/b/wpdev/archive/2013/06/12/remote-html5-debugging-on-windows-phone-with-weinre.aspx" target="_blank">Remote HTML5 debugging on Windows Phone with weinre</a></li>
+<li><a href="http://msopentech.com/blog/2013/05/31/now-on-ie-and-firefox-debug-your-mobile-html5-page-remotely-with-weinre-web-inspector-remote/" target="_blank">Now on IE and Firefox: Debug your mobile HTML5 page remotely with weinre (WEb INspector REmote)</a></li>
+<li><a href="http://www.developer.nokia.com/Community/Wiki/How_to_debug_Windows_Phone_HTML5_Apps" target="_blank">How to debug Windows Phone HTML5 Apps</a></li>
+</ul>
+<h2 id="weinre_(WEb_INspector_REmote)">weinre (WEb INspector REmote)</h2>
+<p>Weinre (WEb INspector REmote) 是一个用于调试 HTML5 页面在移动设备上表现的工具。它是 Apache Cordova 计划中的一部分，旨在帮助开发者在设备上远程调试他们的网页或那些基于 Cordova 的移动 App。 Weinre 可远程地进行 DOM 的审查，让开发者在设备上调试 HTML5 页面显示效果更为方便。</p>
+<p>如果你熟悉 IE 上的 F12 审查工具、Firefox 上的 Firebug 或 Chrome 的 Web 审查工具，那你将会十分熟悉 Weinre，因为它们非常相像。</p>
+<h2 id="安装部署">安装部署</h2>
+<ol>
+<li>到 <a href="http://nodejs.org/" target="_blank">Node.js</a> 对应平台的版本，安装部署 Node.js。</li>
+<li><p>启动 Node.js 的命令提示符，输入下面命令安装 weinre：<code>npm -g -install weinre</code></p>
+<p><em>PS</em>：如系统有设置代理的话，可在环境变量中添加 <code>http_proxy</code> 和 <code>https_proxy</code> 两个变量，并设置为代理地址。</p>
+</li>
+<li><p>安装完成后，输入以下命令启动 weinre： <code>weinre -boundHost xx.xx.xx.xx</code>，<code>xx.xx.xx.xx</code> 你想要绑定的网络适配器 IP 地址。</p>
+</li>
+<li><p>在浏览器中输入 <code>http://xx.xx.xx.xx:8080</code> 即可打开 weinre 页面。页面如下：</p>
+<p><img src="http://d.pr/i/qRTc.png" alt="weinre_console"></p>
+</li>
+</ol>
+<h2 id="开始调试">开始调试</h2>
+<p>如果你所在的网络环境不复杂的话，其实已经可以开始调试你的页面了。步骤如下：</p>
+<ol>
+<li><p>在 PC 上启动调试器客户端页面：<a href="http://xx.xx.xx.xx:8080/client（xx.xx.xx.xx" target="_blank">http://xx.xx.xx.xx:8080/client（xx.xx.xx.xx</a> 的含义如上文所述），打开后可以看到下面的界面：</p>
+<p><img src="http://d.pr/i/AvaR.png" alt="weinre_client"></p>
+</li>
+<li><p>在需要调试的页面中加入下面的标签：</p>
+<pre><code><span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">”http:</span>//<span class="attribute">xx.xx.xx.xx:8080</span>/<span class="attribute">target</span>/<span class="attribute">target-script-min.js</span>#<span class="attribute">anonymous</span>”&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+</code></pre></li>
+<li><p>然后在应用中打开需要调试的页面，即可在开始调试。</p>
+</li>
+</ol>
+<p><em>PS</em>：关于如何使用 Fiddler 与 Windows Phone 进行联合调试，可以参考这篇文章：《<a href="http://scriptogr.am/blastmann/post/fiddlershare" target="_blank">Fiddler 与 Windows Phone 联调</a>》。</p>
+]]></content>
+    
+    
+      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
+    
+      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Windows Phone 自定义控件学习小记]]></title>
+    <link href="http://blog.edi-c.com/post/notes-about-wp8-customized-control.html"/>
+    <id>http://blog.edi-c.com/post/notes-about-wp8-customized-control.html</id>
+    <published>2013-06-12T08:54:00.000Z</published>
+    <updated>2014-05-23T17:12:03.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="自定义控件的简单过程记录">自定义控件的简单过程记录</h2>
+<ol>
+<li>新建项目（Windows Phone Class Library）</li>
+<li><p>新建一个类，继承自 <code>Control</code> 类，并在构造函数中定义 <code>DefaultStyleKey</code>，示例如下：</p>
+<pre><code><span class="keyword">public</span> <span class="keyword">class</span> CustomControl : Control
+{
+    <span class="keyword">public</span> <span class="title">CustomControl</span>()
+    {
+        DefaultStyleKey = <span class="keyword">typeof</span> (CustomControl);
+    }
+}
+</code></pre></li>
+<li><p>在项目中添加一个新文件夹，名字定义为：Themes（必须是这个名字）。</p>
+</li>
+<li><p>在 Themes 文件夹中添加一个 <code>Generic.xaml</code> 文件，内建一个自定义的资源字典，示例如下：</p>
+<pre><code>&lt;ResourceDictionary
+    xmlns=<span class="string">"http://schemas.microsoft.com/winfx/2006/xaml/presentation"</span>
+    xmlns:x=<span class="string">"http://schemas.microsoft.com/winfx/2006/xaml"</span>
+    xmlns:phoneClassLibrary1=<span class="string">"clr-namespace:PhoneClassLibrary1"</span>&gt;
+
+    &lt;<span class="keyword">Style</span> TargetType=<span class="string">"phoneClassLibrary1:CustomControl"</span>&gt;
+        &lt;<span class="keyword">Style</span>.Setters&gt;
+            &lt;<span class="keyword">Setter</span> <span class="keyword">Property</span>=<span class="string">"Background"</span> <span class="keyword">Value</span>=<span class="string">"{StaticResource PhoneAccentBrush}"</span>/&gt;
+            &lt;<span class="keyword">Setter</span> <span class="keyword">Property</span>=<span class="string">"Template"</span>&gt;
+                &lt;<span class="keyword">Setter</span>.<span class="keyword">Value</span>&gt;
+                    &lt;ControlTemplate TargetType=<span class="string">"phoneClassLibrary1:CustomControl"</span>&gt;
+                        &lt;Border BorderThickness=<span class="string">"{StaticResource PhoneBorderThickness}"</span> 
+                                BorderBrush=<span class="string">"{StaticResource PhoneBorderBrush}"</span> 
+                                <span class="keyword">Background</span>=<span class="string">"{StaticResource PhoneAccentBrush}"</span> /&gt;
+                    &lt;/ControlTemplate&gt;
+                &lt;/<span class="keyword">Setter</span>.<span class="keyword">Value</span>&gt;
+            &lt;/<span class="keyword">Setter</span>&gt;
+        &lt;/<span class="keyword">Style</span>.Setters&gt;
+    &lt;/<span class="keyword">Style</span>&gt;
+&lt;/ResourceDictionary&gt;
+</code></pre><p><strong>注意</strong>：Style 在定义时切莫声明 <code>Key</code> 值，否则会造成样式无法索引，编译通过、运行正常但控件无法显示。</p>
+</li>
+<li><p>在 Windows Phone 应用程序工程中引用此类库项目，尝试添加以上定义的 <code>CustomControl</code>，编译运行，观察是否正常显示。运行截图如下：</p>
+<p><img src="http://d.pr/i/PX3B.png" alt="CustomControl"></p>
+</li>
+</ol>
+]]></content>
+    
+    
+      <category term="note" scheme="http://blog.edi-c.com/tags/note/"/>
+    
+      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Windows Phone UI 开发中的各种诡异]]></title>
+    <link href="http://blog.edi-c.com/post/ui-dev-tricks-in-windows-phone.html"/>
+    <id>http://blog.edi-c.com/post/ui-dev-tricks-in-windows-phone.html</id>
+    <published>2013-05-27T08:41:00.000Z</published>
+    <updated>2014-05-23T17:12:03.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="自定义_TextBox_的诡异地方">自定义 TextBox 的诡异地方</h2>
+<p>自己自定义了一个<code>TextBox</code>，<code>TextBox</code>样式设置高度之类的属性，然后发现里面选中的时候选择手柄没有显示完整，于是发现可以通过设置 <code>MaxHeight</code> 来让手柄显示正常。</p>
+<p><a href="http://msdn.microsoft.com/zh-cn/library/windowsphone/develop/system.windows.frameworkelement.maxheight(v=vs.105).aspx" target="_blank">参考资料：FrameworkElement中的高度信息</a></p>
+<blockquote>
+<p><strong>依赖项属性标识符字段： <code>MaxHeightProperty</code></strong></p>
+<p>这是 <code>FrameworkElement</code> 上的三个用于指定高度信息的属性之一。 另外两个是 <code>MinHeight</code> 和 <code>Height</code>。 如果这三个值之间存在冲突，则应用程序确定高度的实际顺序是：首先必须采用 <code>MinHeight</code>；然后采用 <code>MaxHeight</code>；最后，如果这些值中的每个值都在限制之内，则采用 <code>Height</code>。</p>
+<p>从技术角度讲，允许 <code>MaxHeight</code> 的值不是整数，但应通常避免这种情况，并且一般通过默认的布局舍入行为来舍入这些值。</p>
+</blockquote>
+<h2 id="ScrollViewer_做渐变动画时内容变模糊">ScrollViewer 做渐变动画时内容变模糊</h2>
+<p>在测试的示例代码中基本结构是在一个<code>ScrollViewer</code>中内嵌一个<code>StackPanel</code>，然后添加一个<code>TextBlock</code>和一个<code>Button</code>。点击<code>Button</code>，触发<code>Button</code>上的<code>Click</code>事件，启动外层<code>Grid</code>上的渐变动画。</p>
+<p>测试结果如下：</p>
+<ul>
+<li>当<code>ScrollViewer</code>中内容不多的时候（不超过最外层<code>Grid</code>的高度），动画显示正常，内容不会出现模糊。</li>
+<li>复制示例代码中的<code>TextBlock</code>，确保<code>ScrollViewer</code>高度大于外层<code>Grid</code>高度，再次点击<code>Button</code>进行测试，动画显示正常，但动画过程中内容变模糊，直至动画完成。</li>
+</ul>
+<p>根据动画进行过程中的内存情况分析，猜测动画过程中，如对<code>ScrollViewer</code>本身及其外层窗口进行渐变动画，<code>ScrollViewer</code>将自动开启<code>BitmapCache</code>（渲染大小为1X），造成一定程度的模糊，同时内存也会对应上升一定程度（动画结束后内存释放）。</p>
+<p>暂时发现比较好的解决方法是：直接对内嵌于<code>ScrollViewer</code>中的<code>Panel</code>控件做动画，模糊问题可以得到解决。但<code>ListBox</code> \ <code>LLS</code>等控件该怎么获取内部<code>ScrollViewer</code>中的控件，这是一个问题，或者是对其中的<code>ItemsPresenter</code>进行动画吧。</p>
+<p>示例代码如下（包含多余的样式代码）：</p>
+<ul>
+<li><p>XAML:</p>
+<pre><code> <span class="tag">&lt;<span class="title">Grid</span> <span class="attribute">x:Name</span>=<span class="value">"ContentPanel"</span> <span class="attribute">Grid.Row</span>=<span class="value">"1"</span> <span class="attribute">Margin</span>=<span class="value">"12,0,12,0"</span>&gt;</span>
+     <span class="tag">&lt;<span class="title">ScrollViewer</span> <span class="attribute">Name</span>=<span class="value">"ContentSV"</span>&gt;</span>
+         <span class="tag">&lt;<span class="title">StackPanel</span> <span class="attribute">Name</span>=<span class="value">"ContentSP"</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Button</span> <span class="attribute">Content</span>=<span class="value">"Fade Grid"</span> <span class="attribute">Click</span>=<span class="value">"FadeGrid_OnClick"</span>/&gt;</span>
+             <span class="tag">&lt;<span class="title">Button</span> <span class="attribute">Content</span>=<span class="value">"Fade ScrollViewer"</span> <span class="attribute">Click</span>=<span class="value">"FadeSV_OnClick"</span>&gt;</span><span class="tag">&lt;/<span class="title">Button</span>&gt;</span>
+             <span class="tag">&lt;<span class="title">Button</span> <span class="attribute">Content</span>=<span class="value">"Fade StackPanel"</span> <span class="attribute">Click</span>=<span class="value">"FadeSP_OnClick"</span>/&gt;</span>
+
+             <span class="tag">&lt;<span class="title">TextBlock</span> <span class="attribute">TextWrapping</span>=<span class="value">"Wrap"</span>&gt;</span>
+                 Lorem ipsum Pariatur sint occaecat sunt sint do labore adipisicing 
+                 eiusmod incididunt culpa laborum consequat magna dolor labore sunt sed 
+                 ullamco anim adipisicing do pariatur ea esse qui sint magna in voluptate 
+                 Duis id ut anim id.
+             <span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+
+             <span class="tag">&lt;<span class="title">TextBlock</span> <span class="attribute">TextWrapping</span>=<span class="value">"Wrap"</span>&gt;</span>
+                 Lorem ipsum Pariatur sint occaecat sunt sint do labore adipisicing 
+                 eiusmod incididunt culpa laborum consequat magna dolor labore sunt sed 
+                 ullamco anim adipisicing do pariatur ea esse qui sint magna in voluptate 
+                 Duis id ut anim id.
+             <span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+
+             <span class="tag">&lt;<span class="title">TextBlock</span> <span class="attribute">TextWrapping</span>=<span class="value">"Wrap"</span>&gt;</span>
+                 Lorem ipsum Pariatur sint occaecat sunt sint do labore adipisicing 
+                 eiusmod incididunt culpa laborum consequat magna dolor labore sunt sed 
+                 ullamco anim adipisicing do pariatur ea esse qui sint magna in voluptate 
+                 Duis id ut anim id.
+             <span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+
+             <span class="tag">&lt;<span class="title">TextBlock</span> <span class="attribute">TextWrapping</span>=<span class="value">"Wrap"</span>&gt;</span>
+                 Lorem ipsum Pariatur sint occaecat sunt sint do labore adipisicing 
+                 eiusmod incididunt culpa laborum consequat magna dolor labore sunt sed 
+                 ullamco anim adipisicing do pariatur ea esse qui sint magna in voluptate 
+                 Duis id ut anim id.
+             <span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+
+             <span class="tag">&lt;<span class="title">TextBlock</span> <span class="attribute">TextWrapping</span>=<span class="value">"Wrap"</span>&gt;</span>
+                 Lorem ipsum Pariatur sint occaecat sunt sint do labore adipisicing 
+                 eiusmod incididunt culpa laborum consequat magna dolor labore sunt sed 
+                 ullamco anim adipisicing do pariatur ea esse qui sint magna in voluptate 
+                 Duis id ut anim id.
+             <span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+         <span class="tag">&lt;/<span class="title">StackPanel</span>&gt;</span>
+     <span class="tag">&lt;/<span class="title">ScrollViewer</span>&gt;</span>
+ <span class="tag">&lt;/<span class="title">Grid</span>&gt;</span>
+</code></pre></li>
+</ul>
+<ul>
+<li><p>C#:</p>
+<pre><code>  <span class="keyword">private</span> <span class="keyword">void</span> <span class="title">FadeInAndOut</span>(DependencyObject dObj)
+  {
+      <span class="keyword">var</span> storyb = <span class="keyword">new</span> Storyboard();
+      Duration Show_Duration = <span class="keyword">new</span> Duration(<span class="keyword">new</span> TimeSpan(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">450</span>));
+      DoubleAnimation m_OpacityAni = <span class="keyword">new</span> DoubleAnimation();
+      m_OpacityAni.Duration = Show_Duration;
+      m_OpacityAni.From = <span class="number">1.0</span>;
+      m_OpacityAni.To = <span class="number">0.0</span>;
+      m_OpacityAni.AutoReverse = <span class="keyword">true</span>;
+
+      storyb.Children.Add(m_OpacityAni);
+
+      Storyboard.SetTarget(m_OpacityAni, dObj);
+      Storyboard.SetTargetProperty(m_OpacityAni, <span class="keyword">new</span> PropertyPath(<span class="string">"(UIElement.Opacity)"</span>));
+
+      storyb.Begin();
+  }
+
+  <span class="keyword">private</span> <span class="keyword">void</span> <span class="title">FadeGrid_OnClick</span>(<span class="keyword">object</span> sender, RoutedEventArgs e)
+  {
+      FadeInAndOut(ContentPanel);
+  }
+
+  <span class="keyword">private</span> <span class="keyword">void</span> <span class="title">FadeSP_OnClick</span>(<span class="keyword">object</span> sender, RoutedEventArgs e)
+  {
+      FadeInAndOut(ContentSP);
+  }
+
+  <span class="keyword">private</span> <span class="keyword">void</span> <span class="title">FadeSV_OnClick</span>(<span class="keyword">object</span> sender, RoutedEventArgs e)
+  {
+      FadeInAndOut(ContentSV);
+  }
+</code></pre></li>
+</ul>
+<h2 id="ApplicationBar_的坑爹处">ApplicationBar 的坑爹处</h2>
+<p><code>ApplicationBar</code> 的透明度很坑爹，如果透明度为<code>1</code>，它将表现为属于页面的一部分，将占据页面中部分空间。如果透明度小于<code>1</code>（如<code>0.99</code>），它将表现为覆盖在页面之上，不会占据页面的空间。</p>
+<p>那这个时候就有问题了。如果我们页面中有一个 <code>ListBox</code> （或者 <code>LLS</code> ），我们需要将它滚动至最后一项时， <code>ApplicationBar</code> 透明度小于<code>1</code>时将会阻挡其显示。有什么办法可以解决这个问题呢？</p>
+<ol>
+<li><p>Hard Code <code>ListBox</code>（或<code>LLS</code>） 父容器的高度或者外边距</p>
+<p>这种方法个人觉得并不好用，如果页面不考虑旋转的话还好，如果要考虑旋转的话，就必须在旋转的时候注意设置其父容器的高度（<code>Height</code>）或外边距（<code>Margin</code>）。这样我们需要计算的数字比较多，容易造成混乱，而且每次旋转之后都要重新设置高度或者外边距，自适应性不好。不过，原始的方法总是比较实用的对吧。</p>
+</li>
+<li><p>为 <code>LongListSelector</code> 设置 <code>ListFooter</code> </p>
+<p>查看了官方文档之后发现<code>LLS</code>本身有两个很有趣的属性：<code>ListFooter</code>和<code>ListHeader</code>关于这两个部分的位置，官方文档上有一个图描述得非常清楚：</p>
+<p><img src="http://i.msdn.microsoft.com/dynimg/IC619230.png" alt="Header&amp;Footer"></p>
+<p>经测试，这种方法相当于在<code>LLS</code>头部或尾部添加了一个特殊项，我们只要将这个特定项设置为空的、有一定高度（一般是 72px）的元素即可。测试出来的效果跟系统的<code>人脉</code>中显示效果一致，滚动至底部后将出现一定的空白用于分隔列表与 ApplicationBar。</p>
+<p><img src="http://d.pr/i/iHMH.png" alt="People"></p>
+<p>第二种方法比第一种方法好的地方就是：不需要另外指定<code>Margin</code>或者<code>Height</code>这样的属性，所有元素都是自适应的，比起第一种方法要灵活一点。特别是在<code>Pivot</code>和<code>Panorama</code>控件下，不同的页面中对<code>ApplicationBar</code>的要求不一样，当<code>ApplicationBar</code>高度不统一时，我们就需要对其列表控件的高度或外边距进行多个设置，不甚灵活。</p>
+</li>
+<li><p><code>ListBox</code> 怎么办？</p>
+<p>经少量测试，如果给<code>ListBox</code>最后添加上一项空白项的话，可能会造成选项错误。Google 之后发现，还是有一些比较 Tricky 的方法的。下面列出一种：</p>
+<p>对<code>ListBox</code>的模板进行修改，在<code>ItemsPrestenter</code>下面添加一个高度为<code>72px</code>的空白项。示例代码：</p>
+   <ControlTemplate><br>       <ScrollViewer Height="{Binding Height,RelativeSource={RelativeSource Mode=TemplatedParent}}"><br>           <StackPanel><br>               <ItemsPresenter /><br>               <Canvas Height="72" /><br>           </StackPanel><br>       </ScrollViewer><br>   </ControlTemplate>
+
+<p>但是这种方法有 Bug，造成<code>VirtualizingStackPanel</code>的数据虚拟化失效，暂时没有找到除了设置固定高度之外的解决方法。</p>
+</li>
+</ol>
+<h2 id="ToolKit_中的_SlideInEffects_在_WP8_中无效">ToolKit 中的 SlideInEffects 在 WP8 中无效</h2>
+<p>原因：WP8 中，<code>LongListSelector</code>、<code>Panorama</code> 和 <code>Pivot</code> 属于框架中的一部分，它们的 <code>ManipulationCompleted</code> 事件默认被标识为 <code>handled</code>，以提高界面的流畅性。</p>
+<p>如果真的要处理 Pivot 控件的 <code>ManipulationCompleted</code> 事件的话，可以把 <code>SlideInEffects.cs</code> 的 <code>OnParentPivotPropertyChanged</code> 函数中的</p>
+<pre><code><span class="attribute">newPivot.ManipulationCompleted +</span>=<span class="string"> Pivot_ManipulationCompleted;</span>
+</code></pre><p>替换为：</p>
+<pre><code>newPivot.<span class="keyword">AddHandler</span>(Pivot.ManipulationCompletedEvent, <span class="keyword">new</span> EventHandler&lt;ManipulationCompletedEventArgs&gt;(Pivot_ManipulationCompleted), <span class="literal">true</span>);
+</code></pre><p>但处理效果不好，会导致动画效果异常。原因是 <code>SelectionChanged</code> 事件在 <code>ManipulationCompleted</code> 事件完成之后才会触发，因此造成动画效果异常。</p>
+<p>比较丑陋的解决方法是：将 <code>SelectionChanged</code> 事件处理与 <code>ManipulationCompleted</code> 对调，同时将 <code>fromRight</code> 变量抽取为静态变量，让动画在 <code>SelectionChanged</code> 事件中进行处理。<a href="http://d.pr/f/MiSr" target="_blank"><strong>点击这里下载</strong></a>。</p>
+<h2 id="Toolkit_中的_HubTile_滑动展开到最大后消失及没有适配_WP8_的新翻转效果">Toolkit 中的 HubTile 滑动展开到最大后消失及没有适配 WP8 的新翻转效果</h2>
+<p>经过排查发现，原因应该是 <code>Generic.xaml</code> 中的状态动画没有对 <code>Collapsed</code> 状态进行定义。另外，文件里的动画也很久没有更新了，没有适配 WP8 首屏瓷砖翻转时的 <code>BackEase</code> 效果。我在原来的 <code>HubTile</code> 基础上加了一些内容，主要更新点是：</p>
+<ul>
+<li>当瓷砖中有具体信息时，瓷砖不会采用滑动展开的动画，只会使用翻转动画。</li>
+<li>稍微调整了一下动画触发的时间，减少等待。</li>
+<li>适配 WP8 的动画效果。</li>
+</ul>
+<p>具体可以<a href="http://d.pr/f/7tlo" target="_blank">点击这里</a>下载代码。</p>
+<h2 id="ListPicker_选项初始位置偏移的问题">ListPicker 选项初始位置偏移的问题</h2>
+<p>在升级 Windows Phone Toolkit 的开发测试过程中出现过这么一个现象：</p>
+<blockquote>
+<p><code>ListPicker</code> 的初始化一切都很正常，但是在完成初始化之后，选项的第一项位移有些许偏移，而且在初次打开的时候会比较卡。</p>
+</blockquote>
+<p><img src="http://d.pr/i/fkdl.png" alt="ListPicker"></p>
+<p>调试中发现：当 <code>ListPicker</code> 在绑定 <code>SelectionChanged</code> 事件后，进行添加数据的操作将会引起 <code>SelectionChanged</code> 事件的反复调用，估计是反复调用 <code>SelectionChanged</code> 引起的问题。</p>
+<p>解决错位的问题：只需要把数据绑定完成之后，再进行事件绑定操作即可，避免事件反复触发进行控件布局异常。</p>
+<h2 id="点击事件与背景色">点击事件与背景色</h2>
+<p>点击事件的触发与元素的背景色有关系，示例代码：</p>
+<ul>
+<li><p>XAML:</p>
+<pre><code>  &lt;<span class="keyword">Grid</span> x:Name=<span class="string">"ContentPanel"</span> <span class="keyword">Grid</span>.<span class="keyword">Row</span>=<span class="string">"1"</span> Margin=<span class="string">"12,0,12,0"</span> Tap=<span class="string">"ContentPanel_OnTap"</span>&gt;
+      &lt;<span class="keyword">Grid</span> Tap=<span class="string">"UIElement_OnTap"</span> Height=<span class="string">"300"</span>&gt;&lt;/<span class="keyword">Grid</span>&gt;
+  &lt;/<span class="keyword">Grid</span>&gt;
+</code></pre></li>
+<li><p>CS:</p>
+<pre><code>  <span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ContentPanel_OnTap</span>(<span class="keyword">object</span> sender, GestureEventArgs e)
+  {
+      System.Diagnostics.Debug.WriteLine(e.OriginalSource.ToString() + <span class="string">"1"</span>);
+      e.Handled = <span class="keyword">true</span>;
+  }
+
+  <span class="keyword">private</span> <span class="keyword">void</span> <span class="title">UIElement_OnTap</span>(<span class="keyword">object</span> sender, GestureEventArgs e)
+  {
+      System.Diagnostics.Debug.WriteLine(e.OriginalSource.ToString() + <span class="string">"2"</span>);
+      e.Handled = <span class="keyword">true</span>;
+  }
+</code></pre></li>
+<li><p>大致布局如下，高亮框为内嵌高度为300px的 Grid：</p>
+<p>  <img src="http://d.pr/i/Fcl2.png" alt="Layout"></p>
+</li>
+</ul>
+<p>示例很简单，只是两个 Grid 的嵌套加上 <code>Tap</code> 事件的简单输出。运行的时候可以发现，我们点击外层 Grid 时输出窗口并没有输出内容，但点击中间的 Grid 时则有输出 <code>System.Windows.Controls.Grid2</code> 的信息，而两者的区别仅在于背景色的设置。在设计流式布局时，要注意这个问题，有时候点击事件没有触发的原因仅仅是因为外层的容器没有设置一个透明的背景色。</p>
+<p>当 <code>Background</code> 属性为空时，点击该元素并不会触发 <code>Tap</code> 事件，只有当 <code>Background</code> 属性不为空（如不想影响显示效果，可设置为 <code>Transparent</code>），点击事件才会触发。</p>
+<h2 id="莫名其妙的_TextBox_获取焦点事件触发（2013-05-27更新）">莫名其妙的 TextBox 获取焦点事件触发（2013-05-27更新）</h2>
+<p>页面结构基本如下：</p>
+<pre><code>-<span class="ruby"> <span class="constant">Grid</span>
+</span>  -<span class="ruby"> <span class="constant">ScrollViewer</span>
+</span>    -<span class="ruby"> <span class="constant">StackPanel</span>
+</span>      -<span class="ruby"> <span class="constant">TextBox</span>
+</span>      -<span class="ruby"> <span class="constant">TextBlock</span></span>
+</code></pre><p>问题就是，当我们点击 TextBlock 设置 Grid 进行隐藏时，ScrollViewer 很神奇地会让 TextBox 触发 <code>GotFocus</code> 事件，导致页面隐藏后出现软键盘。</p>
+<p>废话不多说了，直接看代码：</p>
+<ul>
+<li><p>XAML:</p>
+<pre><code>  <span class="tag">&lt;<span class="title">Grid</span> <span class="attribute">x:Name</span>=<span class="value">"ContentPanel"</span> <span class="attribute">Grid.Row</span>=<span class="value">"1"</span> <span class="attribute">Margin</span>=<span class="value">"12,0,12,0"</span>&gt;</span>
+      <span class="tag">&lt;<span class="title">Grid.RowDefinitions</span>&gt;</span>
+          <span class="tag">&lt;<span class="title">RowDefinition</span> <span class="attribute">Height</span>=<span class="value">"Auto"</span>&gt;</span><span class="tag">&lt;/<span class="title">RowDefinition</span>&gt;</span>
+          <span class="tag">&lt;<span class="title">RowDefinition</span> <span class="attribute">Height</span>=<span class="value">"*"</span>&gt;</span><span class="tag">&lt;/<span class="title">RowDefinition</span>&gt;</span>
+      <span class="tag">&lt;/<span class="title">Grid.RowDefinitions</span>&gt;</span>
+
+      <span class="tag">&lt;<span class="title">Button</span> <span class="attribute">Grid.Row</span>=<span class="value">"0"</span> <span class="attribute">Click</span>=<span class="value">"ButtonBase_OnClick"</span>&gt;</span>Display<span class="tag">&lt;/<span class="title">Button</span>&gt;</span>
+
+      <span class="tag">&lt;<span class="title">Grid</span> <span class="attribute">Grid.Row</span>=<span class="value">"1"</span> <span class="attribute">Name</span>=<span class="value">"canvas"</span> <span class="attribute">GotFocus</span>=<span class="value">"UIElement_OnGotFocus"</span>&gt;</span>
+          <span class="tag">&lt;<span class="title">ScrollViewer</span> <span class="attribute">Name</span>=<span class="value">"SV"</span> <span class="attribute">GotFocus</span>=<span class="value">"UIElement_OnGotFocus"</span> &gt;</span>
+              <span class="tag">&lt;<span class="title">StackPanel</span>&gt;</span>
+                  <span class="tag">&lt;<span class="title">TextBox</span> <span class="attribute">Name</span>=<span class="value">"TB"</span> <span class="attribute">GotFocus</span>=<span class="value">"UIElement_OnGotFocus"</span> <span class="attribute">Width</span>=<span class="value">"200"</span> /&gt;</span>
+                  <span class="tag">&lt;<span class="title">TextBlock</span> <span class="attribute">Margin</span>=<span class="value">"0,50,0,0"</span> <span class="attribute">Tap</span>=<span class="value">"ButtonBase_OnClick"</span> 
+                             <span class="attribute">GotFocus</span>=<span class="value">"UIElement_OnGotFocus"</span>&gt;</span>Hide<span class="tag">&lt;/<span class="title">TextBlock</span>&gt;</span>
+              <span class="tag">&lt;/<span class="title">StackPanel</span>&gt;</span>
+          <span class="tag">&lt;/<span class="title">ScrollViewer</span>&gt;</span>
+      <span class="tag">&lt;/<span class="title">Grid</span>&gt;</span>
+</code></pre></li>
+<li><p>CS:</p>
+<pre><code>  private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+  {
+      System<span class="preprocessor">.Diagnostics</span><span class="preprocessor">.Debug</span><span class="preprocessor">.WriteLine</span>(<span class="string">"Click: "</span> + sender<span class="preprocessor">.GetType</span>())<span class="comment">;</span>
+
+      // 在修改`Visibility`前禁用ScrollViewer
+      SV<span class="preprocessor">.IsEnabled</span> = canvas<span class="preprocessor">.Visibility</span> != Visibility<span class="preprocessor">.Visible</span><span class="comment">;</span>
+
+      canvas<span class="preprocessor">.Visibility</span> = canvas<span class="preprocessor">.Visibility</span> == Visibility<span class="preprocessor">.Visible</span>
+                              ? Visibility<span class="preprocessor">.Collapsed</span>
+                              : Visibility<span class="preprocessor">.Visible</span><span class="comment">;</span>
+  }
+
+  private void UIElement_OnGotFocus(object sender, RoutedEventArgs e)
+  {
+      System<span class="preprocessor">.Diagnostics</span><span class="preprocessor">.Debug</span><span class="preprocessor">.WriteLine</span>(<span class="string">"GotFocus: "</span> + sender<span class="preprocessor">.GetType</span>() + <span class="string">", Source: "</span> + e<span class="preprocessor">.OriginalSource</span>)<span class="comment">;</span>
+  }
+</code></pre></li>
+</ul>
+<p>暂时的解决方法是：在隐藏外层 Grid 时，对 <code>ScrollViewer.IsEnabled</code> 设置为 <code>False</code>，或者直接对 ScrollViewer 设置隐藏，两个方法都不会触发到 TextBox 的 <code>GotFocus</code> 事件。</p>
+]]></content>
+    
+    
+      <category term="windows" scheme="http://blog.edi-c.com/tags/windows/"/>
+    
+      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[创建宽度高度自适应的 Windows Phone App 界面布局]]></title>
+    <link href="http://blog.edi-c.com/post/create-a-flexible-wp-app-page-layout.html"/>
+    <id>http://blog.edi-c.com/post/create-a-flexible-wp-app-page-layout.html</id>
+    <published>2013-05-23T13:00:00.000Z</published>
+    <updated>2014-05-23T17:12:03.000Z</updated>
+    <content type="html"><![CDATA[<h4 id="[1]_利用好_Grid_的分行/分列功能">[1] 利用好 Grid 的分行/分列功能</h4>
+<p>Grid 提供了分行/分列的属性，示例代码如下：</p>
+<pre><code><span class="tag">&lt;<span class="title">Grid.RowDefinitions</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">RowDefinition</span> <span class="attribute">Height</span>=<span class="value">"Auto"</span>/&gt;</span>
+    <span class="tag">&lt;<span class="title">RowDefinition</span> <span class="attribute">Height</span>=<span class="value">"*"</span>/&gt;</span>
+    <span class="tag">&lt;<span class="title">RowDefinition</span> <span class="attribute">Height</span>=<span class="value">"2*"</span>/&gt;</span>
+<span class="tag">&lt;/<span class="title">Grid.RowDefinitions</span>&gt;</span>
+</code></pre><p>其中行高（列宽）有几种取值方式：</p>
+<ol>
+<li>直接指定数值。此方式最直接，将直接指定具体高度或宽度。</li>
+<li>使用 <code>Auto</code> 值。使用 <code>Auto</code> 的话，Grid 将根据该行/列内容计算其占据空间的大小。</li>
+<li>使用 <code>*</code> 值。使用 <code>*</code> 的话，Grid 将根据其他的行/列占据空间后剩余的空间来计算此行/列的大小。此值还支持比例计算，如示例代码中的 <code>2*</code>，表示 Grid 的空间在第一行计算完成后，剩余空间将均分为3份，第二行占据一份，第三行占据两份。</li>
+</ol>
+<p>分行/分列的属性在实现页面基础布局的情况下十分有用。但需要注意不要在数据模板中使用过于复杂的 Grid 结构，否则会导致大量计算资源消耗在计算 Grid 布局上。</p>
+<p>相关资料：《<a href="http://scriptogr.am/blastmann/post/wpf-panels-performance" target="_blank">关于 WPF 中的面板性能分析</a>》</p>
+<h4 id="[2]_注意对齐属性的区别">[2] 注意对齐属性的区别</h4>
+<ol>
+<li><p><code>HorizontalAlignment</code> / <code>VerticalAlignment</code> （水平对齐和垂直对齐）</p>
+<p><code>HorizontalAlignment</code> 和 <code>VerticalAlignment</code> 是 FrameworkElement 中定义的两个属性。当 FrameworkElement 位于面板或项控件中时，这两个属性将会有应用，设置后影响此元素的布局。默认值是 <code>Stretch</code>，如果需要建立一个自适应的布局，最好不要修改此值。</p>
+<ul>
+<li><code>HorizontalAlignment</code> 取值： <code>Left</code> / <code>Right</code> / <code>Center</code> / <code>Stretch</code>。</li>
+<li><code>VerticalAlignment</code> 取值： <code>Top</code> / <code>Bottom</code> / <code>Center</code> / <code>Stretch</code>。</li>
+</ul>
+<p>当前元素没有设置宽度（或高度）时，如使用除 <code>Stretch</code> 以外的值，会导致元素的大小变为该元素内部的元素占据的大小。如：</p>
+<pre><code><span class="tag">&lt;<span class="title">Border</span> <span class="attribute">Height</span>=<span class="value">"50"</span> <span class="attribute">BorderBrush</span>=<span class="value">"White"</span> <span class="attribute">BorderThickness</span>=<span class="value">"3"</span> <span class="attribute">Background</span>=<span class="value">"Red"</span>
+        <span class="attribute">HorizontalAlignment</span>=<span class="value">"Left"</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">Border</span>&gt;</span>
+</code></pre><p>则此 <code>Border</code> 的宽度将变为0。因此，注意 <code>Stretch</code> 的使用。</p>
+</li>
+<li><p><code>HorizontalContentAlignment</code> / <code>VerticalContentAlignment</code> （内容水平对齐和内容垂直对齐）</p>
+<p><code>HorizontalContentAlignment</code> 和 <code>VerticalContentAlignment</code> 是 Control 中实现的两个属性，主要影响控件内元素的排列位置，默认值分别是 <code>HorizontalAlignment.Left</code> 和 <code>VerticalAlignment.Top</code>。同样地，如果将属性设置为 <code>Stretch</code> 的话，则内部元素在没有设置固定大小时将会得到拉伸处理。</p>
+<ul>
+<li><code>HorizontalContentAlignment</code> 取值： <code>Left</code> / <code>Right</code> / <code>Center</code> / <code>Stretch</code>。</li>
+<li><code>HorizontalContentAlignment</code> 取值： <code>Top</code> / <code>Bottom</code> / <code>Center</code> / <code>Stretch</code>。</li>
+</ul>
+</li>
+</ol>
+<p>强调这两个属性的原因是，当我们需要实现弹性布局时，使用 <code>Stretch</code> 可以免除频繁设置元素大小的困扰。</p>
+]]></content>
+    
+    
+      <category term="windows" scheme="http://blog.edi-c.com/tags/windows/"/>
+    
+      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
+    
+  </entry>
+  
+</feed>
