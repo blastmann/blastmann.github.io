@@ -4,8 +4,6 @@ date: 2014-07-08 09:59:46
 tags: [iOS,Swift]
 ---
 
-……前面的读书笔记日后补
-
 ## 写在前面
 
 Apple这次发布Swift语言，是想把OC开发者渐渐迁移到新平台上面吧。暂时来说，Swift具备了很多OC不具备的语言特性，更方便智商不够用的开发者来到iOS平台进行开发。但是，Swift离取代OC的日子还有点远。因为Swift的特性还不能完全覆盖OC的所有特性（举个例子：KVO暂时还没有）。所以未来有一段时间都会是两种语言并行使用。
@@ -14,7 +12,11 @@ Apple这次发布Swift语言，是想把OC开发者渐渐迁移到新平台上�
 
 所以，暂时还是学好OC比较有用。虽然Swift更安全更方便，但是用OC先摸一下iOS平台上的坑，还是有必要的。
 
-### 基础点
+下面的内容有点乱，随便看看就好。
+
+## Swift初体验
+
+### 1. 基础点
 
 1. 有动态语言的语法特征，但用的是类型推导，是编译型语言
 2. 有泛型，个人觉得最直观的体现就是Array和Dictionary终于是强类型的了但还有些很神奇的坑。
@@ -22,7 +24,7 @@ Apple这次发布Swift语言，是想把OC开发者渐渐迁移到新平台上�
 4. 官方文档上没有发现有`public` \ `private`等关键字，全部定义都是公有，这样真没有问题么？虽然类型安全了，但是API编写可能存在比较大的风险。
 5. ...这里想到再补充吧
 
-### 闭包
+### 2. 闭包
 
 闭包就跟OC里面的Block差不多（Block就是一个实现得丑了一点的闭包）。
 
@@ -70,7 +72,7 @@ func makeIncrementor(forIncrement amount: Int) -> () -> Int {
 
 ```
 
-### 泛型（赞）
+### 3. 泛型（赞）
 
 Swift里面可以使用泛型了，但是使用了泛型的话就不能与OC进行对接，这点需要事先声明。因为泛型不可以与OC进行对接，所以下面的代码会出现链接错误：
 
@@ -87,7 +89,7 @@ class errorNSObject<T> : NSObject {
 
 ## 与Objetive-C混合使用
 
-### 模块引用
+### 1. 模块引用
 
 从OC代码中引用Swift模块，只需要OC文件中引入对应的头文件，示例：
 
@@ -99,7 +101,7 @@ class errorNSObject<T> : NSObject {
 
 如果要在Swift中使用OC代码，则需要在一个名字为`#ProductName#-Bridging-Header.h`的头文件中引用所有需要暴露给Swift的模块头文件。
 
-### 与OC API的结合使用
+### 2. 与OC API的结合使用
 
 #### 构造函数的差别
 
@@ -120,15 +122,15 @@ let myTableView: UITableView = UITableView(frame: CGRectZero, style: .Grouped)
 
 挺容易理解，id类型在Swift里面对应的就是AnyObject了。与OC混合使用的时候，难免会遇到NSArray、NSDictionary相互转换的情况，从OC转换过来的数组和字典里面所存的数据都是用AnyObject，转换后可以通过`as?`进行安全的类型转换。
 
-### @objc标记
+### 3. @objc标记
 
 如果你的类不是继承自NSObject或者OC编写的类，但又想兼容OC，可以使用`@objc`标记。
 
-### 内省方法
+### 4. 内省方法
 
 OC里面可以使用`isKindOfClass:`之类的方法进行对象的类型判断，Swift中可以直接通过`is`、`as`这两个关键字进行代替。
 
-### OC混合编程中无法使用的Swift特性
+### 5. OC混合编程中无法使用的Swift特性
 
 * Generics：泛型
 * Tuples：元组
@@ -145,11 +147,11 @@ OC里面可以使用`isKindOfClass:`之类的方法进行对象的类型判断�
 
 都已经到Xcode beta3了，Swift开发环境还是一堆堆的坑，下面简单记录一下。
 
-### Xcode自动补全没反应，索引服务经常挂掉。
+### 1. Xcode自动补全没反应，索引服务经常挂掉。
 
 坑爹的是我输入一个`for`，感觉它应该给我提示自动补全一个for循环吧，结果它竟然给我提示`fork()`！而且提示里面还没有for循环的选项可以用！
 
-### delegate模式的使用
+### 2. delegate模式的使用
 
 ``` swift
 
@@ -195,3 +197,49 @@ class ModalViewController: UIViewController {
 > `weak` cannot be applied to non-class type `xxxx`
 
 [StackOverflow上说这种情况](http://stackoverflow.com/questions/24066304/how-can-i-make-a-weak-protocol-reference-in-pure-swift-w-o-objc)需要对protocol添加关键字`@objc`或者`@class_protocol`。但现阶段使用后者的话，运行的时候程序会Crash。这是Bug吧？
+
+### 3. `[unowned self]`导致崩溃
+
+OC里面，当我们在使用heap block的时候，会注意到如果在block中对self进行引用的话，很容易会造成循环引用导致的内存泄漏。这时我们会使用`__weak`关键字解决这问题，例如：
+
+``` objc
+
+- (void)startPolling {
+    __weak EOCClass *weakSelf = self;
+    _pollTimer = [NSTimer eoc_scheduledTimerWithTimeInterval:5.0
+                                                       block:^{
+                                                    EOCClass *strongSelf = weakSelf;
+                                                    [strongSelf p_doPoll];
+                                                        }
+                                                    repeats:YES];
+}
+
+```
+
+在Swift中，使用属性或方法返回闭包时，官方文档上说也可以使用`unowned`关键字解决这问题。用`weak`的话应该也可以，例如：
+
+``` swift
+
+// 使用unowned
+var asHTML: () -> String = {
+    [unowned self] in
+    if let text = self.text {
+        return "<\(self.name)>\(text)</\(self.name)>"
+    } else {
+        return "<\(self.name) />"
+    }
+}
+
+// 使用weak
+var asHTML: () -> String = {
+    [weak self] in
+    if let text = self?.text {
+        return "<\(self?.name)>\(text)</\(self?.name)>"
+    } else {
+        return "<\(self?.name) />"
+    }
+}
+
+```
+
+测试结果暂时显示，使用`unowned`的话会导致Crash。这估计是坑吧……
