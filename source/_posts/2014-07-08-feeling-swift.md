@@ -30,7 +30,6 @@ Apple这次发布Swift语言，是想把OC开发者渐渐迁移到新平台上�
 闭包就跟OC里面的Block差不多（Block就是一个语法丑了一点的闭包）。
 
 ``` swift
-
 class HTMLElement: NSObject {
     let name: String
     let text: String?
@@ -53,22 +52,19 @@ class HTMLElement: NSObject {
         println("\(name) is being deinitialized")
     }
 }
-
 ```
 
 ##### Nested Function也算是一种闭包
 
 ``` swift
-
 func makeIncrementor(forIncrement amount: Int) -> () -> Int {
     var runningTotal = 0
     func incrementor() -> Int {
         runningTotal += amount
         return runningTotal
     }
-    return intrementor
+    return incrementor
 }
-
 ```
 
 ### 3. 泛型（赞）
@@ -86,6 +82,10 @@ class errorGenericObject<T> : NSObject {
 
 反正我把`NSObject`的继承去掉之后就可以正常使用了，我觉得Xcode在这个提示上面可以更清晰一些，beta3里面如果有这样的编码，编译时只会提示链接错误，而且错误信息也不是很清晰。
 
+### 4. ARC
+
+ARC的规则与OC里面差不多，需要解决循环引用的地方都建议使用`weak`或者`unowned`。`unowned`适用于变量总是有值的情况，`weak`则是对普通变量使用的。标明`unowned`的变量在使用过程中一定要确保它是非空的，否则会造成异常。
+
 ## 与Objetive-C混合使用
 
 ### 1. 模块引用
@@ -102,22 +102,21 @@ class errorGenericObject<T> : NSObject {
 
 ### 2. 与OC API的结合使用
 
-#### 构造函数的差别
+#### a. 构造函数的差别
 
-``` objc
 OBJECTIVE-C
 
+``` objc
 UITableView *myTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
 In Swift, you do this:
 ```
 
-``` swift
 SWIFT
-
+``` swift
 let myTableView: UITableView = UITableView(frame: CGRectZero, style: .Grouped)
 ```
 
-#### id类型与AnyObject
+#### b. id类型与AnyObject
 
 挺容易理解，id类型在Swift里面对应的就是AnyObject了。与OC混合使用的时候，难免会遇到NSArray、NSDictionary相互转换的情况，从OC转换过来的数组和字典里面所存的数据都是用AnyObject，转换后可以通过`as?`进行安全的类型转换。
 
@@ -153,7 +152,6 @@ OC里面可以使用`isKindOfClass:`之类的方法进行对象的类型判断�
 ### 2. delegate模式的使用
 
 ``` swift
-
 //@class_protocol protocol ModalViewControllerDelegate {
 @objc protocol ModalViewControllerDelegate {
     func modalViewControllerDidClickedDismissButton(viewController: ModalViewController)
@@ -188,7 +186,6 @@ class ModalViewController: UIViewController {
         self.delegate?.modalViewControllerDidClickedDismissButton(self)
     }
 }
-
 ```
 
 使用delegate模式时，一般都会用`weak`去解决循环引用。但直接使用`weak`的话，编译器会提示
@@ -202,7 +199,6 @@ class ModalViewController: UIViewController {
 OC里面，当我们在使用heap block的时候，会注意到如果在block中对self进行引用的话，很容易会造成循环引用导致的内存泄漏。这时我们会使用`__weak`关键字解决这问题，例如：
 
 ``` objc
-
 - (void)startPolling {
     __weak EOCClass *weakSelf = self;
     _pollTimer = [NSTimer eoc_scheduledTimerWithTimeInterval:5.0
@@ -212,13 +208,11 @@ OC里面，当我们在使用heap block的时候，会注意到如果在block中
                                                         }
                                                     repeats:YES];
 }
-
 ```
 
 在Swift中，使用属性或方法返回闭包时，官方文档上说也可以使用`unowned`关键字解决这问题。用`weak`的话应该也可以，例如：
 
 ``` swift
-
 // 使用unowned
 var asHTML: () -> String = {
     [unowned self] in
@@ -238,7 +232,6 @@ var asHTML: () -> String = {
         return "<\(self?.name) />"
     }
 }
-
 ```
 
 测试结果暂时显示，使用`unowned`的话会导致Crash。这估计是坑吧……
@@ -247,14 +240,12 @@ var asHTML: () -> String = {
 
 用Swift重写了一次PrimeFinder，多线程方面还是可以正常使用GCD提供的功能，就是一些block的生成需要注意一下，把语法改一下就好。
 
-由于Swift里面暂时没找到`@synchronized`这加锁的语法，所以暂时会用下面的代码代替。
+由于Swift里面暂时没找到`@synchronized`这加锁的语法，可以暂时会用下面的代码代替。用`NSLock`之类的代替也可以。
 
 ``` swift
-
 objc_sync_enter(self)
 ...
 objc_sync_exit(self)
-
 ```
 
 注意一下加锁的对象就好。在重写的时候发现了一个死锁的情况，例如：
@@ -281,7 +272,12 @@ class PrimeFinder {
 ...
     }
 }
-
 ```
 
 在加锁的时候使用的是`self?.primes`可能为空，导致死锁。如果单独使用一个常量`let syncObject: NSObject`来代替的话则没有问题。另外，block里面使用`unowned`似乎是一件很危险的事情，经常会出现Crash。
+
+### 5. Playground有何用？
+
+新建一个Playground文件，里面有所见即所得的编程体验，编写的代码可以立刻从Playground里面反映出来。但是，[对于自定义类来说，在Playground里面暂时无法引用](http://stackoverflow.com/questions/24045245/how-to-import-own-classes-from-your-own-project-into-a-playground)。
+
+简单粗暴的方法是：源码复制粘贴到Playground里面再使用。
