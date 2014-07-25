@@ -82,6 +82,32 @@ class errorGenericObject<T> : NSObject {
 
 反正我把`NSObject`的继承去掉之后就可以正常使用了，我觉得Xcode在这个提示上面可以更清晰一些，beta3里面如果有这样的编码，编译时只会提示链接错误，而且错误信息也不是很清晰。
 
+官方文档说可以用数组来处理这种问题：
+
+```swift
+@objc class errorObj<T> {
+    private let _member: [T]
+    var member: T {
+        return _member[0]
+    }
+    
+    init(aMember: T) {
+        self._member = []
+        self._member[0] = aMember
+    }
+}
+```
+
+编译后Swift生成的OC类会是这样的：
+
+```objc
+SWIFT_CLASS("_TtC12TestSwiftApp8errorObj")
+@interface errorObj
+@end
+```
+
+即使可以编译过了，但泛型相关的信息也会被抹消掉，结果就是这种泛型类无法在OC下使用。
+
 ### 4. ARC
 
 ARC的规则与OC里面差不多，需要解决循环引用的地方都建议使用`weak`或者`unowned`。`unowned`适用于变量总是有值的情况，`weak`则是对普通变量使用的。标明`unowned`的变量在使用过程中一定要确保它是非空的，否则会造成异常。
