@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://blog.edi-c.com/"/>
-  <updated>2014-08-04T14:17:18.663Z</updated>
+  <updated>2014-08-04T14:18:36.487Z</updated>
   <id>http://blog.edi-c.com/</id>
   
   <author>
@@ -19,9 +19,9 @@
     <link href="http://blog.edi-c.com/post/a-solution-for-any-hosts-to-notify-winrt-81-webview.html"/>
     <id>http://blog.edi-c.com/post/a-solution-for-any-hosts-to-notify-winrt-81-webview.html</id>
     <published>2014-08-04T14:10:00.000Z</published>
-    <updated>2014-08-04T14:17:10.000Z</updated>
+    <updated>2014-08-04T14:18:08.000Z</updated>
     <content type="html"><![CDATA[<h2 id="前言">前言</h2>
-<p>在使用WebBrowser\Webview一类的控件时，一般都免不了与JS打交道。从WP7开始，微软的WebBrowser就支持使用<code>ScriptNotify()</code>进行JS与C#代码间的交互，到WinRT下面仍然有这么一个API供开发者使用，但适用情况有些许改变。</p>
+<p>在使用WebBrowser\Webview一类的控件时，一般都免不了与JS打交道。从WP7开始，微软的WebBrowser就支持使用<code>ScriptNotify()</code>进行JS与C#代码间的交互，到WinRT下的Webview仍然有这么一个API供开发者使用，但适用情况有些许改变。</p>
 <h2 id="问题描述">问题描述</h2>
 <p>WinRT 8.1下，微软增强了Webview控件的大部分功能，同时也废弃了几个允许脚本通知（ScriptNotify)的属性。关于ScriptNotify，在8.1的帮助文档里面有这么一段注释：</p>
 <blockquote>
