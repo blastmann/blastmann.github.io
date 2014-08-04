@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://blog.edi-c.com/"/>
-  <updated>2014-08-04T14:11:09.359Z</updated>
+  <updated>2014-08-04T14:17:18.663Z</updated>
   <id>http://blog.edi-c.com/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://blog.edi-c.com/post/a-solution-for-any-hosts-to-notify-winrt-81-webview.html"/>
     <id>http://blog.edi-c.com/post/a-solution-for-any-hosts-to-notify-winrt-81-webview.html</id>
     <published>2014-08-04T14:10:00.000Z</published>
-    <updated>2014-08-04T14:10:07.000Z</updated>
+    <updated>2014-08-04T14:17:10.000Z</updated>
     <content type="html"><![CDATA[<h2 id="前言">前言</h2>
 <p>在使用WebBrowser\Webview一类的控件时，一般都免不了与JS打交道。从WP7开始，微软的WebBrowser就支持使用<code>ScriptNotify()</code>进行JS与C#代码间的交互，到WinRT下面仍然有这么一个API供开发者使用，但适用情况有些许改变。</p>
 <h2 id="问题描述">问题描述</h2>
@@ -45,6 +45,7 @@
 <p>关于<code>iframe</code>的跨域通信，网上有不少的解决方法。在我的示例中只使用了<code>postMessage</code>这个HTML5 API进行通信（不兼容IE8以下）。</p>
 <p><img src="https://xbyjdw.bn1.livefilestore.com/y2pB5LW1JARe7w32dZ04XD6eijpeYMoYH9g8tKZKnIoJib-7W5OVK8B5ypBVHG6A0zjIMoYqIanjg6fBOXg86IIro4UTz_isP0gsXvEaF_L9C4/any-uri-notify.png?psid=1" alt="any-uri-notify"></p>
 <p>示例代码下载：<a href="https://www.dropbox.com/s/tv2sq7qt9ybuopz/Control_WebView.zip" target="_blank">点击下载</a>。</p>
+<p>PS：微软限制JS的通知当然是出于安全性的考虑了，所以我们在使用这种方法的时候，也需要好好考虑一下会不会造成什么安全隐患。另外，我个人是希望JS通知这东西能少则少，毕竟性能也不是很好，建议尽量是减少使用的。</p>
 ]]></content>
     
     
