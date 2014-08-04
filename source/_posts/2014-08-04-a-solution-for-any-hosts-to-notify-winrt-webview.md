@@ -42,3 +42,5 @@ These changes do not affect apps compiled for Windows 8, even when running on Wi
 ![any-uri-notify](https://xbyjdw.bn1.livefilestore.com/y2pB5LW1JARe7w32dZ04XD6eijpeYMoYH9g8tKZKnIoJib-7W5OVK8B5ypBVHG6A0zjIMoYqIanjg6fBOXg86IIro4UTz_isP0gsXvEaF_L9C4/any-uri-notify.png?psid=1)
 
 示例代码下载：[点击下载](https://www.dropbox.com/s/tv2sq7qt9ybuopz/Control_WebView.zip)。
+
+PS：微软限制JS的通知当然是出于安全性的考虑了，所以我们在使用这种方法的时候，也需要好好考虑一下会不会造成什么安全隐患。另外，我个人是希望JS通知这东西能少则少，毕竟性能也不是很好，建议尽量是减少使用的。
