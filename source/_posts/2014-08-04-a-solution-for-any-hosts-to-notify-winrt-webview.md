@@ -6,7 +6,7 @@ tags: [winrt,webview]
 
 ## 前言
 
-在使用WebBrowser\Webview一类的控件时，一般都免不了与JS打交道。从WP7开始，微软的WebBrowser就支持使用`ScriptNotify()`进行JS与C#代码间的交互，到WinRT下面仍然有这么一个API供开发者使用，但适用情况有些许改变。
+在使用WebBrowser\Webview一类的控件时，一般都免不了与JS打交道。从WP7开始，微软的WebBrowser就支持使用`ScriptNotify()`进行JS与C#代码间的交互，到WinRT下的Webview仍然有这么一个API供开发者使用，但适用情况有些许改变。
 
 ## 问题描述
 
