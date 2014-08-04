@@ -2,6 +2,21 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://blog.edi-c.com/post/a-solution-for-any-hosts-to-notify-winrt-81-webview.html</loc>
+    <lastmod>2014-08-04T14:10:07.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/feeling-swift.html</loc>
+    <lastmod>2014-07-27T00:27:04.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/set-language-in-wp81-dev-power-tools.html</loc>
+    <lastmod>2014-07-09T14:19:27.000Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.edi-c.com/post/how-to-import-custom-font-in-wp8.html</loc>
     <lastmod>2014-06-14T15:52:01.000Z</lastmod>
   </url>
@@ -37,22 +52,7 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/create-a-flexible-wp-app-page-layout.html</loc>
-    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://blog.edi-c.com/post/vs2012-tips.html</loc>
-    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://blog.edi-c.com/post/how-to-create-a-st2-plugin.html</loc>
-    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://blog.edi-c.com/post/PRO-WPF-NOTES-001.html</loc>
+    <loc>http://blog.edi-c.com/post/remote-html5-debugging-on-windows-phone-with-weinre.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -102,7 +102,7 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/my-notes-about-how-browsers-work.html</loc>
+    <loc>http://blog.edi-c.com/post/create-a-flexible-wp-app-page-layout.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -112,7 +112,7 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/remote-html5-debugging-on-windows-phone-with-weinre.html</loc>
+    <loc>http://blog.edi-c.com/post/my-notes-about-how-browsers-work.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -153,6 +153,21 @@
   
   <url>
     <loc>http://blog.edi-c.com/post/my-st2-tips.html</loc>
+    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/vs2012-tips.html</loc>
+    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/how-to-create-a-st2-plugin.html</loc>
+    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/PRO-WPF-NOTES-001.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
