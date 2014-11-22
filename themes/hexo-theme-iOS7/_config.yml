@@ -1,8 +1,8 @@
 menu:
-  Home: /
-  Archives: /archives/
-  About: /about/
-  Subscribe: /atom.xml
+ Home: /
+ Archives: /archives/
+ About: /about/
+ Subscribe: /atom.xml
 
 widgets:
 - menu
@@ -10,7 +10,7 @@ widgets:
 - category
 - tagcloud
 
-excerpt_link: Read More
+excerpt_link: 'Read More'
 
 fancybox: true
 
@@ -27,8 +27,8 @@ cnzzId:
 jiathisUUID:
 
 weibo:
-	name: @cmm要给力
-	uid: newdings
-	link: http://weibo.com/newdings/
+ name: '@cmm是muffinman_'
+ uid: newdings
+ link: http://weibo.com/newdings/
 
 rss: http://blog.edi-c.com/atom.xml
