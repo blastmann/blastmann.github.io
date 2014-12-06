@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://blog.edi-c.com/"/>
-  <updated>2014-12-06T12:59:22.907Z</updated>
+  <updated>2014-12-06T13:03:18.637Z</updated>
   <id>http://blog.edi-c.com/</id>
   
   <author>
@@ -84,24 +84,6 @@
       <category term="winrt" scheme="http://blog.edi-c.com/tags/winrt/"/>
     
       <category term="vs2013" scheme="http://blog.edi-c.com/tags/vs2013/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[MVVM SideKick使用心得]]></title>
-    <link href="http://blog.edi-c.com/post/mvvmsidekick-experience.html"/>
-    <id>http://blog.edi-c.com/post/mvvmsidekick-experience.html</id>
-    <published>2014-09-27T08:48:24.000Z</published>
-    <updated>2014-09-27T09:09:58.000Z</updated>
-    <content type="html"><![CDATA[<p>框架之前做练手的时候也有用过一段时间，当时就当作一般的MVVM来用了一下，也没有用到像页面跳转的那种功能。昨天经韦恩叔指点之后，好好学习了一下类似Unity IoC框架，终于对这个框架有点感觉了。</p>
-<h2 id="ViewModelLocator">ViewModelLocator</h2>
-<p>这两天遇到这么一个需求：在一个ListView里面封装的列表，点击不同的列表项再对应生成该页面的VM，最后用StageManager进行跳转。</p>
-<p>刚开始的时候相着这个应该可以用Factory来解决，但是大叔的框架里面VM似乎不推荐使用类继承的方法来进行扩展。问了一下，叔说：“接口继承，在ServiceLocator里面注册好了最后拿来用就行。”</p>
-<p>当时确实不知道ServiceLocator这东西，在叔的指引下翻了一下Unity框架的书，才大概了解类的生成还能用这么一种方法进行扩展，用起来确实挺灵活的。</p>
-<p>ViewModelLocator也是ServiceLocator的一种，除了用来注册VM的生成，它还负责VM-&gt;View的绑定。</p>
-<p>暂时我对这需求的解决方法是：在选中项中添加一个特定的字段和一个公共的Interface，特定字段与VML中注册VM时使用的Key一致，然后调用VML.Resolve进行类的生成。</p>
-]]></content>
-    
     
   </entry>
   
@@ -1425,6 +1407,34 @@ mklink /D "C:<span class="command">\Users</span><span class="command">\xxx</span
       <category term="aspnet" scheme="http://blog.edi-c.com/tags/aspnet/"/>
     
       <category term="mvc" scheme="http://blog.edi-c.com/tags/mvc/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[WP8 上的 IE10 对 @font-face 属性的支持程度]]></title>
+    <link href="http://blog.edi-c.com/post/wp8-ie10-font-face-support.html"/>
+    <id>http://blog.edi-c.com/post/wp8-ie10-font-face-support.html</id>
+    <published>2013-07-03T09:19:00.000Z</published>
+    <updated>2014-05-23T17:12:03.000Z</updated>
+    <content type="html"><![CDATA[<p>现在的前端都流行把一些小图标转换成字体，然后利用 <code>@font-face</code> 这个 CSS 属性来定义一个页面专有的字体，从而达到把小图标转换成字符显示的效果。这样做除了可以省流量，图标的显示效果也很好，放大缩小都不怎么会影响效果，确实是一个不错的的手段。</p>
+<p>关于 CSS3 中的 <code>@font-face</code> 属性，可以参阅<a href="http://www.w3cplus.com/content/css3-font-face" target="_blank">这篇文章</a>，里面有很详细的属性应用介绍。</p>
+<p>但是，在 PC 的 IE10 下面尝试嵌入 ttf 格式的字体时，会提示这样的信息：</p>
+<blockquote>
+<p>CSS3114: @font-face 未能完成 OpenType 嵌入权限检查。权限必须是可安装的。 </p>
+</blockquote>
+<p>原因可能是自制的 ttf 格式没有正确的安装权限造成的。因此，有必要对 ttf 格式进行转换，PC 上的 IE10 支持多种字体格式，如 Embedded-Opentype(eot)、Web Open Font Format(woff)、TrueType(ttf) 和 Scalable Vector Graphics(SVG)，具体可以参考上面文章。</p>
+<p>但 WP8 上的 IE10 对字体格式的要求更严格，转换成 IE 专用的 eot 格式之后还是不能正常显示。于是又查了一下资料，发现还是能用的（<a href="http://stackoverflow.com/questions/15819717/font-awesome-not-displayed-on-windows-phone-8" target="_blank">点击这里</a>）。于是把格式换成 woff 之后就没有问题了，ttf 转 woff 的工具在网上都有，可以在线转换（<a href="http://everythingfonts.com/" target="_blank">点击这里有一个网站可以试试</a>）。</p>
+<p>PS：最好还是在引用的 url 后面声明一下字体的格式。</p>
+<pre><code><span class="at_rule">@<span class="keyword">font-face</span></span> <span class="rules">{
+    <span class="rule"><span class="attribute">font-family</span>:<span class="value"> <span class="string">'Test'</span></span></span>;
+    <span class="rule"><span class="attribute">src</span>:<span class="value"><span class="function">url(font/font.woff)</span> <span class="function">format(<span class="string">'woff'</span>)</span></span></span>;
+<span class="rule">}</span></span>
+</code></pre>]]></content>
+    
+    
+      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
+    
+      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
     
   </entry>
   

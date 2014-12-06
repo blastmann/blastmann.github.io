@@ -17,11 +17,6 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/mvvmsidekick-experience.html</loc>
-    <lastmod>2014-09-27T09:09:58.000Z</lastmod>
-  </url>
-  
-  <url>
     <loc>http://blog.edi-c.com/post/a-solution-for-any-hosts-to-notify-winrt-81-webview.html</loc>
     <lastmod>2014-08-04T14:18:08.000Z</lastmod>
   </url>
@@ -47,17 +42,12 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/handle-scrollviewer-manipulation-events-in-winrt.html</loc>
-    <lastmod>2014-06-07T14:36:31.000Z</lastmod>
-  </url>
-  
-  <url>
     <loc>http://blog.edi-c.com/post/functionkey-swithcher-workflow.html</loc>
     <lastmod>2014-06-07T14:36:31.000Z</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/effective-objetive-c-note.html</loc>
+    <loc>http://blog.edi-c.com/post/handle-scrollviewer-manipulation-events-in-winrt.html</loc>
     <lastmod>2014-06-07T14:36:31.000Z</lastmod>
   </url>
   
@@ -67,12 +57,22 @@
   </url>
   
   <url>
+    <loc>http://blog.edi-c.com/post/effective-objetive-c-note.html</loc>
+    <lastmod>2014-06-07T14:36:31.000Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.edi-c.com/post/using-mklink-to-migrate-windows-phone-emulator-images.html</loc>
     <lastmod>2014-05-23T17:13:58.000Z</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/a-brief-about-submitting-a-package-to-package-control.html</loc>
+    <loc>http://blog.edi-c.com/post/external-notify-cant-use-with-uglifyjs-compressor.html</loc>
+    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/vintage-mode-in-st2.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -117,12 +117,12 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/external-notify-cant-use-with-uglifyjs-compressor.html</loc>
+    <loc>http://blog.edi-c.com/post/my-notes-about-how-browsers-work.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/my-notes-about-how-browsers-work.html</loc>
+    <loc>http://blog.edi-c.com/post/a-brief-about-submitting-a-package-to-package-control.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -183,11 +183,6 @@
   
   <url>
     <loc>http://blog.edi-c.com/post/how-to-handle-unproductive-days.html</loc>
-    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://blog.edi-c.com/post/vintage-mode-in-st2.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
