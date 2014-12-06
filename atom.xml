@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://blog.edi-c.com/"/>
-  <updated>2014-08-04T14:18:36.487Z</updated>
+  <updated>2014-12-06T12:59:22.907Z</updated>
   <id>http://blog.edi-c.com/</id>
   
   <author>
@@ -13,6 +13,97 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[WebViewJavscriptBridge For WinRT]]></title>
+    <link href="http://blog.edi-c.com/post/webviewjavascriptbridge-for-winrt.html"/>
+    <id>http://blog.edi-c.com/post/webviewjavascriptbridge-for-winrt.html</id>
+    <published>2014-12-06T12:37:51.000Z</published>
+    <updated>2014-12-06T12:59:07.000Z</updated>
+    <content type="html"><![CDATA[<p>直奔主题，之前说了<a href="/post/a-solution-for-any-hosts-to-notify-winrt-8-1-webview.html">如何在WinRT 8.1下面通过<code>ScriptNotify</code>接收页面JS对Native Code发送的消息</a>。虽然示例工程也说得比较清楚，但是没有封装成一个类似iOS/OSX下面的<a href="https://github.com/marcuswestin/WebViewJavascriptBridge" target="_blank">WebViewJavscriptBridge</a>插件。于是这两天闲来无事，将其封装成Runtime Component。Repo：<a href="https://github.com/blastmann/WebViewJavascriptBridgeRT" target="_blank">WebViewJavascriptBridgeRT</a>。</p>
+<p>整个Bridge跟iOS下面的封装几乎一样，主体JS也是从那边拿过来改了适配了一下就用了。整体流程在示例App里面写得比较清楚，就不重复写了。主要流程就是：新建桥接-&gt;注册回调接口-&gt;对页面发送消息或调用注册接口。</p>
+<p>不同于ObjC，在解析JS回传的JSON时，由于不建议使用<code>dynamic</code>，因此暂时建议在回传的时候统一对结果进行<code>stringify</code>处理，获取到结果的字符串后再自行解析成所需对象。JSON解析引用了JSON.Net，速度还是挺不错的。</p>
+<p>暂时发现在WebView里面回调本地代码似乎有点性能问题，后面需要再跟进一下。然后再研究一下回传结果的解析函数能否使用泛型重写，这样似乎能更方便地处理回传结果的解析问题，避免上面的限制。</p>
+]]></content>
+    
+    
+      <category term="winrt" scheme="http://blog.edi-c.com/tags/winrt/"/>
+    
+      <category term="webview" scheme="http://blog.edi-c.com/tags/webview/"/>
+    
+      <category term="js" scheme="http://blog.edi-c.com/tags/js/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[编译wxSQLite3 for WinRT]]></title>
+    <link href="http://blog.edi-c.com/post/compile-a-wxsqlite3-for-winrt.html"/>
+    <id>http://blog.edi-c.com/post/compile-a-wxsqlite3-for-winrt.html</id>
+    <published>2014-11-22T14:52:55.000Z</published>
+    <updated>2014-12-06T12:37:07.000Z</updated>
+    <content type="html"><![CDATA[<p>原生的SQLite没有实现加解密接口，只留了一个函数入口给开发者自行实现。在Windows下面本身提供了一个跟ADO.NET紧密结合的SQLite，支持加解密。但WinRT上面使用的还是原生的SQLite，这就只能依靠开发者自己去实现一个加解密流程。幸好wxWidget这开源工程里面本来就实现了一个支持AES 128/256位加密的SQLite，只需要将这个wxSQLite按照WinRT的编译流程去编译打包成VSIX包就可以了。具体的实现，我已经把<a href="https://github.com/blastmann/wxSqlite3-WinRT-Project" target="_blank">已编译的包和可编译的源码都放在Github上</a>了，有兴趣的可以去弄一下。</p>
+<p>注意点：</p>
+<ol>
+<li>编译前需要安装好Cygwin、Active Tcl 8.5和zip\unzip命令。</li>
+<li>原版的SQLite-Net没有导入和封装加解密函数，同样的在源码里面已经有封装好的了。</li>
+<li>个人只测试了加解密和数据库读取能正常工作，不确保在写入的时候会有异常情况发生，欢迎在repo里面留下issue。</li>
+</ol>
+]]></content>
+    
+    
+      <category term="winrt" scheme="http://blog.edi-c.com/tags/winrt/"/>
+    
+      <category term="sqlite" scheme="http://blog.edi-c.com/tags/sqlite/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[利用Link大法让Visual Studio工程文件自动更新Assets]]></title>
+    <link href="http://blog.edi-c.com/post/easy-way-to-manage-assets-in-visual-studio.html"/>
+    <id>http://blog.edi-c.com/post/easy-way-to-manage-assets-in-visual-studio.html</id>
+    <published>2014-11-17T11:50:46.000Z</published>
+    <updated>2014-12-06T12:37:07.000Z</updated>
+    <content type="html"><![CDATA[<p>前段时间在做<a href="http://www.windowsphone.com/s?appid=fb0ce559-ea2a-4447-abac-599da5e90e50" target="_blank">MH4 Dex RT</a>的时候，Ping叔给了一堆图片资源（几千张），都是一些小图标。每次做完图片处理之后都要重新拉到工程里面，做了好几次的时候就觉得超麻烦。每次往VS里面拖图片都会被它自动复制一份，拖的时候VS还会卡住好长一段时间。想了半天要不要用脚本解决这问题，最后发现我大VS竟然提供了一个特别的功能叫”Add as Link”。简单修改一下工程文件就可以让VS自动更新工程目录下的工程资源了。</p>
+<p>以Universal Project为例，用编辑器打开.Shared目录下面的<code>.projitems</code>文件，进行下面的操作：</p>
+<ol>
+<li>找到原来的Assets目录声明，一般在某个ItemGroup里面。</li>
+<li><p>用下面的XML片段替换：</p>
+<pre><code> <span class="tag">&lt;<span class="title">Content</span> <span class="attribute">Include</span>=<span class="value">"$(MSBuildThisFileDirectory)Assets\**\*.*"</span>&gt;</span>
+     <span class="tag">&lt;<span class="title">Link</span>&gt;</span>Assets\%(RecursiveDir)%(FileName)%(Extension)<span class="tag">&lt;/<span class="title">Link</span>&gt;</span>
+ <span class="tag">&lt;/<span class="title">Content</span>&gt;</span>
+</code></pre></li>
+<li><p>保存，在VS里面重新加载工程。</p>
+</li>
+</ol>
+<p>如此修改之后，以后在Shared工程里面添加资源后，只要在VS里面进行一次Project Reload即可更新Assets，十分方便快捷。</p>
+<p>PS：此方法也适用于一份代码共享多个工程的情况。</p>
+<p>PPS：不要尝试在VS里面对Link的资源进行复制、删除等操作。</p>
+]]></content>
+    
+    
+      <category term="winrt" scheme="http://blog.edi-c.com/tags/winrt/"/>
+    
+      <category term="vs2013" scheme="http://blog.edi-c.com/tags/vs2013/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[MVVM SideKick使用心得]]></title>
+    <link href="http://blog.edi-c.com/post/mvvmsidekick-experience.html"/>
+    <id>http://blog.edi-c.com/post/mvvmsidekick-experience.html</id>
+    <published>2014-09-27T08:48:24.000Z</published>
+    <updated>2014-09-27T09:09:58.000Z</updated>
+    <content type="html"><![CDATA[<p>框架之前做练手的时候也有用过一段时间，当时就当作一般的MVVM来用了一下，也没有用到像页面跳转的那种功能。昨天经韦恩叔指点之后，好好学习了一下类似Unity IoC框架，终于对这个框架有点感觉了。</p>
+<h2 id="ViewModelLocator">ViewModelLocator</h2>
+<p>这两天遇到这么一个需求：在一个ListView里面封装的列表，点击不同的列表项再对应生成该页面的VM，最后用StageManager进行跳转。</p>
+<p>刚开始的时候相着这个应该可以用Factory来解决，但是大叔的框架里面VM似乎不推荐使用类继承的方法来进行扩展。问了一下，叔说：“接口继承，在ServiceLocator里面注册好了最后拿来用就行。”</p>
+<p>当时确实不知道ServiceLocator这东西，在叔的指引下翻了一下Unity框架的书，才大概了解类的生成还能用这么一种方法进行扩展，用起来确实挺灵活的。</p>
+<p>ViewModelLocator也是ServiceLocator的一种，除了用来注册VM的生成，它还负责VM-&gt;View的绑定。</p>
+<p>暂时我对这需求的解决方法是：在选中项中添加一个特定的字段和一个公共的Interface，特定字段与VML中注册VM时使用的Key一致，然后调用VML.Resolve进行类的生成。</p>
+]]></content>
+    
+    
+  </entry>
   
   <entry>
     <title><![CDATA[让WinRT 8.1 Webview支持任意站点下的JS通知]]></title>
@@ -1334,165 +1425,6 @@ mklink /D "C:<span class="command">\Users</span><span class="command">\xxx</span
       <category term="aspnet" scheme="http://blog.edi-c.com/tags/aspnet/"/>
     
       <category term="mvc" scheme="http://blog.edi-c.com/tags/mvc/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[WP8 上的 IE10 对 @font-face 属性的支持程度]]></title>
-    <link href="http://blog.edi-c.com/post/wp8-ie10-font-face-support.html"/>
-    <id>http://blog.edi-c.com/post/wp8-ie10-font-face-support.html</id>
-    <published>2013-07-03T09:19:00.000Z</published>
-    <updated>2014-05-23T17:12:03.000Z</updated>
-    <content type="html"><![CDATA[<p>现在的前端都流行把一些小图标转换成字体，然后利用 <code>@font-face</code> 这个 CSS 属性来定义一个页面专有的字体，从而达到把小图标转换成字符显示的效果。这样做除了可以省流量，图标的显示效果也很好，放大缩小都不怎么会影响效果，确实是一个不错的的手段。</p>
-<p>关于 CSS3 中的 <code>@font-face</code> 属性，可以参阅<a href="http://www.w3cplus.com/content/css3-font-face" target="_blank">这篇文章</a>，里面有很详细的属性应用介绍。</p>
-<p>但是，在 PC 的 IE10 下面尝试嵌入 ttf 格式的字体时，会提示这样的信息：</p>
-<blockquote>
-<p>CSS3114: @font-face 未能完成 OpenType 嵌入权限检查。权限必须是可安装的。 </p>
-</blockquote>
-<p>原因可能是自制的 ttf 格式没有正确的安装权限造成的。因此，有必要对 ttf 格式进行转换，PC 上的 IE10 支持多种字体格式，如 Embedded-Opentype(eot)、Web Open Font Format(woff)、TrueType(ttf) 和 Scalable Vector Graphics(SVG)，具体可以参考上面文章。</p>
-<p>但 WP8 上的 IE10 对字体格式的要求更严格，转换成 IE 专用的 eot 格式之后还是不能正常显示。于是又查了一下资料，发现还是能用的（<a href="http://stackoverflow.com/questions/15819717/font-awesome-not-displayed-on-windows-phone-8" target="_blank">点击这里</a>）。于是把格式换成 woff 之后就没有问题了，ttf 转 woff 的工具在网上都有，可以在线转换（<a href="http://everythingfonts.com/" target="_blank">点击这里有一个网站可以试试</a>）。</p>
-<p>PS：最好还是在引用的 url 后面声明一下字体的格式。</p>
-<pre><code><span class="at_rule">@<span class="keyword">font-face</span></span> <span class="rules">{
-    <span class="rule"><span class="attribute">font-family</span>:<span class="value"> <span class="string">'Test'</span></span></span>;
-    <span class="rule"><span class="attribute">src</span>:<span class="value"><span class="function">url(font/font.woff)</span> <span class="function">format(<span class="string">'woff'</span>)</span></span></span>;
-<span class="rule">}</span></span>
-</code></pre>]]></content>
-    
-    
-      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
-    
-      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[Package Control 插件发布流程]]></title>
-    <link href="http://blog.edi-c.com/post/a-brief-about-submitting-a-package-to-package-control.html"/>
-    <id>http://blog.edi-c.com/post/a-brief-about-submitting-a-package-to-package-control.html</id>
-    <published>2013-07-02T06:57:00.000Z</published>
-    <updated>2014-05-23T17:12:03.000Z</updated>
-    <content type="html"><![CDATA[<p>Package Control 是 Sublime Text 下的一个插件管理工具，可以很方便地管理需要安装的 Sublime Text 插件。现在已经有不少开发者在上面发布了<a href="http://blog.edi-c.com/post/my-st2-tips" target="_blank">各式各样的插件</a>，对 Sublime Text 本身的扩展还是很有用的。Sublime Text 本身采用了 Python 作为插件编写的语言，因此在插件开发过程中也十分的轻松，可以实时调试插件的效果。</p>
-<p>前两天尝试在上面发布了自己的插件 <a href="https://github.com/blastmann/ScriptOgrSender" target="_blank">ScriptOgrSender</a>，提交过程也十分简单，下面简单整理一下：</p>
-<ol>
-<li><strong>在 <a href="https://github.com/" target="_blank">GitHub</a> 或 <a href="https://bitbucket.org/" target="_blank">BitBucket</a> 中托管你的插件代码。</strong>单个 Repo 只能包含一个插件，同时需要将插件脚本放置于 Repo 的根目录下。</li>
-<li><strong>请勿在你的 Repo 中包含 <code>package-metadata.json</code> 文件。</strong>这个文件会在每台客户端中自行创建，用于跟踪安装包的版本。如需对你的插件包描述进行修改，可以在你的 GitHub 和 BitBucket 仓库中修改相应的描述字段。</li>
-<li><strong>Fork the Package Control Channel:  </strong><br>GitHub: <a href="https://github.com/wbond/package_control_channel" target="_blank">https://github.com/wbond/package_control_channel</a><br>BitBucket: <a href="https://bitbucket.org/wbond/package_control_channel" target="_blank">https://bitbucket.org/wbond/package_control_channel</a></li>
-<li><p><strong>在 <code>repositories.json</code> 文件中添加你的 repo URL。</strong>如果你的插件不是在三个平台（OS X, Windows 和 Linux）下面通用的话，请参阅「<a href="http://wbond.net/sublime_packages/package_control/package_developers#Custom_packages_json_on_GitHub" target="_blank">在 GitHub 上自定义 packages.json</a>」一节。</p>
-<p>添加的 URL 格式请参考下面几种形式：</p>
-<ul>
-<li><a href="https://github.com/user/repo" target="_blank">https://github.com/user/repo</a></li>
-<li><a href="https://github.com/user/repo/tree/branch" target="_blank">https://github.com/user/repo/tree/branch</a></li>
-<li><a href="https://bitbucket.org/user/repo" target="_blank">https://bitbucket.org/user/repo</a></li>
-</ul>
-<p>添加你的 URL 时请注意按字母顺序排列添加，以防产生冲突。同时请注意不要在 URL 尾部添加 <code>.git</code>。</p>
-</li>
-<li><p><strong>在 <code>package_name_map</code> 中添加自己的插件包名字的映射（可选）。</strong>注意，如果你没有自定义 <code>packages.json</code> 文件而且不想用你的 GitHub Repo 的 URL permalink 作为你的插件名字的话，请务必将你想要的插件名字添加到此字段中。如插件托管在 BitBucket 的话，将使用 Repo 的名字，不需要再另外添加映射。</p>
-<p><strong>如果你的插件名中包含 <em>Sublime</em> 这个字眼的话，请考虑映射另外一个名字（去除 <em>Sublime</em>）以减少信息噪音。</strong>这里的映射会在 Community Package 列表、ST 中的安装列表和安装后的文件夹名字中生效。</p>
-</li>
-<li><p><strong>修改时请确保你的修改不会影响其它代码。</strong></p>
-</li>
-<li><strong>发送一个 Pull 请求。</strong></li>
-</ol>
-<p>整个提交过程十分简单，我也是第一次在 GitHub 上对其它代码仓库进行代码提交（其实就加了那么一行），提交时还没有注意到添加的 URL 必须按字母顺序排列，结果被打回来再修改了一次。</p>
-<p>之前做的插件在跨平台方面也没有什么问题，所以整个代码提交过程也十分轻松，不用特别去制件一个专属的 JSON 文件。只要加入 Package Control 之后，就可以继续在自己的 Repo 中进行代码更新。Package Control 会自动拉取新的代码更新插件包，过程大概需要一两个小时吧。</p>
-<p>至于怎么去针对 ST2 和 ST3 进行插件发布呢？这个问题还没有研究清楚，过两天看看怎么处理吧。</p>
-]]></content>
-    
-    
-      <category term="st2" scheme="http://blog.edi-c.com/tags/st2/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[window.external.notify() 与 UglifyJS 压缩优化冲突]]></title>
-    <link href="http://blog.edi-c.com/post/external-notify-cant-use-with-uglifyjs-compressor.html"/>
-    <id>http://blog.edi-c.com/post/external-notify-cant-use-with-uglifyjs-compressor.html</id>
-    <published>2013-06-18T11:14:00.000Z</published>
-    <updated>2014-05-23T17:12:03.000Z</updated>
-    <content type="html"><![CDATA[<p>近期研究了一下 UglifyJs 对 JS 代码的压缩，发现 UglifyJS 压缩后，无法调用 <code>window.external.notify()</code> 方法，JS 代码如下：</p>
-<pre><code><span class="function"><span class="keyword">function</span> <span class="title">MyNotify</span> <span class="params">()</span> {</span>
-    <span class="keyword">try</span>{
-        alert(<span class="string">"Notify"</span>);
-        window.external.notify(<span class="string">"Notify"</span>);
-    } <span class="keyword">catch</span> (e){
-        alert(e.message);
-    }
-}
-
-<span class="function"><span class="keyword">function</span> <span class="title">MyNotifyCompressed</span><span class="params">()</span>{</span>
-    <span class="keyword">try</span> {
-        alert(<span class="string">"Notify"</span>), window.external.notify(<span class="string">"Notify"</span>);
-    } <span class="keyword">catch</span> (e) {
-        alert(e.message);
-    }
-}
-</code></pre><p>UglifyJS 在压缩 JS 代码时，压缩选项（-c)中有这么一个参数：</p>
-<blockquote>
-<p>sequences — join consecutive simple statements using the comma operator</p>
-</blockquote>
-<p>此选项默认是开启状态。当此选项处于开启状态时，UglifyJS 将会把多行代码压缩为一行并使用逗号进行分隔。压缩后，利用 <code>InvokeScript()</code> 调用 <code>MyNotifyCompressed()</code> 函数，系统将提示：</p>
-<blockquote>
-<p>Object doesn’t support this action</p>
-</blockquote>
-<p><code>window.external.notify()</code> 方法无法正常使用，则在程序中的一些逻辑无法正常处理。到底为什么无法调用这个方法呢？暂时也不大明白，可能是作用域出现问题了。</p>
-<p>如果使用逗号相连导致不能直接调用 <code>window.external.notify()</code> 的话，那还是把它单独封装成一个函数好了。</p>
-]]></content>
-    
-    
-      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
-    
-      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
-    
-      <category term="javascript" scheme="http://blog.edi-c.com/tags/javascript/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[在 Windows Phone 上利用 weinre 远程调试 HTML5 页面]]></title>
-    <link href="http://blog.edi-c.com/post/remote-html5-debugging-on-windows-phone-with-weinre.html"/>
-    <id>http://blog.edi-c.com/post/remote-html5-debugging-on-windows-phone-with-weinre.html</id>
-    <published>2013-06-14T05:53:00.000Z</published>
-    <updated>2014-05-23T17:12:03.000Z</updated>
-    <content type="html"><![CDATA[<p>参考资料：</p>
-<ul>
-<li><a href="http://blogs.windows.com/windows_phone/b/wpdev/archive/2013/06/12/remote-html5-debugging-on-windows-phone-with-weinre.aspx" target="_blank">Remote HTML5 debugging on Windows Phone with weinre</a></li>
-<li><a href="http://msopentech.com/blog/2013/05/31/now-on-ie-and-firefox-debug-your-mobile-html5-page-remotely-with-weinre-web-inspector-remote/" target="_blank">Now on IE and Firefox: Debug your mobile HTML5 page remotely with weinre (WEb INspector REmote)</a></li>
-<li><a href="http://www.developer.nokia.com/Community/Wiki/How_to_debug_Windows_Phone_HTML5_Apps" target="_blank">How to debug Windows Phone HTML5 Apps</a></li>
-</ul>
-<h2 id="weinre_(WEb_INspector_REmote)">weinre (WEb INspector REmote)</h2>
-<p>Weinre (WEb INspector REmote) 是一个用于调试 HTML5 页面在移动设备上表现的工具。它是 Apache Cordova 计划中的一部分，旨在帮助开发者在设备上远程调试他们的网页或那些基于 Cordova 的移动 App。 Weinre 可远程地进行 DOM 的审查，让开发者在设备上调试 HTML5 页面显示效果更为方便。</p>
-<p>如果你熟悉 IE 上的 F12 审查工具、Firefox 上的 Firebug 或 Chrome 的 Web 审查工具，那你将会十分熟悉 Weinre，因为它们非常相像。</p>
-<h2 id="安装部署">安装部署</h2>
-<ol>
-<li>到 <a href="http://nodejs.org/" target="_blank">Node.js</a> 对应平台的版本，安装部署 Node.js。</li>
-<li><p>启动 Node.js 的命令提示符，输入下面命令安装 weinre：<code>npm -g -install weinre</code></p>
-<p><em>PS</em>：如系统有设置代理的话，可在环境变量中添加 <code>http_proxy</code> 和 <code>https_proxy</code> 两个变量，并设置为代理地址。</p>
-</li>
-<li><p>安装完成后，输入以下命令启动 weinre： <code>weinre -boundHost xx.xx.xx.xx</code>，<code>xx.xx.xx.xx</code> 你想要绑定的网络适配器 IP 地址。</p>
-</li>
-<li><p>在浏览器中输入 <code>http://xx.xx.xx.xx:8080</code> 即可打开 weinre 页面。页面如下：</p>
-<p><img src="http://d.pr/i/qRTc.png" alt="weinre_console"></p>
-</li>
-</ol>
-<h2 id="开始调试">开始调试</h2>
-<p>如果你所在的网络环境不复杂的话，其实已经可以开始调试你的页面了。步骤如下：</p>
-<ol>
-<li><p>在 PC 上启动调试器客户端页面：<a href="http://xx.xx.xx.xx:8080/client（xx.xx.xx.xx" target="_blank">http://xx.xx.xx.xx:8080/client（xx.xx.xx.xx</a> 的含义如上文所述），打开后可以看到下面的界面：</p>
-<p><img src="http://d.pr/i/AvaR.png" alt="weinre_client"></p>
-</li>
-<li><p>在需要调试的页面中加入下面的标签：</p>
-<pre><code><span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">”http:</span>//<span class="attribute">xx.xx.xx.xx:8080</span>/<span class="attribute">target</span>/<span class="attribute">target-script-min.js</span>#<span class="attribute">anonymous</span>”&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
-</code></pre></li>
-<li><p>然后在应用中打开需要调试的页面，即可在开始调试。</p>
-</li>
-</ol>
-<p><em>PS</em>：关于如何使用 Fiddler 与 Windows Phone 进行联合调试，可以参考这篇文章：《<a href="http://scriptogr.am/blastmann/post/fiddlershare" target="_blank">Fiddler 与 Windows Phone 联调</a>》。</p>
-]]></content>
-    
-    
-      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
-    
-      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
     
   </entry>
   

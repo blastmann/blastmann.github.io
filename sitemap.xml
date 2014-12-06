@@ -2,6 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://blog.edi-c.com/post/webviewjavascriptbridge-for-winrt.html</loc>
+    <lastmod>2014-12-06T12:59:07.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/compile-a-wxsqlite3-for-winrt.html</loc>
+    <lastmod>2014-12-06T12:37:07.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/easy-way-to-manage-assets-in-visual-studio.html</loc>
+    <lastmod>2014-12-06T12:37:07.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/mvvmsidekick-experience.html</loc>
+    <lastmod>2014-09-27T09:09:58.000Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.edi-c.com/post/a-solution-for-any-hosts-to-notify-winrt-81-webview.html</loc>
     <lastmod>2014-08-04T14:18:08.000Z</lastmod>
   </url>
@@ -37,12 +57,12 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/move-my-blog-to-github.html</loc>
+    <loc>http://blog.edi-c.com/post/effective-objetive-c-note.html</loc>
     <lastmod>2014-06-07T14:36:31.000Z</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/effective-objetive-c-note.html</loc>
+    <loc>http://blog.edi-c.com/post/move-my-blog-to-github.html</loc>
     <lastmod>2014-06-07T14:36:31.000Z</lastmod>
   </url>
   
@@ -52,27 +72,7 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/remote-html5-debugging-on-windows-phone-with-weinre.html</loc>
-    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://blog.edi-c.com/post/PRO-WPF-NOTES-002.html</loc>
-    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://blog.edi-c.com/post/wpf-panels-performance.html</loc>
-    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://blog.edi-c.com/post/how-to-handle-unproductive-days.html</loc>
-    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://blog.edi-c.com/post/vintage-mode-in-st2.html</loc>
+    <loc>http://blog.edi-c.com/post/a-brief-about-submitting-a-package-to-package-control.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -112,7 +112,7 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/my-notes-about-how-browsers-work.html</loc>
+    <loc>http://blog.edi-c.com/post/remote-html5-debugging-on-windows-phone-with-weinre.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -122,7 +122,7 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/a-brief-about-submitting-a-package-to-package-control.html</loc>
+    <loc>http://blog.edi-c.com/post/my-notes-about-how-browsers-work.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -168,6 +168,26 @@
   
   <url>
     <loc>http://blog.edi-c.com/post/PRO-WPF-NOTES-001.html</loc>
+    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/PRO-WPF-NOTES-002.html</loc>
+    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/wpf-panels-performance.html</loc>
+    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/how-to-handle-unproductive-days.html</loc>
+    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/vintage-mode-in-st2.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   

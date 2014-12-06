@@ -851,7 +851,7 @@ article footer .tags:before {
   color: #d00;
 }
 figure.highlight {
-  background: #eee;
+  background: #f5f5f5;
   border: 1px solid #e3e3e5;
   margin-top: 15px;
   padding: 7px 15px;
@@ -880,6 +880,14 @@ figure.highlight pre {
 figure.highlight table {
   margin-top: 0;
   border-spacing: 0;
+  padding: 0;
+}
+figure.highlight td,
+figure.highlight th,
+figure.highlight tb,
+figure.highlight tr {
+  padding: 0;
+  border: 0;
 }
 figure.highlight .gutter {
   color: #d00;
