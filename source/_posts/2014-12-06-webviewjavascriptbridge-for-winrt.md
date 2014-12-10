@@ -1,4 +1,4 @@
-title: WebViewJavscriptBridge For WinRT
+title: WebViewJavascriptBridge For WinRT
 permalink: webviewjavascriptbridge-for-winrt
 date: 2014-12-06 20:37:51
 tags: [winrt,webview,js]
