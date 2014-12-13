@@ -1,6 +1,6 @@
 date: 2014-08-04 22:10
 title: 让WinRT 8.1 Webview支持任意站点下的JS通知
-permalink: a-solution-for-any-hosts-to-notify-winrt-8.1-webview
+permalink: a-solution-for-any-hosts-to-notify-winrt-81-webview
 tags: [winrt,webview]
 ---
 
