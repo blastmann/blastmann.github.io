@@ -4,7 +4,7 @@ date: 2014-12-06 20:37:51
 tags: [winrt,webview,js]
 ---
 
-直奔主题，之前说了[如何在WinRT 8.1下面通过`ScriptNotify`接收页面JS对Native Code发送的消息](/post/a-solution-for-any-hosts-to-notify-winrt-8-1-webview.html)。虽然示例工程也说得比较清楚，但是没有封装成一个类似iOS/OSX下面的[WebViewJavscriptBridge](https://github.com/marcuswestin/WebViewJavascriptBridge)插件。于是这两天闲来无事，将其封装成Runtime Component。Repo：[WebViewJavascriptBridgeRT](https://github.com/blastmann/WebViewJavascriptBridgeRT)。
+直奔主题，之前说了[如何在WinRT 8.1下面通过`ScriptNotify`接收页面JS对Native Code发送的消息](/post/a-solution-for-any-hosts-to-notify-winrt-81-webview.html)。虽然示例工程也说得比较清楚，但是没有封装成一个类似iOS/OSX下面的[WebViewJavscriptBridge](https://github.com/marcuswestin/WebViewJavascriptBridge)插件。于是这两天闲来无事，将其封装成Runtime Component。Repo：[WebViewJavascriptBridgeRT](https://github.com/blastmann/WebViewJavascriptBridgeRT)。
 
 整个Bridge跟iOS下面的封装几乎一样，主体JS也是从那边拿过来改了适配了一下就用了。整体流程在示例App里面写得比较清楚，就不重复写了。主要流程就是：新建桥接->注册回调接口->对页面发送消息或调用注册接口。
 
