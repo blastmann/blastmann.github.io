@@ -114,6 +114,89 @@
       
       
   
+    <h1 class="title"><a href="/post/fiddler_share.html">Fiddler 与 Windows Phone 联调</a></h1>
+  
+
+      <time datetime="2013-05-14T04:35:00.000Z"><a href="/post/fiddler_share.html">5月 14 2013</a></time>
+      
+  </header>
+    <div class="entry">
+      
+        <p>最近对浏览器的页面显示进行调节的时候，不得不使用 <a href="http://fiddler2.com/home" target="_blank">Fiddler</a> 进行本地代理调试。下面简单对使用进行介绍，主要是参考<a href="http://www.spikie.be/blog/post/2013/01/04/Windows-Phone-8-and-Fiddler.aspx" target="_blank"><strong>这个链接</strong></a>。</p>
+<h4 id="使用_Fiddler_对_WP8_模拟器进行抓包">使用 Fiddler 对 WP8 模拟器进行抓包</h4>
+<p>首先我们先去 Fiddler 官方网站下载一个最新的版本（<a href="http://fiddler2.com/get-fiddler" target="_blank">点击下载</a>）。由于 Windows Phone 8 的模拟器是以 Hyper-V 虚拟机的形式运行，所以它在网络中相当于一台独立的设备。我们需要对 Fiddler 进行监控远程设备的设置。</p>
+<ol>
+<li>安装启动 Fiddler</li>
+<li>按照下面的顺序开启菜单：<code>Tools</code> &gt; <code>Fiddler Options</code> &gt; <code>Connections</code></li>
+<li><p>选中 <code>Allow remote computers to connect</code>，确定设置</p>
+<p><img src="http://d.pr/i/6mqR.png" alt="remote connection"></p>
+</li>
+<li><p>返回主界面，在界面右下角有一个黑色的区域，称为 <code>QuickExec Box</code>，在输入框中输入下面的命令，其中 <code>IP Address</code> 为你本机的 IP 地址（设置为本机的主机名亦可）：</p>
+<pre><code>prefs <span class="keyword">set</span> fiddler<span class="preprocessor">.network</span><span class="preprocessor">.proxy</span><span class="preprocessor">.registrationhostname</span> [IP Address]
+</code></pre><p><img src="http://d.pr/i/1WTT.png" alt="QuickExec"></p>
+</li>
+<li><p>设置完成后，重新启动 Fiddler 和模拟器，用模拟器中的浏览器打开页面，看能否正常抓包。PS：除了模拟器的流量，本地流量也会同时显示在 Fiddler 中。</p>
+</li>
+</ol>
+<h4 id="使用_Fiddler_对_WP8_设备进行抓包">使用 Fiddler 对 WP8 设备进行抓包</h4>
+<p>基本设置与上面的步骤是一样的，我们只需要对设备的 WiFi 接入点进行一点设置即可。</p>
+<ol>
+<li>打开设备中的 <code>设置</code> &gt; <code>WiFi</code></li>
+<li>选择你已经连接的 WiFi 接入点，进入高级设置</li>
+<li>高级设置中启用代理服务器，服务器地址为你本机的 IP 地址，端口是8888。</li>
+<li>设置完成后手机将通过 PC 代理进行联网，此时即可在 Fiddler 中对其抓包处理。</li>
+</ol>
+<h4 id="利用_Fiddler_本地调试网页资源">利用 Fiddler 本地调试网页资源</h4>
+<p>这部分就比较简单了，属于 Fiddler 的一个最常用的功能。</p>
+<ol>
+<li>在列表中选择一项抓包内容，打开右键菜单选择将该内容保存到本地</li>
+<li>选择右边的 AutoResponder，勾选 <code>Enable automatic responses</code> 和 <code>Unmatched requests passthrough</code></li>
+<li>点击 <code>Add</code> 添加规则</li>
+<li>在下面列表中选择本地保存下来的文件，然后点击 <code>Save</code></li>
+<li>此时可以尝试修改本地的文件内容，测试是否代理成功。</li>
+</ol>
+
+	 
+	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
+<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm是muffinman_</strong></a> - 5月 14 2013</span><br />
+<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
+</p>
+       	 
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  
+<article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+  <header>
+      
+      
+  
     <h1 class="title"><a href="/post/vintage-mode-in-st2.html">Sublime Text Vim Mode 简单使用</a></h1>
   
 
@@ -981,170 +1064,6 @@ self.proxy_server = settings.<span class="keyword">get</span>(<span class="strin
 	 
 	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
 <span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm是muffinman_</strong></a> - 1月 22 2013</span><br />
-<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
-</p>
-       	 
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-  
-<article class="post">
-  
-    <div class="gallery">
-  <div class="photoset">
-    
-      <img src="">
-    
-  </div>
-  <div class="control">
-    <div class="prev"></div>
-    <div class="next"></div>
-  </div>
-</div>
-  
-  <div class="post-content">
-  <header>
-      
-      
-  
-    <h1 class="title"><a href="/post/my-st2-tips.html">Sublime Text 使用技巧总结</a></h1>
-  
-
-      <time datetime="2013-01-16T00:00:00.000Z"><a href="/post/my-st2-tips.html">1月 16 2013</a></time>
-      
-  </header>
-    <div class="entry">
-      
-        <h2 id="Sublime_Text_使用技巧总结">Sublime Text 使用技巧总结</h2>
-<p>简单总结一下 ST2 在使用过程中的一些小经验和技巧吧。</p>
-<h2 id="亮点功能">亮点功能</h2>
-<ul>
-<li>在工程项目中的快速文件切换</li>
-<li>当前文件中的函数定位</li>
-<li>支持插件功能</li>
-<li>自定义Snippet支持</li>
-<li>免打扰模式</li>
-<li>Mac 版本下支持 TextMate 的 Bundle</li>
-</ul>
-<h2 id="快捷键">快捷键</h2>
-<p>关于软件中的快捷键，其实可以自行查找软件中的快捷键设定文件（ Preferences-&gt;Key Binding - Default ），打开之后可以看到一堆快捷键绑定。</p>
-<p>简单解释一下配置文档中的快捷键绑定，super 键就是对应 Windows 下面的 win 键，在 OSX 下面对应的是 command 键。一部分键位组合在 Windows 下面并不能使用，例如 super+1,2,3,4,5… 之类当前打开文件切换的快捷键（由于会与系统快捷键产生冲突），所以会更改为 alt+1,2,3,4,5… 等。</p>
-<h3 id="基本操作">基本操作</h3>
-<p>简单列出一些常用的快捷键吧。</p>
-<ul>
-<li>ctrl+shift+p - 调出全局功能菜单，支持模糊匹配，可以直接输入菜单中的命令的部分字母直接调用。</li>
-<li>ctrl+p - 打开快速文件切换面板（可以同时使用组合命令如 <code>:</code> 和 <code>@</code> 这两个命令）</li>
-<li>ctrl+tab - 按照打开顺序切换当前打开的文件</li>
-<li>ctrl+t - 新建一个tab</li>
-<li>ctrl+w - 关闭当前tab</li>
-<li>ctrl+shift+t - 恢复关闭的tab</li>
-<li>ctrl+d - 选中当前的单词</li>
-<li>ctrl+l - 选中当前的行</li>
-<li>ctrl+m - 移动光标到作用域中括号</li>
-<li>ctrl+shift+m - 选中光标所在位置到框选部分</li>
-<li>ctrl+k, ctrl+b - 显示、关闭侧边栏</li>
-</ul>
-<h3 id="其他较好用的快捷键">其他较好用的快捷键</h3>
-<ul>
-<li>ctrl+super+g - 快速在当前文档中查找选中部分并全部选中，支持同时编辑</li>
-<li>alt+super+g - 快速向下查找下一项</li>
-<li>ctrl+shift+up/down - 将当前行或选中的部分向上/向下移动一行</li>
-</ul>
-<h2 id="Package_Control_—_最重要的插件管理工具">Package Control — 最重要的插件管理工具</h2>
-<h3 id="如何为Sublime_Text添加Package_Control？">如何为Sublime Text添加Package Control？</h3>
-<p>Sublime Text的软件架构支持添加插件，但是我们仍然需要一个方便的管理工具来管理我们的Package，此时我们就需要使用<a href="http://wbond.net/sublime_packages/package_control" target="_blank">Package Control</a>。</p>
-<h4 id="自动安装">自动安装</h4>
-<p>按组合键Ctrl+`打开Console，然后添加下面的命令：</p>
-<pre><code>import urllib2,os; pf=<span class="string">'Package Control.sublime-package'</span>; ipp=sublime.installed_packages_path(); os.makedirs(ipp) <span class="keyword">if</span> <span class="keyword">not</span> os.path.<span class="keyword">exists</span>(ipp) <span class="keyword">else</span> None; urllib2.install_opener(urllib2.build_opener(urllib2.ProxyHandler())); <span class="keyword">open</span>(os.path.<span class="keyword">join</span>(ipp,pf),<span class="string">'wb'</span>).<span class="keyword">write</span>(urllib2.urlopen(<span class="string">'http://sublime.wbond.net/'</span>+pf.replace(<span class="string">' '</span>,<span class="string">'%20'</span>)).<span class="keyword">read</span>()); <span class="keyword">print</span> <span class="string">'Please restart Sublime Text to finish installation'</span>
-</code></pre><p>最新版本的Package Control已经完善了网络代理的功能，因此如果使用时的网络环境处于代理环境下，我们可以通过修改Package Control的配置文件来添加代理服务器地址。</p>
-<h4 id="手动安装">手动安装</h4>
-<ol>
-<li>点击<em>Preference &gt; Browse Packages..</em></li>
-<li>打开<em>Installed Packages</em>目录</li>
-<li><a href="http://sublime.wbond.net/Package%20Control.sublime-package" target="_blank">点击下载</a>并将文件复制到’Installed Packages’目录下</li>
-<li>重启Sublime Text</li>
-</ol>
-<h4 id="如何使用">如何使用</h4>
-<p>Package Control安装完成之后，会在软件全局菜单（Ctrl+Shift+p）添加相应的菜单项，我们只需调出菜单，输入pci(Package Control: Install Package，对应命令中握住的字母)，即可开始安装我们需要的插件。</p>
-<h3 id="强大的插件">强大的插件</h3>
-<p>下面推荐的插件都可以直接在 Package Control 里面安装，很是方便。</p>
-<ul>
-<li>Zen Coding / Emmet - Zen Coding是前端工程师必备快速书写 HTML 代码的插件，后来改名为 Emmet。具体可以参考 <a href="http://docs.emmet.io/" target="_blank">doc.emmet.io</a></li>
-<li>SublimeLinter - 用于检查代码书写是否正确的插件，并给出相应的修改提示，支持 C/C++、CSS、HTML、Javascript、Perl、XML 等语言，在使用 Package Control 安装完成后，请参考插件目录下面的 Readme.md 进行相应配置。详情可以<a href="https://github.com/SublimeLinter/SublimeLinter" target="_blank">点击这里</a>。</li>
-<li>Sublime Alignment - 让你的变量赋值代码自动对齐</li>
-<li>Clipboard History - 添加剪切板历史功能</li>
-<li>Sublime CodeIntel - 添加智能提示功能</li>
-<li>ConvertToUTF8 - ST2 只支持 UTF8 编码。此插件可以让 ST2 支持显示 GBK，BIG5 等编码的显示</li>
-<li>Http Requester - 使用选中的超链接快速发出一个 HTTP 请求并将返回结果显示在当前文件中</li>
-<li>Sublime V8 - 使用 V8 引擎调试当前的 JS 代码</li>
-</ul>
-<h2 id="设置">设置</h2>
-<p>在 Preferences-&gt;Settings - Defaults 可以找到软件默认的设置选项，需要注意一点：标明 Defaults 的文件在软件升级的时候一般都会被覆盖。建议将需要修改的选项添加到 Settings - User中，避免在升级过程中被覆盖。</p>
-<p>下面是我个人的一个喜好设置，其中的一些设置选项可以参考下面的注释。</p>
-<pre><code>{
-    <span class="comment">// 设置自动完成的延时</span>
-    <span class="string">"auto_complete_delay"</span>: <span class="number">500</span>,
-    <span class="comment">// 默认配色主题</span>
-    <span class="string">"color_scheme"</span>: <span class="string">"Packages/Color Scheme - Default/Monokai Bright.tmTheme"</span>,
-    <span class="comment">// 检查缩进</span>
-    <span class="string">"detect_indentation"</span>: <span class="keyword">true</span>,
-    <span class="comment">// 检查启动太慢的插件</span>
-    <span class="string">"detect_slow_plugins"</span>: <span class="keyword">false</span>,
-    <span class="comment">// 字体选择</span>
-    <span class="string">"font_face"</span>: <span class="string">"Monaco"</span>,
-    <span class="comment">// 字体大小</span>
-    <span class="string">"font_size"</span>: <span class="number">12</span>,
-    <span class="comment">// 忽略插件</span>
-    <span class="string">"ignored_packages"</span>:
-    [
-        <span class="string">"Vintage"</span>
-    ],
-    <span class="comment">// tab大小设置</span>
-    <span class="string">"tab_size"</span>: <span class="number">4</span>,
-    <span class="comment">// 将tab转换为空格</span>
-    <span class="string">"translate_tabs_to_spaces"</span>: <span class="keyword">true</span>,
-    <span class="comment">// 自动删除空白位置</span>
-    <span class="string">"trim_automatic_white_space"</span>: <span class="keyword">true</span>,
-    <span class="comment">// 保存时删除每行结束后面多余的空格</span>
-    <span class="string">"trim_trailing_white_space_on_save"</span>: <span class="keyword">true</span>
-}
-</code></pre><h2 id="Key_Bindings">Key Bindings</h2>
-<p>Key Bindings 是 ST2 中的快捷键绑定设置文件，内容很清晰易懂。Key Bindings 中提供了很多设置的组合选项，可以对不同条件下面的情况进行快捷键绑定。</p>
-<pre><code>[
-    // 将 f12 绑定为 ReIndent 命令，自动重新缩进代码（支持HTML与CSS）
-    { "<span class="attribute">keys</span>": <span class="value">[<span class="string">"f12"</span>]</span>, "<span class="attribute">command</span>": <span class="value"><span class="string">"reindent"</span></span>, "<span class="attribute">args</span>": <span class="value">{"<span class="attribute">single_line</span>": <span class="value"><span class="literal">false</span></span>} </span>},
-    // 除了支持命令绑定参数，还支持定义上下文，只有符合定义上下文中的情况下才启动对应快捷键
-    { "<span class="attribute">keys</span>": <span class="value">[<span class="string">"super+shift+m"</span>]</span>, "<span class="attribute">command</span>": <span class="value"><span class="string">"plain_tasks_cancel"</span></span>, "<span class="attribute">context</span>": <span class="value">[{"<span class="attribute">key</span>": <span class="value"><span class="string">"selector"</span></span>, "<span class="attribute">operator</span>": <span class="value"><span class="string">"equal"</span></span>, "<span class="attribute">operand</span>": <span class="value"><span class="string">"text.todo"</span> </span>}] </span>}
-]
-</code></pre><h2 id="Snippets_代码片段定义">Snippets 代码片段定义</h2>
-<p>在 ST2 的菜单中可以自行新建一个属于自己的 Snippet，可以将常用的代码片段放置在其中，只要输入自己定义的字符，点击 tab 键便自动拓展其内容。</p>
-<p>在 Tools 菜单下点击 New Snippet，自动弹出下面的示例内容。</p>
-<pre><code><span class="tag">&lt;<span class="title">snippet</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">content</span>&gt;</span><span class="cdata">&lt;![CDATA[
-Hello, ${1:this} is a ${2:snippet}.
-]]&gt;</span><span class="tag">&lt;/<span class="title">content</span>&gt;</span>
-    <span class="comment">&lt;!-- Optional: Set a tabTrigger to define how to trigger the snippet --&gt;</span>
-    <span class="tag">&lt;<span class="title">tabTrigger</span>&gt;</span>hello<span class="tag">&lt;/<span class="title">tabTrigger</span>&gt;</span>
-    <span class="comment">&lt;!-- Optional: Set a scope to limit where the snippet will trigger --&gt;</span>
-    <span class="comment">&lt;!-- &lt;scope&gt;source.python&lt;/scope&gt; --&gt;</span>
-<span class="tag">&lt;/<span class="title">snippet</span>&gt;</span>
-</code></pre><p>去掉 tabTrigger 注释保存之后，在文档中输入 hello+tab 便会自动输出对应的 snippet 内容，并提供两个点击 tab 后切换的编辑点。</p>
-
-	 
-	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
-<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm是muffinman_</strong></a> - 1月 16 2013</span><br />
 <span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
 </p>
        	 

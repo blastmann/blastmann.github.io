@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://blog.edi-c.com/post/filco-minila-air-experience.html</loc>
+    <lastmod>2015-01-23T16:48:28.000Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.edi-c.com/post/webviewjavascriptbridge-for-winrt.html</loc>
     <lastmod>2015-01-04T09:31:37.000Z</lastmod>
   </url>
@@ -42,17 +47,12 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/functionkey-swithcher-workflow.html</loc>
-    <lastmod>2014-06-07T14:36:31.000Z</lastmod>
-  </url>
-  
-  <url>
     <loc>http://blog.edi-c.com/post/handle-scrollviewer-manipulation-events-in-winrt.html</loc>
     <lastmod>2014-06-07T14:36:31.000Z</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/move-my-blog-to-github.html</loc>
+    <loc>http://blog.edi-c.com/post/functionkey-swithcher-workflow.html</loc>
     <lastmod>2014-06-07T14:36:31.000Z</lastmod>
   </url>
   
@@ -62,17 +62,17 @@
   </url>
   
   <url>
+    <loc>http://blog.edi-c.com/post/move-my-blog-to-github.html</loc>
+    <lastmod>2014-06-07T14:36:31.000Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.edi-c.com/post/using-mklink-to-migrate-windows-phone-emulator-images.html</loc>
     <lastmod>2014-05-23T17:13:58.000Z</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/external-notify-cant-use-with-uglifyjs-compressor.html</loc>
-    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://blog.edi-c.com/post/vintage-mode-in-st2.html</loc>
+    <loc>http://blog.edi-c.com/post/a-brief-about-submitting-a-package-to-package-control.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -92,7 +92,7 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/texture-addressing-modes.html</loc>
+    <loc>http://blog.edi-c.com/post/task-management-in-st2.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -117,12 +117,12 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/my-notes-about-how-browsers-work.html</loc>
+    <loc>http://blog.edi-c.com/post/external-notify-cant-use-with-uglifyjs-compressor.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/a-brief-about-submitting-a-package-to-package-control.html</loc>
+    <loc>http://blog.edi-c.com/post/my-notes-about-how-browsers-work.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -132,7 +132,7 @@
   </url>
   
   <url>
-    <loc>http://blog.edi-c.com/post/task-management-in-st2.html</loc>
+    <loc>http://blog.edi-c.com/post/texture-addressing-modes.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   
@@ -183,6 +183,11 @@
   
   <url>
     <loc>http://blog.edi-c.com/post/how-to-handle-unproductive-days.html</loc>
+    <lastmod>2014-05-23T17:12:03.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.edi-c.com/post/vintage-mode-in-st2.html</loc>
     <lastmod>2014-05-23T17:12:03.000Z</lastmod>
   </url>
   

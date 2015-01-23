@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://blog.edi-c.com/"/>
-  <updated>2015-01-04T09:32:29.542Z</updated>
+  <updated>2015-01-23T16:48:57.342Z</updated>
   <id>http://blog.edi-c.com/</id>
   
   <author>
@@ -13,6 +13,23 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[]]></title>
+    <link href="http://blog.edi-c.com/post/filco-minila-air-experience.html"/>
+    <id>http://blog.edi-c.com/post/filco-minila-air-experience.html</id>
+    <published>2015-01-23T16:00:00.000Z</published>
+    <updated>2015-01-23T16:48:28.000Z</updated>
+    <content type="html"><![CDATA[<p>title: 第一个Filco Minila Air红轴体验<br>permalink: filco-minila-air-experience<br>date: 2015-01-24 00:41:40</p>
+<h2 id="tags:keyboard">tags:keyboard</h2>
+<p>最近终于还是手贱买下了红轴的Filco迷你啦蓝牙版，今天是日本EMS空运到货，发现EMS竟然也那么快，真是神奇。</p>
+<p>刚上手的时候感觉比起公司的渣渣茶轴还是有点不大习惯，因为没有段落感的样子，所以感觉没有上来。但敲了十来分钟之后觉得感觉上来了，整个输入体验也就习惯了。就是在连接Mac的时候有点怪怪的，因为键位的问题有点不大习惯，其它的都还好。</p>
+<p>感觉上起公司那块iMac标配Keyboard，这个迷你啦还是挺不错的，大规模输入的时候应该比那块标配的舒服。虽然大家都是非标准键盘，尺寸都差不多，但是键位的键程差别是很大的。这个蓝牙键盘在连接MBP的时候感觉不是特别灵敏，不知道为啥。在Sublime Text里面输入的时候感觉一点点滞后（可能是输入法的问题而已）。</p>
+<p>总的来说，这键盘还是挺不错的。作为少有的蓝牙机械键盘，我觉得值了。</p>
+]]></content>
+    
+    
+  </entry>
   
   <entry>
     <title><![CDATA[WebViewJavascriptBridge For WinRT]]></title>
@@ -1414,34 +1431,6 @@ mklink /D "C:<span class="command">\Users</span><span class="command">\xxx</span
       <category term="aspnet" scheme="http://blog.edi-c.com/tags/aspnet/"/>
     
       <category term="mvc" scheme="http://blog.edi-c.com/tags/mvc/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[WP8 上的 IE10 对 @font-face 属性的支持程度]]></title>
-    <link href="http://blog.edi-c.com/post/wp8-ie10-font-face-support.html"/>
-    <id>http://blog.edi-c.com/post/wp8-ie10-font-face-support.html</id>
-    <published>2013-07-03T09:19:00.000Z</published>
-    <updated>2014-05-23T17:12:03.000Z</updated>
-    <content type="html"><![CDATA[<p>现在的前端都流行把一些小图标转换成字体，然后利用 <code>@font-face</code> 这个 CSS 属性来定义一个页面专有的字体，从而达到把小图标转换成字符显示的效果。这样做除了可以省流量，图标的显示效果也很好，放大缩小都不怎么会影响效果，确实是一个不错的的手段。</p>
-<p>关于 CSS3 中的 <code>@font-face</code> 属性，可以参阅<a href="http://www.w3cplus.com/content/css3-font-face" target="_blank">这篇文章</a>，里面有很详细的属性应用介绍。</p>
-<p>但是，在 PC 的 IE10 下面尝试嵌入 ttf 格式的字体时，会提示这样的信息：</p>
-<blockquote>
-<p>CSS3114: @font-face 未能完成 OpenType 嵌入权限检查。权限必须是可安装的。 </p>
-</blockquote>
-<p>原因可能是自制的 ttf 格式没有正确的安装权限造成的。因此，有必要对 ttf 格式进行转换，PC 上的 IE10 支持多种字体格式，如 Embedded-Opentype(eot)、Web Open Font Format(woff)、TrueType(ttf) 和 Scalable Vector Graphics(SVG)，具体可以参考上面文章。</p>
-<p>但 WP8 上的 IE10 对字体格式的要求更严格，转换成 IE 专用的 eot 格式之后还是不能正常显示。于是又查了一下资料，发现还是能用的（<a href="http://stackoverflow.com/questions/15819717/font-awesome-not-displayed-on-windows-phone-8" target="_blank">点击这里</a>）。于是把格式换成 woff 之后就没有问题了，ttf 转 woff 的工具在网上都有，可以在线转换（<a href="http://everythingfonts.com/" target="_blank">点击这里有一个网站可以试试</a>）。</p>
-<p>PS：最好还是在引用的 url 后面声明一下字体的格式。</p>
-<pre><code><span class="at_rule">@<span class="keyword">font-face</span></span> <span class="rules">{
-    <span class="rule"><span class="attribute">font-family</span>:<span class="value"> <span class="string">'Test'</span></span></span>;
-    <span class="rule"><span class="attribute">src</span>:<span class="value"><span class="function">url(font/font.woff)</span> <span class="function">format(<span class="string">'woff'</span>)</span></span></span>;
-<span class="rule">}</span></span>
-</code></pre>]]></content>
-    
-    
-      <category term="webdev" scheme="http://blog.edi-c.com/tags/webdev/"/>
-    
-      <category term="wp8" scheme="http://blog.edi-c.com/tags/wp8/"/>
     
   </entry>
   

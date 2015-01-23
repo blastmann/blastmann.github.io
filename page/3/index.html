@@ -114,6 +114,69 @@
       
       
   
+    <h1 class="title"><a href="/post/wp8-ie10-font-face-support.html">WP8 上的 IE10 对 @font-face 属性的支持程度</a></h1>
+  
+
+      <time datetime="2013-07-03T09:19:00.000Z"><a href="/post/wp8-ie10-font-face-support.html">7月 3 2013</a></time>
+      
+  </header>
+    <div class="entry">
+      
+        <p>现在的前端都流行把一些小图标转换成字体，然后利用 <code>@font-face</code> 这个 CSS 属性来定义一个页面专有的字体，从而达到把小图标转换成字符显示的效果。这样做除了可以省流量，图标的显示效果也很好，放大缩小都不怎么会影响效果，确实是一个不错的的手段。</p>
+<p>关于 CSS3 中的 <code>@font-face</code> 属性，可以参阅<a href="http://www.w3cplus.com/content/css3-font-face" target="_blank">这篇文章</a>，里面有很详细的属性应用介绍。</p>
+<p>但是，在 PC 的 IE10 下面尝试嵌入 ttf 格式的字体时，会提示这样的信息：</p>
+<blockquote>
+<p>CSS3114: @font-face 未能完成 OpenType 嵌入权限检查。权限必须是可安装的。 </p>
+</blockquote>
+<p>原因可能是自制的 ttf 格式没有正确的安装权限造成的。因此，有必要对 ttf 格式进行转换，PC 上的 IE10 支持多种字体格式，如 Embedded-Opentype(eot)、Web Open Font Format(woff)、TrueType(ttf) 和 Scalable Vector Graphics(SVG)，具体可以参考上面文章。</p>
+<p>但 WP8 上的 IE10 对字体格式的要求更严格，转换成 IE 专用的 eot 格式之后还是不能正常显示。于是又查了一下资料，发现还是能用的（<a href="http://stackoverflow.com/questions/15819717/font-awesome-not-displayed-on-windows-phone-8" target="_blank">点击这里</a>）。于是把格式换成 woff 之后就没有问题了，ttf 转 woff 的工具在网上都有，可以在线转换（<a href="http://everythingfonts.com/" target="_blank">点击这里有一个网站可以试试</a>）。</p>
+<p>PS：最好还是在引用的 url 后面声明一下字体的格式。</p>
+<pre><code><span class="at_rule">@<span class="keyword">font-face</span></span> <span class="rules">{
+    <span class="rule"><span class="attribute">font-family</span>:<span class="value"> <span class="string">'Test'</span></span></span>;
+    <span class="rule"><span class="attribute">src</span>:<span class="value"><span class="function">url(font/font.woff)</span> <span class="function">format(<span class="string">'woff'</span>)</span></span></span>;
+<span class="rule">}</span></span>
+</code></pre>
+	 
+	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
+<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm是muffinman_</strong></a> - 7月 3 2013</span><br />
+<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
+</p>
+       	 
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  
+<article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+  <header>
+      
+      
+  
     <h1 class="title"><a href="/post/a-brief-about-submitting-a-package-to-package-control.html">Package Control 插件发布流程</a></h1>
   
 
@@ -1033,89 +1096,6 @@ alert(t1<span class="attribute">-t0</span>);
 	 
 	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
 <span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm是muffinman_</strong></a> - 5月 21 2013</span><br />
-<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
-</p>
-       	 
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-  
-<article class="post">
-  
-    <div class="gallery">
-  <div class="photoset">
-    
-      <img src="">
-    
-  </div>
-  <div class="control">
-    <div class="prev"></div>
-    <div class="next"></div>
-  </div>
-</div>
-  
-  <div class="post-content">
-  <header>
-      
-      
-  
-    <h1 class="title"><a href="/post/fiddler_share.html">Fiddler 与 Windows Phone 联调</a></h1>
-  
-
-      <time datetime="2013-05-14T04:35:00.000Z"><a href="/post/fiddler_share.html">5月 14 2013</a></time>
-      
-  </header>
-    <div class="entry">
-      
-        <p>最近对浏览器的页面显示进行调节的时候，不得不使用 <a href="http://fiddler2.com/home" target="_blank">Fiddler</a> 进行本地代理调试。下面简单对使用进行介绍，主要是参考<a href="http://www.spikie.be/blog/post/2013/01/04/Windows-Phone-8-and-Fiddler.aspx" target="_blank"><strong>这个链接</strong></a>。</p>
-<h4 id="使用_Fiddler_对_WP8_模拟器进行抓包">使用 Fiddler 对 WP8 模拟器进行抓包</h4>
-<p>首先我们先去 Fiddler 官方网站下载一个最新的版本（<a href="http://fiddler2.com/get-fiddler" target="_blank">点击下载</a>）。由于 Windows Phone 8 的模拟器是以 Hyper-V 虚拟机的形式运行，所以它在网络中相当于一台独立的设备。我们需要对 Fiddler 进行监控远程设备的设置。</p>
-<ol>
-<li>安装启动 Fiddler</li>
-<li>按照下面的顺序开启菜单：<code>Tools</code> &gt; <code>Fiddler Options</code> &gt; <code>Connections</code></li>
-<li><p>选中 <code>Allow remote computers to connect</code>，确定设置</p>
-<p><img src="http://d.pr/i/6mqR.png" alt="remote connection"></p>
-</li>
-<li><p>返回主界面，在界面右下角有一个黑色的区域，称为 <code>QuickExec Box</code>，在输入框中输入下面的命令，其中 <code>IP Address</code> 为你本机的 IP 地址（设置为本机的主机名亦可）：</p>
-<pre><code>prefs <span class="keyword">set</span> fiddler<span class="preprocessor">.network</span><span class="preprocessor">.proxy</span><span class="preprocessor">.registrationhostname</span> [IP Address]
-</code></pre><p><img src="http://d.pr/i/1WTT.png" alt="QuickExec"></p>
-</li>
-<li><p>设置完成后，重新启动 Fiddler 和模拟器，用模拟器中的浏览器打开页面，看能否正常抓包。PS：除了模拟器的流量，本地流量也会同时显示在 Fiddler 中。</p>
-</li>
-</ol>
-<h4 id="使用_Fiddler_对_WP8_设备进行抓包">使用 Fiddler 对 WP8 设备进行抓包</h4>
-<p>基本设置与上面的步骤是一样的，我们只需要对设备的 WiFi 接入点进行一点设置即可。</p>
-<ol>
-<li>打开设备中的 <code>设置</code> &gt; <code>WiFi</code></li>
-<li>选择你已经连接的 WiFi 接入点，进入高级设置</li>
-<li>高级设置中启用代理服务器，服务器地址为你本机的 IP 地址，端口是8888。</li>
-<li>设置完成后手机将通过 PC 代理进行联网，此时即可在 Fiddler 中对其抓包处理。</li>
-</ol>
-<h4 id="利用_Fiddler_本地调试网页资源">利用 Fiddler 本地调试网页资源</h4>
-<p>这部分就比较简单了，属于 Fiddler 的一个最常用的功能。</p>
-<ol>
-<li>在列表中选择一项抓包内容，打开右键菜单选择将该内容保存到本地</li>
-<li>选择右边的 AutoResponder，勾选 <code>Enable automatic responses</code> 和 <code>Unmatched requests passthrough</code></li>
-<li>点击 <code>Add</code> 添加规则</li>
-<li>在下面列表中选择本地保存下来的文件，然后点击 <code>Save</code></li>
-<li>此时可以尝试修改本地的文件内容，测试是否代理成功。</li>
-</ol>
-
-	 
-	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
-<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm是muffinman_</strong></a> - 5月 14 2013</span><br />
 <span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
 </p>
        	 

@@ -114,6 +114,60 @@
       
       
   
+    <h1 class="title"><a href="/post/functionkey-swithcher-workflow.html">一个在Mac上用于快速切换Function Key的Alfred Workflow</a></h1>
+  
+
+      <time datetime="2014-06-03T05:37:51.000Z"><a href="/post/functionkey-swithcher-workflow.html">6月 3 2014</a></time>
+      
+  </header>
+    <div class="entry">
+      
+        <p>最近切换到iOS开发上，每天都在忍受着Xcode和VS之间的异同。Mac上有一些比较脑残的设置（虽然有时候会觉得挺方便）。不过对开发者影响比较大的还是Debug的时候，键盘顶部的Function Keys默认被设置成了OS X上的一些快捷方式。</p>
+<p>虽然，MAS（Mac App Store）上有一款可以自动切换Function Key的软件（叫Puala），有兴趣可以自行下载（￥6）。不过Apple提供了AppleScript，可以对OS X系统、GUI等进行编程，快速实现想要的功能。本来是想自己写一个简单的脚本做处理的，结果查阅了一下各大网站，有人已经写过了。我就简单封装成Alfred Workflow，需要的同学自行下载安装。</p>
+<p>使用方法：呼出Alfred之后，输入swfn回车即可将按钮功能切换成标准的Function Key。</p>
+<p><a href="https://www.dropbox.com/s/ptdtvpsoa1gwzm2/Switch%20FunctionKeys.alfredworkflow" target="_blank">点击下载</a>。</p>
+
+	 
+	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
+<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm是muffinman_</strong></a> - 6月 3 2014</span><br />
+<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
+</p>
+       	 
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  
+<article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <div class="post-content">
+  <header>
+      
+      
+  
     <h1 class="title"><a href="/post/effective-objetive-c-note.html">Effective Objective-C 阅读记录</a></h1>
   
 
@@ -1101,69 +1155,6 @@ mklink /D "C:<span class="command">\Users</span><span class="command">\xxx</span
 	 
 	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
 <span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm是muffinman_</strong></a> - 8月 22 2013</span><br />
-<span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
-</p>
-       	 
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-  
-<article class="post">
-  
-    <div class="gallery">
-  <div class="photoset">
-    
-      <img src="">
-    
-  </div>
-  <div class="control">
-    <div class="prev"></div>
-    <div class="next"></div>
-  </div>
-</div>
-  
-  <div class="post-content">
-  <header>
-      
-      
-  
-    <h1 class="title"><a href="/post/wp8-ie10-font-face-support.html">WP8 上的 IE10 对 @font-face 属性的支持程度</a></h1>
-  
-
-      <time datetime="2013-07-03T09:19:00.000Z"><a href="/post/wp8-ie10-font-face-support.html">7月 3 2013</a></time>
-      
-  </header>
-    <div class="entry">
-      
-        <p>现在的前端都流行把一些小图标转换成字体，然后利用 <code>@font-face</code> 这个 CSS 属性来定义一个页面专有的字体，从而达到把小图标转换成字符显示的效果。这样做除了可以省流量，图标的显示效果也很好，放大缩小都不怎么会影响效果，确实是一个不错的的手段。</p>
-<p>关于 CSS3 中的 <code>@font-face</code> 属性，可以参阅<a href="http://www.w3cplus.com/content/css3-font-face" target="_blank">这篇文章</a>，里面有很详细的属性应用介绍。</p>
-<p>但是，在 PC 的 IE10 下面尝试嵌入 ttf 格式的字体时，会提示这样的信息：</p>
-<blockquote>
-<p>CSS3114: @font-face 未能完成 OpenType 嵌入权限检查。权限必须是可安装的。 </p>
-</blockquote>
-<p>原因可能是自制的 ttf 格式没有正确的安装权限造成的。因此，有必要对 ttf 格式进行转换，PC 上的 IE10 支持多种字体格式，如 Embedded-Opentype(eot)、Web Open Font Format(woff)、TrueType(ttf) 和 Scalable Vector Graphics(SVG)，具体可以参考上面文章。</p>
-<p>但 WP8 上的 IE10 对字体格式的要求更严格，转换成 IE 专用的 eot 格式之后还是不能正常显示。于是又查了一下资料，发现还是能用的（<a href="http://stackoverflow.com/questions/15819717/font-awesome-not-displayed-on-windows-phone-8" target="_blank">点击这里</a>）。于是把格式换成 woff 之后就没有问题了，ttf 转 woff 的工具在网上都有，可以在线转换（<a href="http://everythingfonts.com/" target="_blank">点击这里有一个网站可以试试</a>）。</p>
-<p>PS：最好还是在引用的 url 后面声明一下字体的格式。</p>
-<pre><code><span class="at_rule">@<span class="keyword">font-face</span></span> <span class="rules">{
-    <span class="rule"><span class="attribute">font-family</span>:<span class="value"> <span class="string">'Test'</span></span></span>;
-    <span class="rule"><span class="attribute">src</span>:<span class="value"><span class="function">url(font/font.woff)</span> <span class="function">format(<span class="string">'woff'</span>)</span></span></span>;
-<span class="rule">}</span></span>
-</code></pre>
-	 
-	     <p style="margin:20px 0; color:#9f9f9f; font-size:12px;">
-<span>Posted by <a style="color:#9f9f9f;" href="http://weibo.com/newdings/"><strong>@cmm是muffinman_</strong></a> - 7月 3 2013</span><br />
 <span style="line-height:13px;">如需转载，请注明： 本文来自 <a style="color:#9f9f9f;" href="http://blog.edi-c.com"><strong>@chaoming.edc blog</strong></a></span>
 </p>
        	 
