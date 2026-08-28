@@ -1,9 +1,9 @@
 # Hexo Configuration
 
 # Site
-title: '@chaoming.edc blog'
+title: 'Ink & Silicon'
 subtitle:
-description: track my learning
+description: '墨与硅 · 浏览器与端侧 AI 的工程观察'
 keywords:
 author: chaoming.edc|blastmann
 language: zh-CN
