@@ -1,12 +1,22 @@
 {
-  "name": "hexo-site",
-  "version": "2.6.0",
+  "name": "blastmann-github-io",
+  "version": "1.0.0",
   "private": true,
+  "hexo": {
+    "version": "7.3.0"
+  },
+  "scripts": {
+    "build": "hexo generate",
+    "clean": "hexo clean",
+    "server": "hexo server",
+    "deploy": "hexo deploy"
+  },
   "dependencies": {
-    "hexo-generator-feed": "^0.1.1",
-    "hexo-renderer-ejs": "*",
-    "hexo-renderer-marked": "*",
-    "hexo-renderer-stylus": "*",
-    "hexo-generator-sitemap": "*"
+    "hexo": "^7.3.0",
+    "hexo-deployer-git": "^4.0.0",
+    "hexo-generator-feed": "^3.0.0",
+    "hexo-generator-sitemap": "^3.0.0",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-marked": "^6.0.0"
   }
 }
