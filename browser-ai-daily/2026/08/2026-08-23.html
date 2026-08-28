@@ -1,0 +1,21 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>浏览器 × 端侧 AI 日报｜2026-08-23</title><style>body{margin:0;background:#f6f8fb;color:#172033;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.72}.w{max-width:1020px;margin:auto;padding:28px 18px 60px}.h{background:linear-gradient(135deg,#111827,#203661 60%,#49377d);color:#fff;padding:36px;border-radius:26px}.h h1{font-size:34px;margin:8px 0}.h p{color:#d9e1f2}.g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.c{background:#fff;border:1px solid #e7ebf0;border-radius:18px;padding:22px;margin-top:16px}.t{display:inline-block;background:#eef1ff;color:#4d5fc7;font-size:12px;font-weight:700;border-radius:999px;padding:4px 8px;margin-right:5px}.k{background:#f7f9ff;border-left:4px solid #315efb;padding:12px 14px;border-radius:10px}.s{color:#667085;font-size:13px}a{color:#315efb;text-decoration:none}pre{background:#101828;color:#eef2ff;padding:18px;border-radius:16px;overflow:auto;white-space:pre-wrap}@media(max-width:760px){.g{grid-template-columns:1fr}.h{padding:24px 20px}.h h1{font-size:28px}}</style></head><body><main class="w"><header class="h"><div>DAILY BRIEF</div><h1>浏览器 × 端侧 AI 日报</h1><p>2026-08-23｜长任务 Browser Agent 可靠性、浏览器 AI Provider 编排、WebGPU 本地模型与 Browser Self-Improvement 起点。</p></header><h2>今天最值得看</h2><div class="g"><article class="c"><span class="t">Browser Agent</span><h3>Wuying-Browser-Agent / BrowserBench：长任务可靠性比单步能力更重要</h3><p>这一方向把 Browser Agent 从单次 click/observe 推到长链路执行，强调结构化 observation/action/state、恢复训练与 Browser Harness 对可靠性的贡献。</p><div class="k"><strong>判断：</strong>Browser Agent 的瓶颈正从“大模型会不会操作网页”转向“执行系统是否支持恢复、状态管理和轨迹复用”。</div></article><article class="c"><span class="t">Firefox × AI</span><h3>Firefox × Exa：浏览器开始承担 AI Provider 编排层</h3><p>浏览器不再只是把 AI 功能硬编码到单一模型，而可能逐渐承担 provider selection、permission、context routing 和 capability orchestration。</p><div class="k"><strong>启发：</strong>Browser Runtime 需要一层 AI Provider / Capability Router。</div></article><article class="c"><span class="t">On-device AI</span><h3>LFM2.5 2.6B + WebGPU：小模型进入浏览器 Agent 可用区间</h3><p>2–3B 级模型持续逼近端侧可运行区间，WebGPU 推理让“本地理解 + 云端升级”更现实。</p></article><article class="c"><span class="t">Browser Self-Improvement</span><h3>第一阶段不该直接放开自动改 Chromium Core</h3><p>更现实的路径是先让 AI 自动改善验证与诊断系统，再逐步进入候选 Patch、Benchmark、Canary 与经验沉淀。</p></article></div><h2>浏览器技术</h2><article class="c"><h3>WebKit：Site Isolation / Wasm / IPC 继续强化运行时边界</h3><p>这类改动长期影响 Browser Agent 的 capability boundary：Agent 将拥有更多浏览器内部能力，因此进程、origin、IPC 与权限隔离会越来越重要。</p></article><article class="c"><h3>Firefox 两周发布节奏</h3><p>更高频的稳定发布意味着 Agent / AI 功能未来也需要更快的 capability rollout、回滚与 telemetry 机制。</p></article><h2>端侧 AI</h2><article class="c"><h3>LFM2.5-QAD 与 LFM2.5-VL-3B</h3><p>小模型路线继续验证一个产品判断：Browser Agent 的低风险理解、摘要、分类、简单视觉判断，可以优先在本地完成；复杂规划再升级到云端。</p></article><h2>浏览器 × AI</h2><pre>Local Small Model
+      │
+Browser Harness
+      │
+Cloud Model
+      │
+Capability / Permission
+      │
+Browser Runtime</pre><p class="k">这一架构比“所有页面都直接发给云模型”更适合真实客户端浏览器。</p><h2>Browser Self-Improvement</h2><article class="c"><h3>建议的初始闭环</h3><pre>Telemetry / Regression
+      ↓
+Diagnose
+      ↓
+Hypothesis
+      ↓
+Candidate Patch
+      ↓
+Benchmark / Verify
+      ↓
+Canary
+      ↓
+Learn</pre><p>今天的核心判断是：浏览器 Self-Improvement 应先从 Verification / Diagnosis 做起，而不是 unrestricted self-modifying code。</p></article><h2>开源与论文 / 工程实践</h2><article class="c"><h3>Skim：Browser Agent speculative execution</h3><p>值得关注 speculative action / parallel branch 对浏览器任务延迟与恢复能力的影响。</p></article><footer class="s">本页为 2026-08-23 日报归档版。</footer></main></body></html>
