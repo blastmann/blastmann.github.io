@@ -1,5 +1,12 @@
-<% page.posts.each(function(item){ %>
-  <%- partial('_partial/article', {item: item, index: true}) %>
-<% }); %>
+<section class="landing">
+  <p class="landing-intro">记录浏览器与端侧 AI 的工程观察 —— Chromium / WebKit / Firefox、Browser Agent、端侧模型、WebGPU / WASM。</p>
 
-<%- partial('_partial/pagination') %>
+  <article class="card">
+    <div class="date">DAILY BRIEF</div>
+    <h2>浏览器 × 端侧 AI 日报</h2>
+    <p>跟踪 Chromium / WebKit / Firefox、Browser Agent、端侧 AI、WebGPU / WASM，以及 Browser Self-Improvement 的每日工程信号。</p>
+    <a class="btn" href="<%- config.root %>browser-ai-daily/">进入日报</a>
+  </article>
+
+  <p class="archive-note">2012–2015 年的旧博客文章已停止使用，源文归档在 <a href="https://github.com/blastmann/blastmann.github.io/tree/archive">archive 分支</a>。</p>
+</section>
