@@ -1,0 +1,38 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>浏览器 × 端侧 AI 日报｜2026-08-27</title><style>body{margin:0;background:#f6f8fb;color:#172033;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.72}.w{max-width:1020px;margin:auto;padding:28px 18px 60px}.h{background:linear-gradient(135deg,#111827,#203661 60%,#49377d);color:#fff;padding:36px;border-radius:26px}.h h1{font-size:34px;margin:8px 0}.h p{color:#d9e1f2}.g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.c{background:#fff;border:1px solid #e7ebf0;border-radius:18px;padding:22px;margin-top:16px}.t{display:inline-block;background:#eef1ff;color:#4d5fc7;font-size:12px;font-weight:700;border-radius:999px;padding:4px 8px;margin-right:5px}.k{background:#f7f9ff;border-left:4px solid #315efb;padding:12px 14px;border-radius:10px}.s{color:#667085;font-size:13px}a{color:#315efb;text-decoration:none}pre{background:#101828;color:#eef2ff;padding:18px;border-radius:16px;overflow:auto;white-space:pre-wrap}@media(max-width:760px){.g{grid-template-columns:1fr}.h{padding:24px 20px}.h h1{font-size:28px}}</style></head><body><main class="w"><header class="h"><div>DAILY BRIEF</div><h1>浏览器 × 端侧 AI 日报</h1><p>2026-08-27｜Self-Improving Agents、Chrome CPU Performance API、Actor + Critic Evolution 与 Reviewable Improvement。</p></header><h2>今天最值得看</h2><div class="g"><article class="c"><span class="t">Self-Improvement</span><h3>Warp：用真实工程反馈持续改 Skill，而不是直接让 Agent 改自己</h3><p>Warp 的模式是 base skill + improver skill：周期性读取 GitHub issues / PR 等人类反馈，提出最小 Skill 修改，通过 PR / code review 后合入，并在下一轮任务中复用。</p><div class="k"><strong>关键原则：</strong>可验证领域先建立 verification harness；难以自动验证的领域依赖领域专家反馈。</div><p><a href="https://claude.com/blog/how-warp-builds-self-improving-agents-on-claude">Warp / Claude Blog</a></p></article><article class="c"><span class="t">Chrome 152</span><h3>CPU Performance API：浏览器开始暴露设备能力层级</h3><p>可与 Compute Pressure API 组合，让 Web App 根据设备能力和实时压力调整计算负载。</p><div class="k"><strong>Browser AI 启发：</strong>Local/Cloud 路由可以综合 capability tier、pressure、WebGPU、memory 和 network。</div><p><a href="https://developer.chrome.com/blog/new-in-chrome-152">Chrome 152</a></p></article><article class="c"><span class="t">CAFE</span><h3>Actor 与 Critic 都需要共同演化</h3><p>CAFE 让同一模型在 Search Agent 与 critic 角色间交替，联合优化什么时候请求反馈、反馈如何修正轨迹。</p><div class="k"><strong>启发：</strong>Verifier / Judge 也会过时，Self-Improvement 不能只升级执行 Agent。</div><p><a href="https://arxiv.org/abs/2608.24794">CAFE 论文</a></p></article><article class="c"><span class="t">Metaⁿ</span><h3>固定 Improvement Protocol，比让 Agent 递归改改进逻辑更安全</h3><p>Metaⁿ 通过固定 meta-operation 读取历史 solver traces/code，生成策略预处理和 helper tool 层，但不让系统递归改写自身改进协议。</p><p><a href="https://arxiv.org/abs/2608.24735">Metaⁿ 论文</a></p></article></div><h2>浏览器 × AI</h2><article class="c"><h3>AI Router 应成为 Browser Agent Runtime 的独立层</h3><pre>Browser Agent
+     │
+Agent Runtime
+     │
+Capability Tier / Live Pressure / Privacy Policy
+     │
+AI Router
+ ┌───┴────┐
+Local   Cloud
+Model   Model
+ └───┬────┘
+Memory / Skill
+     │
+Capability Layer
+     │
+WebMCP / DOM / AXTree / DevTools
+     │
+Browser Runtime</pre><p>本地模型并不只是“隐私版云模型”，它更像一个可以根据设备状态动态启停和降级的 Browser Runtime 能力。</p></article><article class="c"><h3>Connection-Allowlist：Agent Policy 应有 Browser Runtime 强制执行</h3><p>Chrome 152 的 Connection-Allowlist 体现一个趋势：网络访问边界应由浏览器执行，而不是依赖 Prompt 约束。</p></article><h2>Browser Self-Improvement</h2><article class="c"><h3>现实可行的 v1</h3><pre>Regression
+   ↓
+Agent Diagnosis
+   ↓
+Engineer Feedback
+   ↓
+Improver
+   ↓
+Skill Patch
+   ↓
+Benchmark
+   ↓
+PR Review
+   ↓
+Merge / Reuse</pre><p>这比“Agent 自动改 Chromium Core 并直接上线”安全得多，也更容易接入现有工程体系。</p></article><article class="c"><h3>Skill 的建议形态</h3><pre>ScrollingJankSkill/
+ ├── README.md
+ ├── collect_trace.py
+ ├── analyze_scheduler.py
+ ├── benchmark.yaml
+ ├── known_patterns.md
+ └── eval_cases/</pre></article><h2>今天的一个判断</h2><article class="c"><p>今天在 Memory Hygiene、Executable Learning 后，再补一层：<strong>Reviewable Improvement</strong>。</p><p>Self-Improvement ≠ Self-Modifying Code。最现实的自主修改范围应该逐步扩大：</p><pre>Skill → Test → Benchmark → Config → Small Patch → Core Patch</pre><p><strong>先让做浏览器工程的 Agent 自我改进，再让浏览器本身自我改进。</strong></p></article><footer class="s">本页为 2026-08-27 日报归档版。</footer></main></body></html>
