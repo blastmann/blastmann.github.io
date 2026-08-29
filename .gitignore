@@ -1,6 +1,0 @@
-.DS_Store
-
-# AI 客户端本地配置（软链接技能目录，不随仓库分发）
-.claude/
-.codex/
-.codebuddy/

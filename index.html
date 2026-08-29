@@ -1,62 +1,103 @@
-<!doctype html>
-<html lang="zh-CN">
+<!DOCTYPE HTML>
+<html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ink &amp; Silicon · 浏览器与端侧 AI 日报</title>
-<meta name="description" content="墨与硅 — 浏览器与端侧 AI 日报">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="preconnect" href="https://fonts.loli.net" crossorigin>
-<link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-<link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
-<style>
-:root{--paper:#faf7f1;--ink:#1c1a17;--ink-soft:#6f6a61;--accent:#c8102e;--rule:#e3ded2;--serif:"Fraunces",Georgia,"Noto Serif SC","Songti SC","STSong",SimSun,serif;--mono:"JetBrains Mono",Menlo,Consolas,monospace}
-*{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.9;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:underline;text-decoration-color:rgba(200,16,46,.35);text-decoration-thickness:1px;text-underline-offset:3px;transition:color .2s ease,text-decoration-color .2s ease}
-a:hover{color:var(--accent);text-decoration-color:var(--accent)}
-::selection{background:var(--accent);color:var(--paper)}
-.wrap{max-width:780px;margin:auto;padding:0 24px 64px}
-.site-head{padding:64px 0 0;border-bottom:3px double var(--accent)}
-.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);text-align:center}
-h1{font-size:42px;font-weight:600;line-height:1.25;margin:14px 0 8px;text-align:center;color:var(--ink)}
-.slogan{font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:var(--ink-soft);text-align:center}
-nav.menu{display:flex;justify-content:center;gap:2.6rem;padding:16px 0}
-nav.menu a{font-size:13px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;color:var(--ink-soft);transition:color .2s ease}
-nav.menu a:hover{color:var(--accent)}
-.landing{padding:40px 0 0}
-.landing-intro{font-size:17px;color:var(--ink-soft);margin:0 0 30px}
-.card{background:#fff;border:1px solid var(--rule);border-radius:3px;padding:26px 28px}
-.card .date{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;color:var(--accent)}
-.card h2{font-size:27px;font-weight:600;line-height:1.35;margin:8px 0;color:var(--ink)}
-.card p{color:#524d44;margin:0 0 6px}
-.btn{display:inline-block;margin-top:14px;padding:8px 18px;background:var(--ink);color:var(--paper);border-radius:2px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;transition:background .2s ease}
-.btn:hover{background:var(--accent);color:#fff}
-.archive-note{font-size:14px;color:var(--ink-soft);margin:26px 0 0}
-footer{margin-top:52px;padding-top:18px;border-top:1px solid var(--rule);color:var(--ink-soft);font-size:12.5px;text-align:center}
-@media(prefers-reduced-motion:no-preference){body{animation:pageIn .5s ease-out both}}
-@keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media(max-width:640px){.wrap{padding:0 18px 44px}.site-head{padding:44px 0 0}h1{font-size:31px}}
-</style>
-</head>
+  <meta charset="utf-8">
+  
+  <title>Home | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="Home"/>
+  <meta name="title" content="Home"/>
+
+  <meta property="displaydate" content="2026-08-29T02:43:06.599Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
 <body>
-<main class="wrap">
-<header class="site-head">
-<div class="kicker">Track My Learning</div>
-<h1>Ink &amp; Silicon</h1>
-<div class="slogan">墨与硅 · 浏览器与端侧 AI 的工程观察</div>
-<nav class="menu"><a href="/">Home</a><a href="/browser-ai-daily/">Daily</a></nav>
-</header>
-<section class="landing">
-<article class="card">
-<div class="date">DAILY BRIEF</div>
-<h2>浏览器 × 端侧 AI 日报</h2>
-<p>跟踪 Chromium / WebKit / Firefox、Browser Agent、端侧 AI、WebGPU / WASM，以及 Browser Self-Improvement 的每日工程信号。</p>
-<a class="btn" href="/browser-ai-daily/">进入日报</a>
-</article>
-<p class="archive-note">2012–2015 年的旧博客文章已停止使用，源文归档在 <a href="https://github.com/blastmann/blastmann.github.io/tree/archive">archive 分支</a>。</p>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      <section class="landing">
+  <p class="landing-intro">记录浏览器与端侧 AI 的工程观察 —— Chromium / WebKit / Firefox、Browser Agent、端侧模型、WebGPU / WASM。</p>
+
+  <article class="card">
+    <div class="date">DAILY BRIEF</div>
+    <h2>浏览器 × 端侧 AI 日报</h2>
+    <p>跟踪 Chromium / WebKit / Firefox、Browser Agent、端侧 AI、WebGPU / WASM，以及 Browser Self-Improvement 的每日工程信号。</p>
+    <a class="btn" href="/browser-ai-daily/">进入日报</a>
+  </article>
+
+  <p class="archive-note">2012–2015 年的旧博客文章已停止使用，源文归档在 <a target="_blank" rel="noopener" href="https://github.com/blastmann/blastmann.github.io/tree/archive">archive 分支</a>。</p>
 </section>
-<footer>© 2026 Ink &amp; Silicon · chaoming.edc | blastmann</footer>
-</main>
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
 </body>
 </html>

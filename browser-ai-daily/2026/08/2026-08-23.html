@@ -1,4 +1,90 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>浏览器 × 端侧 AI 日报｜2026-08-23</title><link rel="preconnect" href="https://fonts.loli.net" crossorigin><link rel="preconnect" href="https://gstatic.loli.net" crossorigin><link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap"><style>:root{--paper:#faf7f1;--ink:#1c1a17;--ink-soft:#6f6a61;--accent:#c8102e;--rule:#e3ded2;--code-bg:#211f1c;--code-fg:#ddd5c6;--green:#2f6d54;--risk:#8a1f1f;--serif:"Fraunces",Georgia,"Noto Serif SC","Songti SC","STSong",SimSun,serif;--mono:"JetBrains Mono",Menlo,Consolas,monospace}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.9;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:underline;text-decoration-color:rgba(200,16,46,.35);text-decoration-thickness:1px;text-underline-offset:3px;transition:color .2s ease,text-decoration-color .2s ease}a:hover{color:var(--accent);text-decoration-color:var(--accent)}::selection{background:var(--accent);color:var(--paper)}.wrap{max-width:930px;margin:auto;padding:40px 24px 64px}.hero{padding:34px 0 26px;border-bottom:3px double var(--accent)}.hero>div:first-child{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600}.hero h1{font-size:38px;font-weight:600;line-height:1.3;margin:10px 0 12px;color:var(--ink)}.hero p{color:var(--ink-soft);max-width:860px}.meta{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;color:var(--ink-soft);margin-top:14px}.wrap>h2,.week>h1{font-size:24px;font-weight:600;margin:38px 0 6px;padding-bottom:.4em;border-bottom:2px solid var(--ink)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}.card{background:#fff;border:1px solid var(--rule);border-radius:3px;padding:20px 22px;margin-top:16px;box-shadow:none}.grid .card{margin-top:0}.card p{color:#524d44;margin:0 0 10px}.card h2{font-size:19px;margin:6px 0 8px;border:none;padding:0;color:var(--ink)}.card h3{font-size:18px;font-weight:600;margin:0 0 8px;color:var(--ink)}.date{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;color:var(--accent)}.tag,.badge{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.05em;color:var(--accent);background:transparent;border:1px solid rgba(200,16,46,.45);border-radius:2px;padding:2px 8px;margin:0 6px 8px 0}.btn{display:inline-block;margin-top:10px;padding:7px 14px;background:var(--ink);color:var(--paper);border-radius:2px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;transition:background .2s ease}.btn:hover{background:var(--accent);color:#fff}.take{background:rgba(200,16,46,.045);border-left:3px solid var(--accent);padding:12px 14px;border-radius:2px;margin-top:12px;font-size:15px}.learn{background:rgba(47,109,84,.06);border-left-color:var(--green)}.risk{background:rgba(138,31,31,.05);border-left-color:var(--risk)}pre{background:var(--code-bg);color:var(--code-fg);padding:18px;border-radius:3px;overflow:auto;white-space:pre-wrap;font-family:var(--mono);font-size:13px;line-height:1.75}footer,.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--rule);color:var(--ink-soft);font-size:12.5px}.foot{margin-top:28px}@media(max-width:760px){.grid{grid-template-columns:1fr}.hero{padding:26px 0 20px}.hero h1{font-size:29px}.wrap{padding:20px 16px 44px}}</style></head><body><main class="wrap"><header class="hero"><div>DAILY BRIEF</div><h1>浏览器 × 端侧 AI 日报</h1><p>2026-08-23｜长任务 Browser Agent 可靠性、浏览器 AI Provider 编排、WebGPU 本地模型与 Browser Self-Improvement 起点。</p></header><h2>今天最值得看</h2><div class="grid"><article class="card"><span class="tag">Browser Agent</span><h3>Wuying-Browser-Agent / BrowserBench：长任务可靠性比单步能力更重要</h3><p>这一方向把 Browser Agent 从单次 click/observe 推到长链路执行，强调结构化 observation/action/state、恢复训练与 Browser Harness 对可靠性的贡献。</p><div class="take"><strong>判断：</strong>Browser Agent 的瓶颈正从“大模型会不会操作网页”转向“执行系统是否支持恢复、状态管理和轨迹复用”。</div></article><article class="card"><span class="tag">Firefox × AI</span><h3>Firefox × Exa：浏览器开始承担 AI Provider 编排层</h3><p>浏览器不再只是把 AI 功能硬编码到单一模型，而可能逐渐承担 provider selection、permission、context routing 和 capability orchestration。</p><div class="take"><strong>启发：</strong>Browser Runtime 需要一层 AI Provider / Capability Router。</div></article><article class="card"><span class="tag">On-device AI</span><h3>LFM2.5 2.6B + WebGPU：小模型进入浏览器 Agent 可用区间</h3><p>2–3B 级模型持续逼近端侧可运行区间，WebGPU 推理让“本地理解 + 云端升级”更现实。</p></article><article class="card"><span class="tag">Browser Self-Improvement</span><h3>第一阶段不该直接放开自动改 Chromium Core</h3><p>更现实的路径是先让 AI 自动改善验证与诊断系统，再逐步进入候选 Patch、Benchmark、Canary 与经验沉淀。</p></article></div><h2>浏览器技术</h2><article class="card"><h3>WebKit：Site Isolation / Wasm / IPC 继续强化运行时边界</h3><p>这类改动长期影响 Browser Agent 的 capability boundary：Agent 将拥有更多浏览器内部能力，因此进程、origin、IPC 与权限隔离会越来越重要。</p></article><article class="card"><h3>Firefox 两周发布节奏</h3><p>更高频的稳定发布意味着 Agent / AI 功能未来也需要更快的 capability rollout、回滚与 telemetry 机制。</p></article><h2>端侧 AI</h2><article class="card"><h3>LFM2.5-QAD 与 LFM2.5-VL-3B</h3><p>小模型路线继续验证一个产品判断：Browser Agent 的低风险理解、摘要、分类、简单视觉判断，可以优先在本地完成；复杂规划再升级到云端。</p></article><h2>浏览器 × AI</h2><pre>Local Small Model
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+
+  <meta property="displaydate" content="2026-08-29T02:43:06.599Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title"></h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>浏览器 × 端侧 AI 日报｜2026-08-23</title><link rel="preconnect" href="https://fonts.loli.net" crossorigin><link rel="preconnect" href="https://gstatic.loli.net" crossorigin><link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap"><style>:root{--paper:#faf7f1;--ink:#1c1a17;--ink-soft:#6f6a61;--accent:#c8102e;--rule:#e3ded2;--code-bg:#211f1c;--code-fg:#ddd5c6;--green:#2f6d54;--risk:#8a1f1f;--serif:"Fraunces",Georgia,"Noto Serif SC","Songti SC","STSong",SimSun,serif;--mono:"JetBrains Mono",Menlo,Consolas,monospace}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.9;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:underline;text-decoration-color:rgba(200,16,46,.35);text-decoration-thickness:1px;text-underline-offset:3px;transition:color .2s ease,text-decoration-color .2s ease}a:hover{color:var(--accent);text-decoration-color:var(--accent)}::selection{background:var(--accent);color:var(--paper)}.wrap{max-width:930px;margin:auto;padding:40px 24px 64px}.hero{padding:34px 0 26px;border-bottom:3px double var(--accent)}.hero>div:first-child{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600}.hero h1{font-size:38px;font-weight:600;line-height:1.3;margin:10px 0 12px;color:var(--ink)}.hero p{color:var(--ink-soft);max-width:860px}.meta{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;color:var(--ink-soft);margin-top:14px}.wrap>h2,.week>h1{font-size:24px;font-weight:600;margin:38px 0 6px;padding-bottom:.4em;border-bottom:2px solid var(--ink)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}.card{background:#fff;border:1px solid var(--rule);border-radius:3px;padding:20px 22px;margin-top:16px;box-shadow:none}.grid .card{margin-top:0}.card p{color:#524d44;margin:0 0 10px}.card h2{font-size:19px;margin:6px 0 8px;border:none;padding:0;color:var(--ink)}.card h3{font-size:18px;font-weight:600;margin:0 0 8px;color:var(--ink)}.date{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;color:var(--accent)}.tag,.badge{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.05em;color:var(--accent);background:transparent;border:1px solid rgba(200,16,46,.45);border-radius:2px;padding:2px 8px;margin:0 6px 8px 0}.btn{display:inline-block;margin-top:10px;padding:7px 14px;background:var(--ink);color:var(--paper);border-radius:2px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;transition:background .2s ease}.btn:hover{background:var(--accent);color:#fff}.take{background:rgba(200,16,46,.045);border-left:3px solid var(--accent);padding:12px 14px;border-radius:2px;margin-top:12px;font-size:15px}.learn{background:rgba(47,109,84,.06);border-left-color:var(--green)}.risk{background:rgba(138,31,31,.05);border-left-color:var(--risk)}pre{background:var(--code-bg);color:var(--code-fg);padding:18px;border-radius:3px;overflow:auto;white-space:pre-wrap;font-family:var(--mono);font-size:13px;line-height:1.75}footer,.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--rule);color:var(--ink-soft);font-size:12.5px}.foot{margin-top:28px}@media(max-width:760px){.grid{grid-template-columns:1fr}.hero{padding:26px 0 20px}.hero h1{font-size:29px}.wrap{padding:20px 16px 44px}}</style></head><body><main class="wrap"><header class="hero"><div>DAILY BRIEF</div><h1>浏览器 × 端侧 AI 日报</h1><p>2026-08-23｜长任务 Browser Agent 可靠性、浏览器 AI Provider 编排、WebGPU 本地模型与 Browser Self-Improvement 起点。</p></header><h2>今天最值得看</h2><div class="grid"><article class="card"><span class="tag">Browser Agent</span><h3>Wuying-Browser-Agent / BrowserBench：长任务可靠性比单步能力更重要</h3><p>这一方向把 Browser Agent 从单次 click/observe 推到长链路执行，强调结构化 observation/action/state、恢复训练与 Browser Harness 对可靠性的贡献。</p><div class="take"><strong>判断：</strong>Browser Agent 的瓶颈正从“大模型会不会操作网页”转向“执行系统是否支持恢复、状态管理和轨迹复用”。</div></article><article class="card"><span class="tag">Firefox × AI</span><h3>Firefox × Exa：浏览器开始承担 AI Provider 编排层</h3><p>浏览器不再只是把 AI 功能硬编码到单一模型，而可能逐渐承担 provider selection、permission、context routing 和 capability orchestration。</p><div class="take"><strong>启发：</strong>Browser Runtime 需要一层 AI Provider / Capability Router。</div></article><article class="card"><span class="tag">On-device AI</span><h3>LFM2.5 2.6B + WebGPU：小模型进入浏览器 Agent 可用区间</h3><p>2–3B 级模型持续逼近端侧可运行区间，WebGPU 推理让“本地理解 + 云端升级”更现实。</p></article><article class="card"><span class="tag">Browser Self-Improvement</span><h3>第一阶段不该直接放开自动改 Chromium Core</h3><p>更现实的路径是先让 AI 自动改善验证与诊断系统，再逐步进入候选 Patch、Benchmark、Canary 与经验沉淀。</p></article></div><h2>浏览器技术</h2><article class="card"><h3>WebKit：Site Isolation / Wasm / IPC 继续强化运行时边界</h3><p>这类改动长期影响 Browser Agent 的 capability boundary：Agent 将拥有更多浏览器内部能力，因此进程、origin、IPC 与权限隔离会越来越重要。</p></article><article class="card"><h3>Firefox 两周发布节奏</h3><p>更高频的稳定发布意味着 Agent / AI 功能未来也需要更快的 capability rollout、回滚与 telemetry 机制。</p></article><h2>端侧 AI</h2><article class="card"><h3>LFM2.5-QAD 与 LFM2.5-VL-3B</h3><p>小模型路线继续验证一个产品判断：Browser Agent 的低风险理解、摘要、分类、简单视觉判断，可以优先在本地完成；复杂规划再升级到云端。</p></article><h2>浏览器 × AI</h2><pre>Local Small Model
       │
 Browser Harness
       │
@@ -19,3 +105,43 @@ Benchmark / Verify
 Canary
       ↓
 Learn</pre><p>今天的核心判断是：浏览器 Self-Improvement 应先从 Verification / Diagnosis 做起，而不是 unrestricted self-modifying code。</p></article><h2>开源与论文 / 工程实践</h2><article class="card"><h3>Skim：Browser Agent speculative execution</h3><p>值得关注 speculative action / parallel branch 对浏览器任务延迟与恢复能力的影响。</p></article><footer class="foot">本页为 2026-08-23 日报归档版。</footer></main></body></html>
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
