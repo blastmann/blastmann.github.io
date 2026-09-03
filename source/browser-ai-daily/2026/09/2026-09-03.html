@@ -1,0 +1,57 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>浏览器 × 端侧 AI 日报｜2026-09-03</title><link rel="preconnect" href="https://fonts.loli.net" crossorigin><link rel="preconnect" href="https://gstatic.loli.net" crossorigin><link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap"><style>:root{--paper:#faf7f1;--ink:#1c1a17;--ink-soft:#6f6a61;--accent:#c8102e;--rule:#e3ded2;--code-bg:#211f1c;--code-fg:#ddd5c6;--green:#2f6d54;--risk:#8a1f1f;--serif:"Fraunces",Georgia,"Noto Serif SC","Songti SC","STSong",SimSun,serif;--mono:"JetBrains Mono",Menlo,Consolas,monospace}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.9;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:underline;text-decoration-color:rgba(200,16,46,.35);text-decoration-thickness:1px;text-underline-offset:3px}a:hover{color:var(--accent)}.wrap{max-width:930px;margin:auto;padding:40px 24px 64px}.hero{padding:34px 0 26px;border-bottom:3px double var(--accent)}.hero>div:first-child{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600}.hero h1{font-size:38px;font-weight:600;line-height:1.3;margin:10px 0 12px}.hero p{color:var(--ink-soft)}.meta{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;color:var(--ink-soft);margin-top:14px}.wrap>h2{font-size:24px;font-weight:600;margin:38px 0 6px;padding-bottom:.4em;border-bottom:2px solid var(--ink)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}.card{background:#fff;border:1px solid var(--rule);border-radius:3px;padding:20px 22px;margin-top:16px}.grid .card{margin-top:0}.card p{color:#524d44;margin:0 0 10px}.card h3{font-size:18px;font-weight:600;margin:0 0 8px}.tag{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.05em;color:var(--accent);border:1px solid rgba(200,16,46,.45);border-radius:2px;padding:2px 8px;margin:0 6px 8px 0}.take{background:rgba(200,16,46,.045);border-left:3px solid var(--accent);padding:12px 14px;border-radius:2px;margin-top:12px;font-size:15px}.learn{background:rgba(47,109,84,.06);border-left-color:var(--green)}.risk{background:rgba(138,31,31,.05);border-left-color:var(--risk)}pre{background:var(--code-bg);color:var(--code-fg);padding:18px;border-radius:3px;overflow:auto;white-space:pre-wrap;font-family:var(--mono);font-size:13px;line-height:1.75}footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--rule);color:var(--ink-soft);font-size:12.5px}@media(max-width:760px){.grid{grid-template-columns:1fr}.hero h1{font-size:29px}.wrap{padding:20px 16px 44px}}</style></head><body><main class="wrap"><header class="hero"><div>DAILY BRIEF · BROWSER × ON-DEVICE AI</div><h1>浏览器 × 端侧 AI 日报</h1><p>今天最值得看的不是新模型，而是 Browser Agent 的本地桥接边界和 Browser Self-Improvement 的长期执行结构开始变得更具体：Chrome 154 给 WebSocket → localhost 增加显式地址空间与权限语义；Harness-of-Harness 则把长期改进拆成 Planner / Developer / QA 三个稳定角色，并把验证证据带入下一轮。</p><div class="meta">2026-09-03 · 过去 24 小时优先 + 一周内未推送高价值补充</div></header><h2>今天最值得看</h2><div class="grid"><article class="card"><span class="tag">Chrome 154</span><span class="tag">Local Agent Bridge</span><h3>Chrome 154 Beta：WebSocket 正式进入 Local Network Access 权限模型</h3><p>Chrome 154 Beta 在 9 月 2 日加入 <code>WebSocketInit</code> options bag，并支持 <code>targetAddressSpace</code>。网页可以明确声明 WebSocket 目标是 <code>local</code> 或 <code>loopback</code>；浏览器随后执行 Local Network Access 权限检查，hostname 也必须实际解析到相应的本地地址。</p><div class="take"><strong>为什么值得关注：</strong>大量 Browser Agent / MCP / 本地 Harness 都采用“网页或扩展 → localhost WebSocket → Agent Bridge”。Chrome 正把这条链路从模糊的 localhost 特例，推进成浏览器可理解、可授权、可阻断的能力边界。未来 Browser Capability Layer 不应该绕过浏览器权限模型，而应该利用它。</div><p><a href="https://developer.chrome.com/blog/chrome-154-beta">Chrome for Developers</a></p></article><article class="card"><span class="tag">Self-Improvement</span><span class="tag">Harness</span><h3>Harness-of-Harness：用稳定角色和独立 QA 支撑 70+ 轮持续改进</h3><p>9 月 2 日公开的 Harness-of-Harness（HoH）在现有 coding-agent harness 外再加一层长期执行框架：Project Planner 只规划，Developer 修改产物，QA Tester 只读验证。每一轮的 artifact 与 evidence bundle 成为下一轮的输入。</p><div class="take learn"><strong>关键点：</strong>它没有要求 Agent 按固定推理流程工作，而是约束“必须产出可验证结果”；实现期测试和独立评估分开，并保留版本化项目历史。论文报告三组 harness-model pair 在三轮后平均相对提升 52.25%，长期案例运行超过 70 轮。</div><p><a href="https://arxiv.org/abs/2609.01481">arXiv</a> · <a href="https://github.com/Flesymeb/HarnessOfHarness">GitHub</a></p></article><article class="card"><span class="tag">Firefox 155</span><span class="tag">Automation</span><h3>补推 Firefox 155：WebDriver BiDi 与 DevTools 并行冲突继续被清理</h3><p>Firefox 155 修复了 <code>moz:debugging</code> 模块对 DevTools 嵌套事件循环的依赖，避免 WebDriver BiDi 与 DevTools 并行使用时发生冲突；还修复 frame reload 和部分 Actions API 语义。它同时加入 WebAssembly compact import section、wide arithmetic，以及桌面 WebGPU dual-source blending。</p><div class="take"><strong>Browser Agent 启发：</strong>当 Agent 同时使用自动化协议、DevTools、性能分析和页面调试时，“多个控制面能否同时存在”会成为真实稳定性问题。Browser Harness 的验证项应该覆盖并发控制面，而不只测试单一 click/type 成功率。</div><p><a href="https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/155">MDN / Mozilla</a></p></article><article class="card"><span class="tag">Local AI</span><span class="tag">Privacy</span><h3>ChatPanel 更新继续验证：本地模型 + Local Bridge + PII Gate 正在合流</h3><p>9 月 2 日更新的 ChatPanel 把私有浏览器模型、当前页/多 Tab 上下文、本地 Agent Bridge 和可选 PII redaction 放在同一扩展里；本地桥使用 <code>127.0.0.1</code>，云模型只接收用户选择发送的上下文。</p><div class="take risk"><strong>为什么只作为产品信号：</strong>它不是浏览器厂商或底层标准，但和近期 Agtweb、Runbook AI、ChromeBoost 的方向一致：Browser Agent 正从“远端云浏览器”回到用户真实浏览器，并在本地增加 Privacy / Capability Gate。</div><p><a href="https://chromewebstore.google.com/detail/chatpanel-%E2%80%94-privacy-first/icemacffhbgnfoofclgdbcdmnlkkklem">Chrome Web Store</a></p></article></div><h2>浏览器技术</h2><article class="card"><h3>Chrome 154 的 <code>targetAddressSpace</code> 对本地 Browser Bridge 很关键</h3><p>以前本地 Agent Bridge 常见做法是网页直接访问 <code>ws://127.0.0.1</code> 或一个解析到私网地址的 hostname。Chrome 154 允许在 WebSocket 构造器里显式标注目标地址空间，同时要求安全上下文和 Local Network Access 用户许可。</p><pre>Public Web App
+    ↓ WebSocket(..., { targetAddressSpace: "local" })
+Chrome Local Network Access Gate
+    ↓ user permission + DNS/address check
+localhost / LAN Agent Bridge
+    ↓
+Local Model / MCP / Browser Harness</pre><div class="take"><strong>工程含义：</strong>Ghost Browser 这类产品若需要“网页 ↔ 本地 Agent”通道，应该把权限设计建立在浏览器原生 LNA 之上；更理想的是 Extension / Native Messaging 继续承担高权限操作，而普通网页只拿到更窄的 localhost capability。</div></article><article class="card"><h3>Chrome 154 同时继续下沉 WebGPU / Worker 能力</h3><p>Chrome 154 给 WGSL <code>@builtin(frag_depth)</code> 增加 <code>less</code>/<code>greater</code> 修饰符，以保留 early-Z 优化；同时把更多 CSS Typed OM 构造器暴露给 Worker。前者不是 AI 推理功能，但反映 WebGPU 仍在持续补足精细性能控制。</p><p><a href="https://developer.chrome.com/blog/chrome-154-beta">Chrome 154 Beta</a></p></article><h2>端侧 AI</h2><article class="card"><h3>过去 24 小时没有发现比昨日 WebGPU kernels / Hybrid Compute 更强的新端侧底座发布</h3><p>本轮没有用普通模型发布填充。更值得继续跟踪的仍是昨天的两条主线：一是 WebGPU kernel 变成可版本化、可 benchmark 的工程资产；二是 Local Small Model 被放到 Privacy / Policy / Routing control plane，而不是只承担聊天生成。</p></article><h2>浏览器 × AI</h2><article class="card"><h3>本地 Browser Bridge 正进入“浏览器原生权限可见”的阶段</h3><p>过去几天看到的 Agtweb、Runbook AI、ChromeBoost、ChatPanel 都依赖 localhost / Native Messaging / Extension bridge。Chrome 154 的变化说明浏览器本身正在更明确地区分 public、local、loopback 地址空间。</p><pre>Agent Request
+    ↓
+Page / Extension
+    ↓
+Capability Gate
+    ├─ Tab / Origin
+    ├─ Operation
+    ├─ Local Network
+    └─ Sensitive Data
+    ↓
+Local Bridge
+    ↓
+Real Browser Session</pre><div class="take"><strong>产品启发：</strong>不要把 localhost 当成“天然可信”。真正可扩展的 Browser Agent Runtime 应该同时标记来源页面、目标地址空间、操作类型与数据敏感度。</div></article><h2>Browser Self-Improvement</h2><article class="card"><h3>今天的新关键词：Independent Verification Loop（独立验证环）</h3><p>HoH 最值得迁移到浏览器工程的不是多 Agent 数量，而是 Planner / Developer / QA 的权限和职责分离。QA Tester 不改产物，只执行并记录证据；上一轮 evidence bundle 再交给下一轮 Planner。</p><pre>Telemetry / Regression
+        ↓
+Planner
+读取问题 + 上一轮 Evidence
+只生成最小改进计划
+        ↓
+Developer
+Patch / Harness / Skill
+        ↓
+Independent QA
+Build / WPT / Benchmark / Trace
+只验证，不改代码
+        ↓
+Evidence Bundle
+Pass / Fail / Perf Delta / Repro
+        ↓
+Versioned History
+        ↓
+Next Iteration</pre><div class="take learn"><strong>闭环走到哪：</strong>HoH 覆盖 Plan → Patch → Test → Evidence → Learn/Next Loop，并证明几十轮长时间运行可行；它缺少 Chromium 级 Telemetry 触发、Pinpoint/bisect、Canary 和线上回流，因此还不是完整 Browser Self-Improvement，但非常适合作为中间的执行 Harness。</div></article><article class="card"><h3>迁移到 Chromium 时，我会把“角色”换成权限边界</h3><p>Browser 工程不需要真的启动三个拟人 Agent，重点是让同一个系统也不能跨越职责边界：</p><pre>Diagnosis Context  → read-only traces / source
+Patch Capability   → code workspace only
+Verification       → clean build + benchmark env
+Rollout            → separate approval / canary gate
+Learning           → only evidence-backed artifacts</pre><p>这样能进一步接上此前形成的原则：Memory Hygiene → Executable Learning → Reviewable Improvement → Trusted Learning → Privilege-Preserving Learning → Selective Learning → Knowledge Compilation → Evidence-Carrying Artifact。</p><div class="take risk"><strong>新的补充：</strong>Evidence 不能由修改代码的同一执行单元自证。对性能回归尤其如此：Patch Agent 可以给出假设，但 benchmark、trace comparison 和 regression gate 应由隔离环境重新执行。</div></article><h2>开源与论文 / 工程实践</h2><div class="grid"><article class="card"><h3>Harness-of-Harness</h3><p>论文已公开；项目仓库目前主要包含说明和演示，轻量实现 HoH-lite 标记为 coming soon。现阶段适合研究执行协议与角色分离，不应把它当成成熟可直接接入 Chromium 的框架。</p><p><a href="https://github.com/Flesymeb/HarnessOfHarness">GitHub</a></p></article><article class="card"><h3>Firefox 155 的自动化协议修复值得进 Browser Harness regression set</h3><p>WebDriver BiDi + DevTools 同时使用、frame reload、修饰键 double-click 这类问题都非常适合作为 Harness 层固定回归用例。它们说明“浏览器能自动化”与“Agent 可长期稳定自动化”之间仍有大量协议语义细节。</p><p><a href="https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/155">Firefox 155 developer notes</a></p></article></div><h2>今天的一个判断</h2><article class="card"><h3>Browser Self-Improvement 的下一步，不是更多自治，而是更强的验证隔离</h3><p>过去一周的线索正在收敛：经验要筛选，Knowledge 要与 Skill 分开，可执行资产要自带 benchmark 和 provenance；今天 HoH 又补上“验证者不修改产物”。</p><pre>Observe
+  ↓
+Diagnose
+  ↓
+Patch
+  ↓
+Independent Verify
+  ↓
+Evidence Bundle
+  ↓
+Trust / Review Gate
+  ↓
+Canary
+  ↓
+Learn
+  ↓
+Revalidate</pre><p>如果把这个结构放进 Chromium，我会优先让 Agent 自动改 Harness、测试、benchmark 配置、小范围代码，并把独立 build/benchmark/trace verifier 作为不可绕过的边界。真正的 Recursive Improvement 应发生在这套证据闭环之上，而不是让同一个 Agent“改完以后自己说通过了”。</p></article><footer>浏览器 × 端侧 AI 日报 · 2026-09-03 · 重点信源：Chrome for Developers、Mozilla/MDN、arXiv、GitHub、Chrome Web Store。</footer></main></body></html>
