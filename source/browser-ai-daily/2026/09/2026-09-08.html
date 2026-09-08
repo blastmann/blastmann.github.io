@@ -1,0 +1,64 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>浏览器 × 端侧 AI 日报｜2026-09-08</title><link rel="preconnect" href="https://fonts.loli.net" crossorigin><link rel="preconnect" href="https://gstatic.loli.net" crossorigin><link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap"><style>:root{--paper:#faf7f1;--ink:#1c1a17;--ink-soft:#6f6a61;--accent:#c8102e;--rule:#e3ded2;--code-bg:#211f1c;--code-fg:#ddd5c6;--green:#2f6d54;--risk:#8a1f1f;--serif:"Fraunces",Georgia,"Noto Serif SC","Songti SC","STSong",SimSun,serif;--mono:"JetBrains Mono",Menlo,Consolas,monospace}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.9;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:underline;text-decoration-color:rgba(200,16,46,.35);text-decoration-thickness:1px;text-underline-offset:3px}a:hover{color:var(--accent)}.wrap{max-width:930px;margin:auto;padding:40px 24px 64px}.hero{padding:34px 0 26px;border-bottom:3px double var(--accent)}.hero>div:first-child{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600}.hero h1{font-size:38px;font-weight:600;line-height:1.3;margin:10px 0 12px}.hero p{color:var(--ink-soft)}.meta{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;color:var(--ink-soft);margin-top:14px}.wrap>h2{font-size:24px;font-weight:600;margin:38px 0 6px;padding-bottom:.4em;border-bottom:2px solid var(--ink)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}.card{background:#fff;border:1px solid var(--rule);border-radius:3px;padding:20px 22px;margin-top:16px}.grid .card{margin-top:0}.card p{color:#524d44;margin:0 0 10px}.card h3{font-size:18px;font-weight:600;margin:0 0 8px}.tag{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.05em;color:var(--accent);border:1px solid rgba(200,16,46,.45);border-radius:2px;padding:2px 8px;margin:0 6px 8px 0}.take{background:rgba(200,16,46,.045);border-left:3px solid var(--accent);padding:12px 14px;border-radius:2px;margin-top:12px;font-size:15px}.learn{background:rgba(47,109,84,.06);border-left-color:var(--green)}.risk{background:rgba(138,31,31,.05);border-left-color:var(--risk)}pre{background:var(--code-bg);color:var(--code-fg);padding:18px;border-radius:3px;overflow:auto;white-space:pre-wrap;font-family:var(--mono);font-size:13px;line-height:1.75}footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--rule);color:var(--ink-soft);font-size:12.5px}@media(max-width:760px){.grid{grid-template-columns:1fr}.hero h1{font-size:29px}.wrap{padding:20px 16px 44px}}</style></head><body><main class="wrap"><header class="hero"><div>DAILY BRIEF · BROWSER × ON-DEVICE AI</div><h1>浏览器 × 端侧 AI 日报</h1><p>过去 24 小时没有新的 Chrome / WebKit / Firefox 引擎级大更新，但 WebMCP 的工程化明显前进了一步：真实浏览器云开始把 WebMCP 当作可持续回归测试的公共接口；本地扩展开始把用户显式连接的登录态 Tab 暴露给 Codex / Claude Code 等 MCP 客户端；DeepSeek Harness 社区则出现“发现缺失工具 → 生成 → 验证 → 保存复用”的 Browser Builder。Browser Self-Improvement 今天最值得关注的是：Learn 不能只保存成功轨迹，而应该保存经过真实浏览器验证的能力资产。</p><div class="meta">2026-09-08 · 过去 24 小时优先 + 一周内未推送高价值补充</div></header><h2>今天最值得看</h2><div class="grid"><article class="card"><span class="tag">WebMCP</span><span class="tag">Real Browser CI</span><h3>TestingBot：WebMCP 开始进入真实浏览器 CI，而不是只靠 Agent 现场试调用</h3><p>TestingBot 在 9 月 7 日更新了 WebMCP 测试文档，把网页暴露的结构化工具当作和 API / 表单一样的公共接口：需要验证工具是否仍注册、schema 是否正确、执行结果是否符合契约、错误是否正确传播，以及写操作是否真的改变页面状态。文档给出 Selenium、Playwright、Puppeteer 在真实 Chrome 上的测试路径，Puppeteer 还可直接使用实验性的 <code>page.webmcp</code>。</p><div class="take learn"><strong>为什么值得关注：</strong>WebMCP 如果要成为 Browser Agent 的稳定 Action Surface，就必须能脱离 LLM 独立回归。这样工具语义变化、注册丢失、状态变更失败，可以在 CI 阶段发现，而不是等 Agent 在线任务失败后再猜原因。</div><p><a href="https://testingbot.com/support/ai/webmcp">TestingBot：Testing WebMCP Tools</a> · <a href="https://pptr.dev/guides/webmcp">Puppeteer WebMCP</a></p></article><article class="card"><span class="tag">Local Browser Bridge</span><span class="tag">Capability</span><h3>WebMCP Cloud Relay：把用户显式连接的登录态 Tab 桥接给本地或远程 MCP Client</h3><p>9 月 7 日更新的 Chrome 扩展 WebMCP Cloud Relay 允许用户主动连接某个 Tab，然后把该页面暴露的 WebMCP 工具转成 MCP 工具，供 Claude Code、Codex 或其他 MCP client 调用；执行仍发生在当前网页与登录态中。它支持 hosted 或 self-hosted relay，并以“只连接用户选中的 Tab”为边界。</p><div class="take"><strong>产品启发：</strong>这条路线比“把整个浏览器 CDP 权限交给 Agent”窄得多。Browser Agent 可以获得网站主动暴露的 typed capability，同时保留真实 Cookie / 登录态；权限可以绑定到 Tab + Origin + Tool，而不是整个浏览器进程。</div><p><a href="https://chromewebstore.google.com/detail/webmcp-cloud-relay/pjbkneijjlmmbcncpjjjhbmcnejamdco">Chrome Web Store：WebMCP Cloud Relay</a></p></article><article class="card"><span class="tag">DeepSeek Harness</span><span class="tag">Tool Learning</span><h3>DeepDeck Builder：Browser Agent 开始尝试“缺什么工具，就生成、验证并保存什么工具”</h3><p>DeepSeek Harness 社区 9 月 7 日展示了 DeepDeck 的 WebMCP + Builder 实现。浏览器先发现网站已经注册的 WebMCP 工具；如果能力不足，Builder 可以探索页面、生成缺失工具、验证它们，再保存供之后访问复用。作者明确说明这是非官方 DSH 客户端实现，不代表上游 Harness 已原生支持 WebMCP。</p><div class="take risk"><strong>为什么值得关注：</strong>这是很接近 Browser Self-Improvement 的 Improve → Verify → Learn：不是每次都让模型重新理解 DOM，而是把成功且验证过的动作编译成可复用 Tool。不过它也带来新的信任问题：生成工具必须和网站原生工具区分，并记录来源、作用域与验证证据。</div><p><a href="https://github.com/deepseek-ai/deepseek-harness/discussions/4971">DeepSeek Harness Discussion #4971</a></p></article><article class="card"><span class="tag">Learn</span><span class="tag">Workflow Replay</span><h3>补推 RoutineKit：成功操作序列先 Review，再变成可参数化、可重放 Routine</h3><p>DeepSeek Harness 社区的 RoutineKit 0.2.0 采用比“直接记忆整段 trajectory”更保守的路径：记录一段成功 tool workflow，经人工 review 后保存，之后用新输入重放；示例还会通过 read-back 校验确认输出真的变化。它不声称能自动学会所有任务，而是把已验证的成功序列变成确定性资产。</p><div class="take"><strong>Browser 工程启发：</strong>浏览器里很多稳定动作并不值得每次重新推理，例如采集同一种 Trace、运行相同 Pinpoint 查询、重复某套 WebMCP 验证。成功流程经 review + parameterize + replay 后，可以显著降低模型噪声。</div><p><a href="https://github.com/deepseek-ai/deepseek-harness/discussions/5701">RoutineKit Discussion #5701</a></p></article></div><h2>浏览器技术</h2><article class="card"><h3>过去 24 小时没有达到推送门槛的 Chromium / WebKit / Firefox 引擎级新能力</h3><p>今天没有发现新的浏览器架构、Web 平台 API、网络/媒体、WebGPU 或 WASM 官方发布值得单独占一条。更值得关注的浏览器底层变化反而是测试表面正在跟上 Agent API：WebMCP 已出现专门的 testing surface / CDP 集成与 Puppeteer <code>page.webmcp</code>，意味着“网站给 Agent 的工具”开始能够被传统浏览器自动化基础设施直接观察和执行。</p><div class="take risk"><strong>一个需要注意的现实：</strong>WebMCP 仍处在实验期，Chrome 版本、flag、<code>document.modelContext</code> / testing surface 的具体形态仍在变化。测试层应该封装 adapter，不要把某一版实验 API 写死到大量业务用例里。</div></article><h2>端侧 AI</h2><article class="card"><h3>今天没有新的高价值端侧推理底座，端侧更适合继续承担 Browser Control Plane</h3><p>过去 24 小时没有发现比本周已推送的 WebGPU kernels、真实设备 Fleet、Hybrid Compute 和本地 Privacy Gate 更强的新底座进展。近期更稳定的方向仍是：大模型负责复杂规划，小模型 / 规则引擎在端侧负责隐私筛选、tool routing、状态检测、失败 watchdog 与低成本触发判断。</p><pre>Page / Browser signals
+        ↓
+Local control plane
+├─ privacy / PII gate
+├─ capability discovery
+├─ cheap anomaly detection
+├─ tool routing
+└─ action-risk classification
+        ↓
+Cloud / larger model only when needed</pre></article><h2>浏览器 × AI</h2><article class="card"><h3>Browser Agent 的 Action Surface 正在从“控制浏览器”拆成更细的能力层</h3><p>今天的两条 WebMCP 进展放在一起看很有意思：TestingBot 负责验证 Tool contract，Cloud Relay 负责把受限 Tool capability 连接给 Agent。它们共同指向一个比全量 CDP 权限更克制的架构：</p><pre>Real browser session
+├─ DOM / AXTree / screenshot      ← fallback observation
+├─ WebMCP tools                   ← typed actions
+├─ DevTools / CDP                 ← diagnosis / deep control
+└─ Local bridge                   ← explicit user-scoped transport
+        ↓
+Capability policy
+├─ tab
+├─ origin
+├─ tool / operation
+├─ read vs write
+└─ human confirmation</pre><p>产品上不应该只问“Agent 能不能控制浏览器”，而应该问“当前任务最窄、最可靠、最容易验证的 Action Surface 是哪一个”。</p></article><h2>Browser Self-Improvement</h2><article class="card"><h3>今天的新关键词：Verified Capability Learning（验证后能力学习）</h3><p>DeepDeck Builder 和 RoutineKit 都在避免一个常见问题：把原始成功 trajectory 直接当成长期 Skill。更合理的 Browser Self-Improvement 路径应该是：</p><pre>Failure / repeated task
+        ↓
+Observe execution
+        ↓
+Generate candidate capability
+├─ helper
+├─ WebMCP adapter
+├─ workflow routine
+└─ harness patch
+        ↓
+Real-browser verification
+├─ discovery
+├─ schema / contract
+├─ state transition
+├─ error semantics
+└─ permission boundary
+        ↓
+Review / provenance
+        ↓
+Persist as reusable capability
+        ↓
+Revalidate on browser / site change</pre><div class="take learn"><strong>核心判断：</strong>Learn 的最小单位不应该是“这次 Agent 做成功了”，而应该是“这个能力在明确 scope 下，通过了可重复验证”。这样才能把 Browser Agent 的经验真正变成工程资产，而不是越来越长、越来越难审计的 Memory。</div></article><article class="card"><h3>映射到 Chromium 工程闭环：今天补强的是 Verify → Learn</h3><pre>Telemetry / Regression
+        ↓
+Diagnose
+        ↓
+Patch / Helper / Skill
+        ↓
+Build
+        ↓
+Benchmark / WPT / Real-browser Contract Test
+        ↓
+Evidence bundle
+        ↓
+Learn
+├─ reusable rule
+├─ validated workflow
+├─ regression test
+└─ scoped tool / helper
+        ↓
+Revalidation trigger
+├─ Chromium roll
+├─ site / schema change
+├─ OS / GPU change
+└─ benchmark drift</pre><p>今天没有新的公开案例把 Agent 自动生成 Chromium/V8 Patch 后一路送进 Canary，但 WebMCP 的真实浏览器 CI 提供了一个非常可迁移的验证范式：<strong>不让模型自己判断 Tool 是否工作，直接让真实 Runtime 执行并断言状态。</strong>同样的原则可以用于 Agent 生成的 DevTools helper、Trace analyzer、WebGPU kernel variant 和 Browser Harness patch。</p></article><h2>开源与论文 / 工程实践</h2><div class="grid"><article class="card"><h3>TestingBot WebMCP testing</h3><p>真实浏览器上的注册、schema、执行、错误与状态变更验证。适合直接放进网站 CI。</p><p><a href="https://testingbot.com/support/ai/webmcp">原始文档</a></p></article><article class="card"><h3>Puppeteer WebMCP</h3><p>实验性的 <code>page.webmcp</code> API，把 WebMCP 工具发现和执行直接接进浏览器自动化库。</p><p><a href="https://pptr.dev/guides/webmcp">官方文档</a></p></article><article class="card"><h3>WebMCP Cloud Relay</h3><p>显式连接 Tab，把该页面 WebMCP capability 暴露给 MCP clients；值得继续观察权限模型和 self-hosted relay。</p><p><a href="https://chromewebstore.google.com/detail/webmcp-cloud-relay/pjbkneijjlmmbcncpjjjhbmcnejamdco">Chrome Web Store</a></p></article><article class="card"><h3>DeepDeck WebMCP Builder</h3><p>非官方 DeepSeek Harness 客户端实践：发现网站工具，并尝试生成、验证、保存缺失工具。</p><p><a href="https://github.com/deepseek-ai/deepseek-harness/discussions/4971">GitHub Discussion</a></p></article></div><h2>今天的一个判断</h2><article class="card"><div class="take learn"><strong>WebMCP 真正值得关注的进展，已经从“有没有这个 API”转向“能否像正常软件接口一样被测试、授权、版本化和复用”。</strong></div><p>如果未来浏览器工程要做 Self-Improvement，我会优先建立同样的结构：Agent 可以生成能力，但持久化前必须经过真实 Runtime 验证；验证通过后保存的不只是代码，还包括 scope、test、provenance、browser/version 和 evidence。这样 Learn 才能真正连接下一轮 Improve，而不是把一次偶然成功变成永久规则。</p></article><footer>筛选原则：优先官方文档、GitHub 原始讨论与英文工程资料；过去 24 小时不足时，仅补一周内尚未推送且能落到 Browser Runtime / Agent Harness / Self-Improvement 闭环的内容。低信息量产品营销与重复发布已过滤。</footer></main></body></html>
