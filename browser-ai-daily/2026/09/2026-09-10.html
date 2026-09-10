@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-09-10 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-09-10"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-09-10"/>
+
+  <meta property="displaydate" content="2026-09-10T09:18:06.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-09-10</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<h2>今天最值得看</h2>
+
+<h3>1. BrowserSkill 0.2.1 把“动作成功”从返回值推进到运行时验证</h3>
+<p>Tencent BrowserSkill 9 月 9 日发布 0.2.1。最值得关注的不是版本号，而是几项很具体的 Runtime 修复：填表操作在报告成功前会验证实际结果；DeepSeek Harness 插件会同步 observation state；session stop 时修复 agent tab 泄漏、borrowed tab 生命周期与跨扩展 CDP 限制下的导航恢复。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 很容易出现一种“假成功”：tool call 返回 success，但页面状态并没有按预期改变。BrowserSkill 这次把 verify 放到动作执行层，而不是交给上层模型自己猜。</p>
+<p><strong>工程启发：</strong>Browser Runtime 应把 action result 设计成 <code>requested → executed → observed → verified</code> 四个阶段。只有最后一层通过，轨迹才应该进入 Learn / Skill / benchmark。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Tencent/BrowserSkill/releases/tag/cli-v0.2.1">BrowserSkill CLI 0.2.1</a> · <a target="_blank" rel="noopener" href="https://github.com/Tencent/BrowserSkill/releases/tag/ext-v0.2.1">BrowserSkill Extension 0.2.1</a></p>
+
+<h3>2. Chrome 153 的安全更新里，AI 已经直接进入真实浏览器漏洞发现流水线</h3>
+<p>Chrome 153 Stable 包含 230 个安全修复。值得单独注意的是，Chrome 官方清单里同时出现了由 Google BigSleep@Grape 报告的高危漏洞，以及由 OpenAI Codex Security 报告的高危 WebPackaging use-after-free；另外 V8 的 CVE-2026-87491 已确认存在在野利用。</p>
+<p><strong>为什么值得关注：</strong>这里的 AI 已经不是安全报告摘要工具，而是实际进入 Chromium / V8 / Browser Security 的发现链路，并产生可进入正式修复流程的漏洞证据。</p>
+<p><strong>Browser Self-Improvement 位置：</strong>当前最成熟的是 <strong>Observe / Discover → Reproduce / Validate → Triage</strong>；后续 Patch、build、Canary 仍主要由传统 Chrome 工程流水线负责。</p>
+<p><a target="_blank" rel="noopener" href="https://chromereleases.googleblog.com/">Chrome Releases：Chrome 153 Stable security fixes</a></p>
+
+<h3>3. SuperSplat 3.0 用 WebGPU 重写编辑器：GPU 不再只是渲染终点，而是数据处理 Runtime</h3>
+<p>PlayCanvas 9 月 9 日发布 SuperSplat Editor 3.0，编辑器从 renderer 到 data model 都进行了 WebGPU-first 重构。Gaussian 的 projection、frustum culling、compaction、depth sorting 和 draw submission 都在 GPU 上执行，并使用 compute projector、GPU radix sort 与 indirect drawing。</p>
+<p><strong>为什么值得关注：</strong>这是一类比“WebGPU 跑一个模型 demo”更成熟的浏览器工程实践：大量数据变换、筛选、排序、提交都进入 GPU pipeline，目标是降低内存占用并保持大场景交互响应。</p>
+<p><strong>端侧 AI 启发：</strong>浏览器内 AI Runtime 也应该把 token/embedding/vision patch 的预处理、筛选、排序、layout 和 dispatch 看成同一条 GPU dataflow，而不是只有 GEMM / attention 才值得 GPU 化。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.playcanvas.com/new-in-supersplat-editor-3-0-rebuilt-on-webgpu/">PlayCanvas：SuperSplat Editor 3.0 Rebuilt on WebGPU</a></p>
+
+<h3>4. 补推 Chrome DevTools MCP 1.9：Agent 能力开始被拆成可关闭、可限制的权限面</h3>
+<p>9 月 8 日发布的 Chrome DevTools MCP 1.9 没在昨日推送中展开。这个版本加入关闭 JavaScript execution tools 的选项，并进一步让 <code>--no-javascript-evaluation</code> 覆盖 navigation 和 initScripts；同时支持 configurable filesystem roots、关闭 source maps、cookie-debugging skill，并把 trace buffer 默认值调整到 DevTools 的 1.2 GB。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 不应该只有“连接 DevTools / 不连接 DevTools”两个状态。真实 Runtime 更需要把 JS execution、filesystem、navigation、trace、source maps 分成独立 capability。</p>
+<p><strong>工程启发：</strong>以后 Browser Harness 的权限模型更适合用 Tool Group / Capability Set 表达，而不是给 Agent 一整套 CDP 权限。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ChromeDevTools/chrome-devtools-mcp/releases/tag/chrome-devtools-mcp-v1.9.0">Chrome DevTools MCP v1.9.0</a></p>
+
+<h2>浏览器技术</h2>
+
+<h3>Chrome 153：安全修复本身也在说明浏览器工程的 AI 入口在哪里</h3>
+<p>Chrome 153 Stable 一次包含 230 个安全修复，其中涉及 WebGL、ANGLE、GPU、V8、Network、WebUI、DevTools、Extensions、ServiceWorker、FileSystem 等大量组件。对 Browser Self-Improvement 来说，这个列表本身就是一个很好的任务分布：高价值问题往往不是“生成一个新功能”，而是从 crash / sanitizer / fuzz / unusual state 中发现真实缺陷，再把问题压缩到一个可复现、可验证的 component-level case。</p>
+<pre>Crash / Fuzz / Security signal
+        ↓
+Candidate issue
+        ↓
+Reproduce in isolated runtime
+        ↓
+Component owner / culprit range
+        ↓
+Patch
+        ↓
+Regression test
+        ↓
+Canary / Stable telemetry</pre>
+<p>这里 AI 最容易先接入的是前半段，因为 discovery、reproduction、triage 都有比较清晰的输入输出；直接自动修改 V8 / GPU / WebGL 则仍需要更强的独立验证。</p>
+
+<h2>端侧 AI</h2>
+
+<h3>WebGPU 工程重点正在从“能运行”转向“整条数据流如何运行”</h3>
+<p>SuperSplat 3.0 的价值在于，它把 culling、compaction、sorting、indirect draw 都放到了 GPU 上。对端侧 AI，这是一个很好的类比：模型推理的性能并不只由 kernel 决定，CPU ↔ GPU 往返、buffer 生命周期、数据重排、筛选和 dispatch 同样会决定最终延迟。</p>
+<pre>Input
+  ↓
+Decode / preprocess
+  ↓
+GPU-side transform / filter / compact
+  ↓
+Kernel execution
+  ↓
+GPU-side postprocess
+  ↓
+Only small result back to CPU</pre>
+<p>如果浏览器内 LLM / VLM Runtime 仍然频繁把中间状态拉回 JS，再重新提交给 WebGPU，单个 kernel 的优化很容易被 orchestration overhead 抵消。</p>
+
+<h2>浏览器 × AI</h2>
+
+<h3>BrowserSkill 的 0.2.1 是一个很典型的 Runtime correctness 进展</h3>
+<p>Browser Agent 工具层常见的错误是把“命令发出去了”当成“动作成功了”。填表尤其容易出问题：框架可能触发了 input event，但 React/Vue controlled state 没更新；元素被替换；页面 debounce 后又恢复旧值；或者 selector 指向了视觉上相似但不是目标的节点。</p>
+<p>更稳的 Browser Action 应该是：</p>
+<pre>Intent
+  ↓
+Locate target
+  ↓
+Execute action
+  ↓
+Read back browser state
+  ↓
+Compare expected post-condition
+  ↓
+Verified success / explicit failure</pre>
+<p>这层验证最好由 Browser Runtime 完成，而不是把 DOM 再丢给 LLM 问“你觉得刚才成功了吗”。</p>
+
+<h3>Chrome DevTools MCP 的方向：把 Browser Agent 权限从连接级别拆到能力级别</h3>
+<p>关闭 JS execution、限制 filesystem root、过滤 Chrome WebUI target、控制 source maps，这些看起来都是零碎 option，但组合起来其实是在形成 Browser Agent 的 capability boundary。</p>
+<pre>Browser Agent Capability Set
+├─ Observe DOM / network / console
+├─ Performance trace
+├─ JavaScript execution
+├─ Navigation
+├─ Filesystem access
+├─ Source map access
+└─ Browser-internal target access</pre>
+<p>对于本地 Browser Agent，这比“只要连接 localhost MCP 就默认可信”更合理。</p>
+
+<h2>Browser Self-Improvement</h2>
+
+<h3>今天的新判断：Learn 之前必须有 Post-condition Verification</h3>
+<p>过去几天我们一直在补强 Independent Verification、Runtime Contract Testing、Improvement Integrity 和 Verified Capability Learning。今天 BrowserSkill 的实际修复把一个容易忽略的环节补了出来：<strong>单个动作自身也必须验证 post-condition。</strong></p>
+<pre>Observe
+  ↓
+Diagnose
+  ↓
+Action / Patch
+  ↓
+Post-condition Verification
+  ├─ page state changed?
+  ├─ expected value persisted?
+  ├─ navigation reached target?
+  ├─ process / tab lifecycle correct?
+  └─ no hidden runtime error?
+  ↓
+Task-level Verification
+  ↓
+Canary / Telemetry
+  ↓
+Learn</pre>
+<p>否则会出现一个非常危险的闭环：</p>
+<pre>Tool returns success
+      ↓
+Agent assumes success
+      ↓
+Trajectory marked good
+      ↓
+Skill / Memory learns wrong behavior
+      ↓
+Future failure becomes systematic</pre>
+<p>所以 Browser Self-Improvement 里的 Learn，不应该只消费“最终任务成功”的轨迹，还应该要求关键 action 自带 state transition evidence。</p>
+
+<h3>Chrome Security：AI 发现真实漏洞已经进入 Browser Self-Improvement 的前半环</h3>
+<p>Chrome 153 的安全修复清单中出现 BigSleep 与 Codex Security 直接报告的高危 Chromium 漏洞，是今天最强的真实工程信号之一。它说明 AI 已经能在浏览器这种大型 C++ / Rust / GPU / JS Runtime 系统里产出可进入 security triage 的发现。</p>
+<p>当前闭环大致是：</p>
+<pre>AI / fuzz discovery
+        ↓
+Issue evidence
+        ↓
+Reproduction / validation
+        ↓
+Human security triage
+        ↓
+Patch + conventional CI
+        ↓
+Stable rollout</pre>
+<p>下一步真正值得做的不是让 AI 直接自动合入 patch，而是把中间证据标准化：reproducer、affected build range、stack / sanitizer signature、suspect CL range、minimal regression test。这样 Patch Agent 才能接得更稳。</p>
+
+<h3>补推 Refine Cycle：小步修改、journal、rollback 比“自动重写 Harness”更可信</h3>
+<p>本周出现的 Refine Cycle for Hermes Agent 是一个值得跟踪的小型实践：它对跨 session 重复失败做 fingerprint，达到重复阈值后才提出最小 skill / memory 修改；每次 mutation 先 journal，支持 rollback，并限制每天修改数量。作者还明确区分了哪些结论来自测试、哪些还缺生产使用证据。</p>
+<p>它最值得迁移到 Browser Harness 的不是具体实现，而是三个约束：<strong>重复证据才触发、最小修改、可回滚。</strong></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Bergschloss/Refine-Cycle-for-Hermes-Agent">Refine Cycle for Hermes Agent</a></p>
+
+<h3>理论侧提醒：更多候选 Patch 不等于更安全地改进</h3>
+<p>《Safe Harness Self-Evolution》进一步指出，生成 modification 和认证 modification 是两个不同瓶颈；当 evaluation capacity 有限时，生成更多 candidate 并不保证更容易得到可安全采用的更新。越接近性能上限，识别真实小改进需要的评测成本还可能急剧上升。</p>
+<p>这对浏览器工程非常现实：一次 0.3% 的 Speedometer / page-load 改善，如果噪声、设备差异和回归面都很大，验证成本可能远大于提出 patch 的成本。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.08175">Safe Harness Self-Evolution: A Theoretical Analysis of Feasibility and Limits</a></p>
+
+<h2>开源与论文 / 工程实践</h2>
+
+<h3>BrowserSkill 0.2.1：值得把 eval 放到 action state transition 上</h3>
+<p>BrowserSkill 仓库已经带有 <code>evals/browser</code>，并强调 agent-neutral browser capability evaluation。今天的 fill result verification 和 observation synchronization 很适合进一步变成 deterministic eval：给固定页面、固定动作、固定 expected state，不需要 LLM 参与就能判断 Runtime 是否正确。</p>
+
+<h3>SuperSplat 3.0：WebGPU 作为浏览器内通用计算底座的成熟案例</h3>
+<p>与模型 demo 相比，编辑器这种长时间运行、数据频繁变化、交互要求高的应用更能暴露 WebGPU Runtime 的真实工程问题：内存、buffer 生命周期、GPU sorting、indirect draw、CPU/GPU 同步、长场景稳定性。对浏览器端 AI 来说，这类项目值得作为 WebGPU engineering reference。</p>
+
+<h2>今天的一个判断</h2>
+
+<blockquote><p><strong>Browser Self-Improvement 现在最应该补的不是“让 Agent 更会改”，而是把每个 Action 和 Patch 都变成可验证的状态变化。只有浏览器 Runtime 能证明“动作真的发生、结果真的保持、没有隐藏错误”，这次成功才有资格进入 Learn。</strong></p></blockquote>
+
+<p>过去 24 小时没有发现达到门槛的新 WebKit / Firefox 引擎级发布，也没有新的端侧小模型底座明显超过本周已推送内容，因此不补低信息量条目。</p>
+
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
