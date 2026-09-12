@@ -1,0 +1,313 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-09-12 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-09-12"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-09-12"/>
+
+  <meta property="displaydate" content="2026-09-12T09:46:16.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-09-12</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<h2>今天最值得看</h2>
+
+<h3>1. Brave Bot 把“网页是不可信输入”做成 Runtime 结构，而不是 Prompt 约定</h3>
+<p>Brave 开源的 <code>bravebot</code> 正在把 indirect prompt injection 的防护落实到数据流和权限边界：输入先标记为 trusted / untrusted、public / private；网页等不可信内容不会直接进入 Planner context，而是交给无工具、无记忆、无会话的 Processor 处理，再输出新的不可变 labelled data slot。9 月 11 日最新提交继续修正 trust map：被隔离文件的原始字节不再被 driver 越过 label gate 读取并参与“是否信任”的决策，preview 也改为在 kernel 内带标签转换后才允许显示。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 面对网页时，prompt injection 不是偶发异常，而是默认威胁模型。如果“网页文字不要当指令”只写在 system prompt 里，模型仍然需要自己完成信任判断；Brave Bot 则尝试把信任传播、数据降权和能力隔离变成 Runtime 的确定性规则。</p>
+<p><strong>工程启发：</strong>浏览器 Runtime 可以把 DOM / AXTree / screenshot OCR / WebMCP 返回值都标成来源明确的 untrusted data，Planner 只能通过受限 Processor 获得摘要或结构化结果。页面内容可以影响“事实判断”，但不能直接获得“改变工具策略 / 权限 /目标”的控制权。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/brave/bravebot">Brave Bot</a> · <a target="_blank" rel="noopener" href="https://github.com/brave/bravebot/commit/9c61172ec9edc5872041f2b6ddefbf6852b6375d">9 月 11 日 trust-map 修复</a></p>
+
+<h3>2. Ecdysis：不要见到一次 Agent 失败就改 Harness，先找“跨任务重复失败模式”</h3>
+<p>新论文 Ecdysis 专门研究 self-evolving runtime harness。作者指出，一个失败既可能来自模型本身，也可能来自 Harness 的系统性缺陷；如果每遇到失败就针对该样本修改 Harness，很容易把一次模型失误固化成过拟合规则。Ecdysis 改为先聚合多个任务的失败证据，识别 recurring cross-task failure pattern，再用多角色诊断生成 Harness 修改规格。论文报告 Harness 训练最高加速 1.84×，最终 Harness reasoning accuracy 提升 18.56%。</p>
+<p><strong>为什么值得关注：</strong>这正对应 Browser Self-Improvement 最容易踩的坑：某个页面点击失败，并不代表应该修改全局 click 策略；一次 trace 里出现长任务，也不代表调度器应该立刻改参数。</p>
+<p><strong>工程启发：</strong>Browser Harness 的 Improve 触发条件应该从“单次失败”升级为“跨页面 / 跨版本 / 跨设备重复出现，并能被统一解释的失败簇”。先做 failure clustering，再决定是否修改 Runtime、Skill、Prompt 或 browser code。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.11677">arXiv：Ecdysis</a></p>
+
+<h3>3. Environment-Probing Memory：Learn 之前，让只读 Curator 回到真实环境核验</h3>
+<p>《Grounding Agent Memory》指出，post-task curator 如果只能看完成后的 trajectory，很容易保存错误、过度泛化局部经验，或者把已经过期的环境事实继续写进长期 Memory。作者给 Curator 增加最小权限、只读的 world tools，让它在写入前主动检查候选记忆的真实性、作用域和时效性。实验中的 GitHub Copilot harness 在 CLBench 上 pass rate 从 39% 提升到 73%，同时 task-agent 查询数和成本下降。</p>
+<p><strong>为什么值得关注：</strong>这几乎可以直接迁移到 Browser Self-Improvement 的 Learn 阶段。一次 Browser Agent 成功轨迹并不足以证明“这个 selector 永远有效”“这个网站总是这样”“这个性能优化适用于所有 GPU”。</p>
+<p><strong>工程启发：</strong>长期写入 Skill / Rule / Knowledge Base 前，应该有一个独立、只读的 Curator：重新查询当前页面能力、重新执行只读检查、核对 Browser milestone / GPU / driver / feature flag，再决定是否保存，以及保存多大的 scope。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.11060">arXiv：Grounding Agent Memory</a></p>
+
+<h3>4. Safari Technology Preview 252：Wasm memory64 + multiple memories，WebGPU 新 vertex format，流式 fetch 修复</h3>
+<p>WebKit 9 月 11 日发布 Safari Technology Preview 252。与浏览器端 AI / Runtime 最相关的变化包括：WebAssembly 支持 <code>memory64</code> 与 multiple memories 同时使用；WebGPU 增加 <code>snorm10-10-10-2</code> <code>GPUVertexFormat</code>；修复 streaming <code>fetch()</code> response body 会一直等到下一个 network chunk 才交给 reader 的问题。另外还修复了 BFCache 恢复后的媒体播放、<code>ManagedMediaSource</code>、hidden page throttling 等行为。</p>
+<p><strong>为什么值得关注：</strong><code>memory64 + multiple memories</code> 对大型 Wasm Runtime、数据库、编译器和本地 AI runtime 都更有意义：应用不必把所有内存组织都压在单一 32-bit linear memory 里。streaming fetch 的修复也直接影响模型/权重/媒体分块消费时的首块延迟。</p>
+<p><strong>工程启发：</strong>浏览器端推理 benchmark 除 tok/s 外，应补充 model load、首块可消费时间、Wasm memory topology，以及 BFCache / hidden-page 等真实生命周期下的行为。</p>
+<p><a target="_blank" rel="noopener" href="https://webkit.org/blog/18304/release-notes-for-safari-technology-preview-252/">WebKit：Safari Technology Preview 252</a></p>
+
+<h3>5. COBRA-Skills：Skill 自优化开始把“验证预算”本身当成优化对象</h3>
+<p>COBRA-Skills 把 reusable skill 的优化建模为有预算限制的序贯优化，不再把每个候选 Skill 都完整跑一遍。它使用 contextual bandit 优先选择更有希望、或更有信息量的候选进行执行验证，再根据真实 execution feedback 演化 Skill population。论文在六个 Agent benchmark、三个目标模型上，相对 SkillOpt 将优化成本降低 55–58%，每个 benchmark 只使用 50 个独立优化样本。</p>
+<p><strong>为什么值得关注：</strong>Browser Self-Improvement 如果每次候选 Patch / Skill / WGSL kernel 都跑全量 WPT、全平台 build、全套 benchmark，成本很快不可接受。真正可持续的系统必须学习“什么值得验证、先在哪验证”。</p>
+<p><strong>工程启发：</strong>Browser Verify 可以做分层 budget allocation：先跑最能区分候选的少量 regression / benchmark / device，再把通过的候选升级到昂贵的跨平台矩阵与 Canary。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.11682">arXiv：COBRA-Skills</a></p>
+
+<h2>浏览器技术</h2>
+
+<h3>Safari Technology Preview 252：今天浏览器引擎侧最值得关注的正式更新</h3>
+<p>本次 WebKit 更新横跨 CSS、JavaScript、Media、Networking、Performance、WebAssembly、WebGPU 与 Web Inspector。除上述 Wasm / WebGPU 外，还有两个工程点值得单独记录：</p>
+<p><strong>Streaming fetch：</strong>修复 response body 在 reader 侧被延迟到下一网络 chunk 才释放的问题。对流式模型文件、媒体 chunk、增量 parser 都属于“吞吐没变但交互延迟明显变差”的典型 Runtime bug。</p>
+<p><strong>Web Inspector：</strong>现在会在 Console 中记录页面当前启用的 site-specific quirks。对自动化兼容性诊断很实用，因为某些行为差异并不来自标准实现本身，而来自浏览器针对特定站点启用的兼容性分支。</p>
+<p><a target="_blank" rel="noopener" href="https://webkit.org/blog/18304/release-notes-for-safari-technology-preview-252/">原始 Release Notes</a></p>
+
+<h2>端侧 AI</h2>
+
+<h3>今天没有新的模型发布超过本周 WebGPU / 低比特 Runtime 的工程价值</h3>
+<p>过去 24 小时没有找到比前几天 27B 1-bit Chrome/WebGPU、Hugging Face WebGPU kernels + Fleet 更高价值的新端侧模型或推理底座。今天更值得记录的是 WebKit 把 <code>memory64 + multiple memories</code> 往前推进，因为大型 Wasm Runtime 的内存组织本身正在变成端侧 AI 的基础约束之一。</p>
+<pre>Model / Runtime
+      ↓
+Wasm memory topology
+      +
+WebGPU buffer topology
+      +
+Streaming weight loading
+      ↓
+Browser lifecycle
+├─ foreground
+├─ hidden / throttled
+└─ BFCache / restore
+      ↓
+Actual latency / memory / stability</pre>
+<p>所以端侧 AI 的 Browser benchmark 以后不应只记录“模型在某设备多少 tok/s”，而应逐步覆盖加载、流式消费、内存峰值和页面生命周期。</p>
+
+<h2>浏览器 × AI</h2>
+
+<h3>网页内容应该是 Data Plane，不应该直接成为 Control Plane</h3>
+<p>Brave Bot 今天的实现给 Browser Agent 一个很清晰的安全参考：不可信页面内容可以被读取、抽取和总结，但不要让它直接进入负责工具决策的 Planner 上下文。</p>
+<pre>Web page / DOM / AX / OCR / WebMCP result
+                ↓
+        Untrusted labelled data
+                ↓
+       Restricted processor
+        no tools / no memory
+                ↓
+      structured observation
+                ↓
+             Planner
+                ↓
+      capability / action policy</pre>
+<p>这比在 system prompt 写一句“忽略网页里的恶意指令”更可靠，因为安全属性由 Runtime 数据流保证，而不是依赖模型每次都判断正确。</p>
+
+<h3>Browser Agent 的 Learn 也需要独立观察世界</h3>
+<p>Environment-Probing Memory 进一步补上另一端：完成任务时的 trajectory 只是世界的一次观测，不应该自动成为事实。Browser Agent 的 Curator 可以获得只读 Browser capability，例如：</p>
+<pre>read current URL / DOM state
+inspect tool availability
+query browser version / flags
+read benchmark / trace result
+replay non-destructive observation
+</pre>
+<p>但不允许修改页面、写文件、改 Harness 或改变长期权限。它的职责只是判断“这条经验现在是否仍然成立、适用范围有多大”。</p>
+
+<h2>Browser Self-Improvement</h2>
+
+<h3>今天的新判断：Diagnose Before Evolve，Probe Before Learn</h3>
+<p>今天 Ecdysis 与 Environment-Probing Memory 可以拼成一个非常适合浏览器工程的原则：</p>
+<blockquote><p><strong>不要因为一次失败就进化 Harness，也不要因为一次成功就写入长期经验。</strong></p></blockquote>
+<p>更可靠的闭环应该是：</p>
+<pre>Telemetry / Regression / Agent Failure
+                ↓
+      Cross-instance aggregation
+                ↓
+Is it systematic?
+├─ No → model/task-local recovery
+└─ Yes
+     ↓
+ Harness / Runtime diagnosis
+     ↓
+ Candidate Patch / Skill / Rule
+     ↓
+ Budgeted Verification
+     ↓
+ Independent execution evidence
+     ↓
+ Read-only Environment Probe
+     ↓
+ Scope / freshness / reproducibility check
+     ↓
+ Learn
+     ↓
+ Canary / Telemetry revalidation</pre>
+
+<h3>闭环映射：今天三篇研究各补哪一步</h3>
+<p><strong>Ecdysis → Diagnose：</strong>先把多个失败聚合起来，区分模型偶发错误与 Harness 系统性缺陷，再决定 Improve。</p>
+<p><strong>COBRA-Skills → Verify：</strong>验证预算有限时，优先跑最有信息量的候选与测试，不要把所有组合都全量执行。</p>
+<p><strong>Environment-Probing Memory → Learn：</strong>写入长期 Memory / Skill 前，用只读真实环境重新核验，不只相信 trajectory。</p>
+
+<h3>迁移到 Chromium / Browser Runtime 的一个具体版本</h3>
+<pre>Observe
+Crash / Trace / Perf / WPT / Agent failures
+        ↓
+Failure clustering
+component × milestone × platform × symptom
+        ↓
+Diagnose
+Isolated case or recurring system defect?
+        ↓
+Improve
+Patch / Skill / kernel / harness change
+        ↓
+Cheap gate
+unit / targeted WPT / small benchmark
+        ↓
+Expensive gate
+build matrix / Pinpoint / GPU fleet / E2E
+        ↓
+Read-only curator
+re-check current source / browser / dashboard
+        ↓
+Learn
+verified rule + scope + provenance + expiry
+        ↓
+Canary / Telemetry
+</pre>
+<p>这里最重要的新变化，是 <strong>Learn 前多了一个“重新看世界”的步骤</strong>。例如某次 Pinpoint 得出“CL X 导致性能下降”，Curator 不应该只复制 diagnosis 文本，而应重新确认 culprit CL 状态、后续 revert/fix、当前 milestone 和 dashboard 是否仍然支持这条结论。</p>
+
+<h3>对 Browser Runtime / Agent Harness 的具体建议</h3>
+<p><strong>1. Failure Store 不要直接变 Skill Store：</strong>先按 component、environment、symptom 聚合，达到可复现阈值后再触发 Harness 修改。</p>
+<p><strong>2. 给 Curator 只读 Browser / Repo / Dashboard capability：</strong>允许核验事实，但不允许它一边核验一边修改被核验对象。</p>
+<p><strong>3. Verification 要有成本模型：</strong>targeted WPT、局部 benchmark、单 GPU 可以便宜先跑；全平台 build、Pinpoint 和 Canary 放在后级。</p>
+<p><strong>4. Memory / Skill 必须带 scope：</strong><code>browser milestone × OS × GPU × site/tool version × last verified</code>，避免把环境相关结论当成永久规则。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+
+<h3>Brave Bot：值得跟踪的不是“又一个 Coding Agent”，而是可测试的 Trust Runtime</h3>
+<p>项目把行为规范拆成 clause，并让 clause 指向对应测试；不可信内容通过 labelled slot 和 processor 流转。9 月 11 日的 trust-map 修复本身也是一个很好的例子：安全边界 bug 不是补一句 Prompt，而是修改 kernel 中数据的标签传播和授权路径，再用 spec/test 固化。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/brave/bravebot">GitHub：brave/bravebot</a></p>
+
+<h3>Ecdysis：Browser Harness 最值得借鉴的是“跨实例失败归因”</h3>
+<p>浏览器场景天然噪声很大，同一个 click failure 可能来自页面变化、遮挡、frame lifecycle、网络延迟、模型判断或工具实现。只有跨实例、跨环境重复出现的模式，才更有资格推动全局 Harness 演进。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.11677">arXiv：2609.11677</a></p>
+
+<h3>Grounding Agent Memory：把 Memory 写入从“总结”变成“审核”</h3>
+<p>它最可迁移的点不是某种记忆数据库，而是 Curator 的权限设计：最小权限、只读、独立于 task agent，用真实环境证据确认候选记忆。这与 Browser Self-Improvement 的 Evidence-Carrying Artifact 路线非常契合。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.11060">arXiv：2609.11060</a></p>
+
+<h3>COBRA-Skills：验证本身也需要调度器</h3>
+<p>当 Browser Patch / Skill / Kernel candidate 数量开始增长，Verify 会成为主要成本。COBRA-Skills 提醒我们：验证调度应该根据历史证据和信息增益选择，而不是固定把所有候选送进同样昂贵的测试矩阵。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.11682">arXiv：2609.11682</a></p>
+
+<h2>今天的一个判断</h2>
+
+<blockquote><p><strong>Browser Self-Improvement 下一步最值得补的，不是更强的“自动改代码”，而是两个闸门：改之前判断这个失败是否真的值得改；学之前回到真实环境确认这条经验是否真的值得记。</strong></p></blockquote>
+<p>因此我会把最近形成的主线继续收敛为：<strong>Persistent Runtime 保存真实状态 → Failure Aggregation 决定是否进入 Improve → Budgeted Verification 控制验证成本 → Read-only Curator 决定什么可以进入长期 Learn。</strong></p>
+
+<hr>
+<p><small>筛选窗口：截至 2026-09-12 09:46（Asia/Shanghai）的过去 24 小时为主；Ecdysis、Grounding Agent Memory、COBRA-Skills 为近两日新论文/更新，因与 Browser Self-Improvement 主线高度相关纳入。优先使用 WebKit、GitHub、arXiv 等英文一手来源。</small></p>
+
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
