@@ -1,0 +1,120 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-09-13
+date: 2026-09-13 09:23:30
+---
+
+<h2>今天最值得看</h2>
+
+<h3>1. Lightpanda 修复 CDP wheel：Browser Agent 的“滚动成功”必须等价于真实浏览器语义</h3>
+<p>Lightpanda 9 月 13 日合入 PR #3479，修复了一个很典型的 Browser Agent Runtime 问题：此前 <code>Input.dispatchMouseEvent(type=mouseWheel)</code> 只会滚动鼠标下方元素；如果没有可滚动元素就直接返回，因此 Playwright <code>mouse.wheel</code>、Puppeteer、chromedp、Selenium BiDi、Browser Use 和 Stagehand 的滚动在页面级场景中实际上可能是 no-op。修复后，命中可滚动容器时滚容器，否则通过 <code>Window.scrollBy</code> 滚 viewport，并正常产生受信任的 <code>scroll</code>/<code>scrollend</code> 事件。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 的工具兼容不能只做到“API 能调用”，而要保证底层行为与真实 Chrome 语义一致。否则上层 Agent 会把 Runtime 缺陷误判成页面问题或规划失败。</p>
+<p><strong>工程启发：</strong>Browser Harness 应维护跨驱动的 semantic compatibility matrix，把同一动作通过 Playwright / Puppeteer / CDP / BiDi / Browser Use 重放，并验证最终 viewport、事件和 DOM 状态，而不是只检查调用返回值。</p>
+<p><a href="https://github.com/lightpanda-io/browser/pull/3479">Lightpanda PR #3479</a> · <a href="https://github.com/lightpanda-io/browser/commit/799dc3e06d3cf2c9ccd43b568955ab84e1741566">合入 commit</a></p>
+
+<h3>2. Brave Bot：工作目录变化不能继承旧信任，权限必须绑定到“执行上下文”</h3>
+<p>Brave Bot 9 月 12 日加入可持久化 working directory 后，同时发现并堵住一个很现实的信任泄漏：一个已经被用户批准过的命令，如果原样在另一个目录执行，原先的 approval 不应自动沿用。否则例如在自己的仓库批准过 <code>git log</code>，Agent 把目录切到不可信 vendored dependency 后，攻击者控制的 commit message 可能被重新标成 trusted data。现在非 workspace root 目录会重新询问，并把输出隔离；目录本身也要经过 effect policy，而不是只检查 read 权限。</p>
+<p><strong>为什么值得关注：</strong>这是 Browser Agent / Coding Agent 权限模型很容易忽略的一层：Capability 不能只绑定 tool + argv，还必须考虑 origin、tab、cwd、workspace、profile 等执行上下文。</p>
+<p><strong>工程启发：</strong>迁移到浏览器可写成 <code>Capability = action × target × context</code>。同一个脚本、WebMCP tool 或 CDP action，在不同 Tab / Origin / Browser profile 下不应天然继承授权。</p>
+<p><a href="https://github.com/brave/bravebot/commit/ade9e78061cffb1fe84feb9729bf2db9c0673996">Brave Bot：working directory / trust policy</a></p>
+
+<h3>3. BrowserSkill 修正 Canvas visual geometry：Observation 本身也需要生产级回归验证</h3>
+<p>BrowserSkill 9 月 12 日合入 Canvas visual geometry 修复。问题包括：body overflow 被传播到 viewport 时截图裁剪可能错误，以及 Shadow DOM slot 场景下 live validation 沿 DOM parent 而不是实际渲染 ancestry，导致 discovery 找到的 Canvas 在验证阶段又被错误拒绝。修复覆盖 viewport overflow、root offset、containment、iframe clipping、open/closed/nested slot、redistribution 和 assignment race。</p>
+<p>这次验证不是只跑单元测试：Extension suite 1,444 项、VOM 47 项、新增 native Chrome 27 项，并确认这些 regression 在未修复代码上确实会失败。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 的 Observe 层如果几何、裁剪或 rendered ancestry 错了，上层 grounding 再强也会做错动作。Observation correctness 应和 Action correctness 同等级。</p>
+<p><strong>工程启发：</strong>DOM snapshot / visual geometry / screenshot / hit-test 最好共享一套几何真值，并在真实 Chrome 中做 cross-check，避免“发现阶段”和“执行前验证阶段”使用两套不同语义。</p>
+<p><a href="https://github.com/Tencent/BrowserSkill/pull/237">BrowserSkill PR #237</a></p>
+
+<h3>4. BrowserSkill 增加 full-page screenshot：长页面 Observation 继续从 viewport 快照走向可复用证据</h3>
+<p>同日 BrowserSkill 合入 full-page screenshot，Extension 和 CLI 都可获取完整页面，而不只是一屏 viewport。这项能力本身不复杂，但对 Browser Agent 的调试和验证很有价值：长页面任务可以保留一次完整视觉证据，用于复盘、差异比较和失败定位，不必依赖 Agent 当时滚到了哪里。</p>
+<p><strong>工程启发：</strong>完整截图不应直接替代结构化 DOM/AX observation，但很适合进入 Evidence Bundle：任务失败时保存 full-page screenshot + DOM snapshot + action trace，可以显著提高异步诊断能力。</p>
+<p><a href="https://github.com/Tencent/BrowserSkill/commit/72876cc20b1cc4f3a34f9dd8a48b2e7e91f0d08f">BrowserSkill full-page screenshot</a></p>
+
+<h2>浏览器技术</h2>
+
+<h3>今天没有新的 Chromium / Firefox / WebKit 正式大版本动作，Runtime 兼容性反而更值得看</h3>
+<p>周末官方浏览器发布较少。今天最值得记录的浏览器工程变化来自 Lightpanda：一个看似简单的 wheel event，如果 viewport、scroll container 与事件派发语义没有和 Chrome 对齐，就会同时破坏多个上层自动化框架。这类问题说明，面向 Agent 的新浏览器 Runtime 最终必须把 CDP / BiDi 的行为兼容当作核心产品指标，而不仅是“接口覆盖率”。</p>
+
+<h2>端侧 AI</h2>
+
+<h3>过去 24 小时没有达到门槛的新 WebGPU / WASM 推理底座</h3>
+<p>今天没有发现比本周已经推送的 Hugging Face WebGPU kernels、27B 1-bit Chrome/WebGPU 更高价值的新端侧推理进展，因此不补普通模型发布。当前更值得继续推进的是 Runtime benchmark：把 Browser milestone、GPU/driver、加载时间、buffer topology 与页面生命周期纳入同一验证矩阵。</p>
+
+<h2>浏览器 × AI</h2>
+
+<h3>Browser Agent 的可靠性开始收敛到两类基础问题：看得准，动作语义对</h3>
+<pre>Observe
+DOM / AX / Canvas geometry / screenshot
+        ↓
+Observation validation
+        ↓
+Action
+CDP / BiDi / WebMCP / generated code
+        ↓
+Semantic post-condition
+viewport / event / DOM / network state
+        ↓
+Evidence
+        ↓
+Agent reasoning / Learn</pre>
+<p>今天 BrowserSkill 和 Lightpanda 的变更分别补了上图的两端。对 Browser Agent 来说，这类确定性 Runtime 修复往往比再换一个更强模型更能提高真实成功率。</p>
+
+<h2>Browser Self-Improvement</h2>
+
+<h3>今天的新判断：Context-Bound Capability + Semantic Ground Truth</h3>
+<p>今天三项工程变化可以拼成一个新的闭环要求：</p>
+<blockquote><p><strong>权限必须绑定执行上下文，验证必须绑定真实浏览器语义。</strong></p></blockquote>
+<pre>Telemetry / Agent Failure
+        ↓
+Reproduce in real runtime
+        ↓
+Classify
+├─ Observation mismatch
+├─ Action semantic mismatch
+└─ Capability / trust mismatch
+        ↓
+Patch Runtime / Harness
+        ↓
+Cross-driver / native-browser verification
+        ↓
+Evidence Bundle
+        ↓
+Learn scoped rule
+├─ browser/runtime version
+├─ action surface
+├─ origin / tab / workspace context
+└─ last verified
+        ↓
+Canary / Telemetry</pre>
+<p><strong>Observe：</strong>BrowserSkill 的 geometry regression 说明 Observation 也要有真实 Chrome ground truth。</p>
+<p><strong>Diagnose：</strong>当 Agent 多次滚动无效时，先判断是不是 Runtime semantics 与 Chrome 不一致，而不是立即归因给规划模型。</p>
+<p><strong>Improve / Verify：</strong>Lightpanda 用 integrations matrix 验证 Playwright、Puppeteer、chromedp、Selenium BiDi、Browser Use、Stagehand 同时从失败变为成功，这是很值得迁移的 Browser Runtime 验证方式。</p>
+<p><strong>Learn：</strong>Brave Bot 的修复提醒我们，长期规则不能写成“这个命令已批准”，而应该是“这个能力在什么上下文被批准”。Browser 侧对应 origin / tab / profile / target address space / sensitive state。</p>
+
+<h3>对 Chromium / Browser Harness 的具体迁移</h3>
+<pre>Failure cluster
+   ↓
+Runtime semantic reproducer
+   ↓
+Reference Chrome / WPT / CDP behavior
+   ↓
+Candidate patch
+   ↓
+Multi-surface replay
+CDP × BiDi × Playwright × Browser Agent
+   ↓
+Post-condition compare
+   ↓
+Scoped rule + regression test
+</pre>
+<p>这条路线尤其适合 Browser Self-Improvement：Agent 可以自动提出 Runtime patch，但“正确”的定义不能由 Agent 自己写，而应该来自 reference browser、WPT、已有协议语义和真实状态变化。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+
+<p><strong>Lightpanda：</strong>今天最值得跟踪的开源 Browser Runtime 变化，重点不在新增 API，而在把 wheel 行为修到多个真实自动化框架都一致通过。</p>
+<p><strong>BrowserSkill：</strong>继续补真实浏览器 Observation 与视觉证据能力，且给出较完整的 native Chrome regression 验证。</p>
+<p><strong>Brave Bot：</strong>继续把 trust / permission 从 Prompt 约定下沉成 Runtime policy；今天的 working-directory 修复进一步说明“上下文变化 = 重新授权边界”。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><p><strong>Browser Agent 现在最缺的不是更多 Action API，而是一套可被 reference browser 验证的“动作语义真值”，以及一套不会跨上下文错误继承的 Capability 模型。</strong></p></blockquote>
+<p>如果这两层稳定下来，Agent 的错误才能被清楚地区分为“模型决策错”还是“Runtime 行为错”；也只有这样，失败经验才值得进入长期 Skill / Harness。</p>
