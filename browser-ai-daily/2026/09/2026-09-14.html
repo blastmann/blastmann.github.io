@@ -1,0 +1,259 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-09-14 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-09-14"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-09-14"/>
+
+  <meta property="displaydate" content="2026-09-14T09:36:43.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-09-14</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<h2>今天最值得看</h2>
+
+<h3>1. Discriminative World Models：Web Agent 的世界模型不应只“预测得像”，而应帮助区分哪个动作更值得执行</h3>
+<p>本周尚未推送的一篇 Web Agent 论文提出 <strong>predicted-state matching</strong>。传统 world model 常训练成预测下一步 HTML、AXTree 或状态摘要，但这种目标和真正的动作选择并不完全一致：对 Agent 来说，关键不是把页面复述得最像，而是能否区分多个候选动作会把浏览器带到哪些不同状态。论文因此从 WebArena Go-Browse 轨迹构造 branching data，让每个 decision point 同时包含多个替代动作及其真实结果，并训练 world model 去辨别真正对应的 resulting state。</p>
+<p><strong>为什么值得关注：</strong>这把 Browser Agent 的“先想象后执行”从生成式预测推进到与 action ranking 直接对齐。论文报告该方法在 predicted-state matching、WebPRMBench 以及 WebArena-Lite 的端到端任务成功率上都优于普通 next-state prediction。</p>
+<p><strong>工程启发：</strong>Browser Runtime 如果已经能提供可重放的 DOM/AX/截图/action trace，可以把真实执行结果积累成 branching dataset：同一页面状态下采样多个候选动作，只执行受控的一部分并记录 outcome，用来训练或评估 action ranker，而不是只训练模型复述页面。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.02885">论文：Discriminative World Models for Web Agents</a></p>
+
+<h3>2. Claw-Eval：Agent Eval 开始把“一次成功”改成“三次都成功”</h3>
+<p>Claw-Eval 目前提供 300 个经过人工核验的任务、2,159 条 rubric，并把主指标改为 <code>Pass^3</code>：一个任务必须在三次独立运行中全部通过，才算真正成功。评测同时检查 Completion、Safety 和 Robustness，并保留完整 trajectory、sandbox isolation 与 state verification。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 很容易出现 lucky run：某次页面加载顺序、网络延迟或 selector 恰好合适，就得到一次成功。只看单次成功率，会把这种偶然性错误写进 Skill、Harness 或模型选择。</p>
+<p><strong>工程启发：</strong>Browser Self-Improvement 的 Verify 层应把关键 regression 从 <code>pass once</code> 升级为重复验证，例如同一任务至少跨 3 次独立 browser session，并针对高风险任务再扩展到多个 milestone / OS / 网络条件。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/claw-eval/claw-eval">Claw-Eval GitHub</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2604.06132">论文</a></p>
+
+<h3>3. Chrome DevTools MCP 本周继续快速成为 Browser Agent 的通用调试桥，但价值已经从“能控制 Chrome”转向“可观测 + 可验证”</h3>
+<p>过去一周 Chrome DevTools MCP 的关注度明显上升。真正值得 Browser 工程关注的不是 star 数，而是它提供的能力边界：Agent 可以读取 DOM、console、network、performance trace，并在真实 Chrome 中执行导航和交互。结合此前 1.9 版对 JavaScript execution、filesystem roots、source maps 等 capability 的拆分，它越来越适合作为 Browser Harness 的诊断与验证层，而不是单纯的自动点击工具。</p>
+<p><strong>工程启发：</strong>对 Browser Self-Improvement，DevTools MCP 更适合放在 <code>Observe / Diagnose / Verify</code>，而不是让同一个高权限 Agent 同时控制 benchmark、修改源码并决定自己是否成功。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ChromeDevTools/chrome-devtools-mcp">Chrome DevTools MCP</a></p>
+
+<h3>4. 今天没有新的高价值端侧模型发布：更值得继续追踪 WebGPU Runtime 的“结果稳定性”而非单次 tok/s</h3>
+<p>过去 24 小时没有发现比本周已推送的 27B 1-bit Chrome/WebGPU、WebGPU kernel fleet 更高价值的新端侧推理底座。结合今天的 Pass^3 思路，端侧 AI benchmark 也应该从“跑一次速度”升级成重复、跨环境的稳定测量。</p>
+<p><strong>工程启发：</strong>同一模型 / kernel 至少记录 Browser milestone、GPU/driver、首次加载、steady-state、显存峰值和重复运行方差。对于 Browser Agent，还要额外记录 tool-use / instruction-following 是否随量化和 Runtime 变化而退化。</p>
+
+<h2>浏览器技术</h2>
+
+<h3>周末没有新的 Chromium / Firefox / WebKit 大版本动作，今天重点放在可验证的 Runtime 行为</h3>
+<p>今天没有发现值得替代前几期 Safari Technology Preview 252、Chrome 153 发布节奏与 WebGPU 更新的新引擎级新闻。对 Browser Runtime 来说，当前更值得推进的是把真实浏览器行为转成稳定的验证资产：WPT、CDP/BiDi semantic tests、trace、network/console evidence，以及跨 milestone 的 replay。</p>
+
+<h2>端侧 AI</h2>
+
+<h3>从“最快一次”转向“可重复性能”</h3>
+<p>WebGPU / WASM 推理正在逐渐进入复杂 Browser Runtime：模型加载、GPU buffer、页面生命周期、后台节流、driver 差异都会影响结果。今天 Claw-Eval 的重复成功原则可以直接迁移到端侧 benchmark：</p>
+<pre>Model / Kernel
+   × Browser milestone
+   × GPU / driver
+   × cold / warm start
+   × foreground / background
+        ↓
+N independent runs
+        ↓
+median + tail + variance
+        ↓
+correctness gate</pre>
+<p>对端侧 Agent，性能提升只有在 correctness 和 tool-use 能力都保持时才应该进入 Learn。</p>
+
+<h2>浏览器 × AI</h2>
+
+<h3>World Model 的价值不是“生成下一页”，而是提前判断动作是否值得执行</h3>
+<p>Discriminative World Models 给 Browser Agent 一个很实用的方向：先为多个 candidate action 预测有区分度的结果表示，再交给 ranker 选择，而不是每次都把真实浏览器当作唯一搜索器。</p>
+<pre>Current browser state
+        ↓
+Candidate actions A / B / C
+        ↓
+Predicted discriminative outcomes
+        ↓
+Rank
+        ↓
+Execute only selected action
+        ↓
+Observe real outcome
+        ↓
+Compare prediction ↔ reality
+        ↓
+Learn</pre>
+<p>如果把真实执行后的差异继续回灌，这会形成一个比“保存成功 trajectory”更细粒度的学习信号：模型可以知道自己究竟在哪类页面状态和动作上预测错误。</p>
+
+<h2>Browser Self-Improvement</h2>
+
+<h3>今天的新判断：Counterfactual Verification（反事实验证）</h3>
+<p>过去几期我们一直强调 Post-condition Verification：动作执行后必须确认真实状态变化。今天可以再往前增加一层：</p>
+<blockquote><p><strong>在真正执行 Patch / Action 前，先比较几个候选方案各自会把系统带向什么结果；执行后再用真实状态校准预测。</strong></p></blockquote>
+<pre>Observe
+  ↓
+Diagnose
+  ↓
+Generate candidates
+A / B / C
+  ↓
+Counterfactual prediction
+  ↓
+Rank by expected outcome / risk / cost
+  ↓
+Execute one candidate
+  ↓
+Post-condition verification
+  ↓
+Repeat verification (Pass^N)
+  ↓
+Prediction error + execution evidence
+  ↓
+Learn</pre>
+
+<p><strong>在 Browser Agent 中：</strong>候选可以是 click、keyboard、WebMCP tool、generated code；world model 先判断哪个最可能到达目标状态。</p>
+<p><strong>在 Chromium 工程中：</strong>候选可以是不同 patch、feature flag、scheduler 参数、cache 策略。并不一定需要一个“大世界模型”预测整个 Chromium；更现实的做法是针对明确 subsystem 学一个 outcome ranker，例如预测哪个 culprit CL、哪个参数修改最可能改善 trace 指标且不引入 regression。</p>
+<p><strong>在 Verify 中：</strong>Claw-Eval 的 Pass^3 提醒我们，单次预测正确或单次 patch benchmark 提升都不能直接进入 Learn；必须跨独立运行确认稳定性。</p>
+
+<h3>映射到 Browser Self-Improvement 闭环</h3>
+<pre>Telemetry / Regression
+        ↓
+Diagnosis
+        ↓
+Candidate Patch A / B / C
+        ↓
+Predicted impact
+Perf / correctness / risk
+        ↓
+Select candidate
+        ↓
+Build / Benchmark
+        ↓
+Pass^N + cross-platform verify
+        ↓
+Canary / Telemetry
+        ↓
+Learn
+├─ prediction accuracy
+├─ successful patch pattern
+└─ failed counterfactuals</pre>
+<p>这里最重要的一点是：<strong>失败候选也应该保留。</strong>如果系统只学习最终成功 patch，就无法学习“哪些看起来合理的修改其实经常失败”。反事实候选 + 最终真实结果，恰好可以形成更有价值的负样本。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+
+<p><strong>Discriminative World Models for Web Agents：</strong>本周最值得补推的 Browser Agent 论文之一。它把 world model 的目标从“生成准确页面状态”改为“为 action ranking 提供有区分度的预测”。</p>
+<p><strong>Claw-Eval：</strong>虽然不是浏览器专用 benchmark，但它的 Pass^3、人工 rubric、trajectory audit 和深层 state verification 很适合迁移到 Browser Harness。</p>
+<p><strong>Chrome DevTools MCP：</strong>继续适合作为真实 Chrome 的 Observe / Diagnose / Verify interface；权限拆分越清晰，就越适合进入自动改进闭环。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><p><strong>Browser Self-Improvement 下一步不只应该验证“做完之后有没有变好”，还应该开始学习“在动手之前，哪个候选改动最值得试”。</strong></p></blockquote>
+<p>真实浏览器执行昂贵，Chromium build / benchmark 更昂贵。Counterfactual ranking 可以减少无效尝试；但最终是否真的变好，仍必须由独立 Runtime、重复 benchmark 和 Canary / Telemetry 决定，而不能由预测模型自己给自己打分。</p>
+
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
