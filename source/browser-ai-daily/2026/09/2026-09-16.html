@@ -1,0 +1,121 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-09-16
+date: 2026-09-16 09:38:04
+---
+
+<h2>今天最值得看</h2>
+
+<h3>1. Chrome 把广告 CPU / Network / Density 变成 CrUX 真实用户遥测：Observe 层出现可公开比较的新信号</h3>
+<p>Chrome 9 月 15 日向 Chrome User Experience Report（CrUX）加入实验性的广告体验指标：Ad Count、Ad Density、Ad Weight (Network) 与 Ad Weight (CPU)。数据来自真实用户，按 28 天滚动窗口聚合；CPU Weight 统计广告 frame 的 JavaScript CPU 时间，Network Weight 统计广告资源的压缩传输字节。</p>
+<p><strong>为什么值得关注：</strong>这不只是广告产品指标。它展示了 Chrome 如何把浏览器内部的 frame/resource 分类、CPU attribution、network attribution 与真实用户环境结合成可长期观测的 field telemetry。对于 Browser Self-Improvement，真正困难的 Observe 层往往正是“某个子系统到底消耗了多少真实用户资源”。</p>
+<p><strong>工程启发：</strong>浏览器内部的 AI 优化也应尽量建立类似 attribution：把 CPU、network、memory、GPU、long task、crash 明确归因到 feature / frame / extension / agent action / model session，而不是只看全局页面指标。这样 Agent 才能从 Regression 继续走向可解释的 Diagnose。</p>
+<p><a href="https://developer.chrome.com/blog/crux-ad-metrics">Chrome：New ad metrics in CrUX</a> · <a href="https://developer.chrome.com/docs/ads/methodology">Measurement methodology</a></p>
+
+<h3>2. Chrome 同时公开广告识别机制：Telemetry 的前提是 Attribution Ground Truth</h3>
+<p>Chrome 新文档解释了 ad detection 如何结合 network-level filtering 与 script execution analysis 识别广告相关 frame/resource，这些分类既用于 CrUX 指标，也用于浏览器层面对高 CPU / 高网络广告的干预。</p>
+<p><strong>为什么值得关注：</strong>Browser Self-Improvement 不能只有“指标变差了”，还必须知道是谁造成的。错误 attribution 会让后面的 culprit、patch、learning 全部偏离。</p>
+<p><strong>工程启发：</strong>可以把同样原则迁移到浏览器 AI：Trace / Perf Dashboard 不只输出 P95，而应附带 component/action attribution 和置信度；自动 Patch 前先验证 attribution 是否稳定。</p>
+<p><a href="https://developer.chrome.com/docs/ads/detection">Chrome：Ad detection in Chrome</a></p>
+
+<h3>3. WebPilot：Local-first Agentic Browser 把运行记录、Browser Profile 与模型选择放在本地 Runtime</h3>
+<p>近期出现的开源 WebPilot 使用 Electron + Playwright MCP，支持 Ollama、本地/云模型、installed browser channel、已有 Chrome CDP 连接和多种 profile 策略。它会在本地保存 run logs、step traces、artifacts、timing 与最终结果，并提供 browser smoke test；Browser tool schema 还通过版本化的 normalized declaration 与具体模型 provider 解耦。</p>
+<p><strong>为什么值得关注：</strong>它本身还不是成熟 Browser Self-Improvement 系统，但其 Runtime 分层与昨天的 Persistent Runtime / Capability Budget 主线一致：Browser/Profile/Trace 属于稳定执行层，模型可以替换。</p>
+<p><strong>工程启发：</strong>对于浏览器 Agent 产品，run artifact 应成为一等资产；失败后可以直接进入 Diagnose / Replay，而不是只保存聊天文本。</p>
+<p><a href="https://github.com/ahamSel/WebPilot">WebPilot GitHub</a></p>
+
+<h3>4. 今天没有新的高价值端侧 AI Runtime 发布：继续把重点放在可归因的 Browser/GPU 遥测</h3>
+<p>过去 24 小时没有发现比近期 1-bit WebGPU、WebGPU kernel fleet 更高价值的新端侧模型或 Runtime 底座，因此不拿普通模型发布补数量。</p>
+<p><strong>工程启发：</strong>端侧 AI 下一步很值得借鉴 CrUX attribution 思路：除了 tok/s，还应记录 model load、GPU memory、CPU orchestration、network model bytes、background lifecycle，并能归因到具体 model/kernel/browser milestone。</p>
+
+<h2>浏览器技术</h2>
+
+<h3>CrUX 从页面体验继续深入到子资源 CPU / Network Attribution</h3>
+<p>新广告指标的测量从主文档 TTFB 后开始，持续到 tab unload；Count/Density 采用 viewport sampling，CPU 与 Network 则从浏览器内部资源和 frame attribution 得到。对浏览器性能工程而言，这比单纯增加一个 dashboard 指标更重要：它证明 field telemetry 可以保留“谁消耗了资源”的语义。</p>
+<p><a href="https://developer.chrome.com/docs/ads/metrics">CrUX ad metrics overview</a></p>
+
+<h2>端侧 AI</h2>
+
+<h3>端侧推理 Benchmark 应增加 Attribution 维度</h3>
+<pre>Model / Kernel
+  × Browser milestone
+  × GPU / driver
+       ↓
+CPU orchestration
+GPU time / memory
+model network bytes
+first-token / decode
+foreground / background
+       ↓
+component attribution
+       ↓
+Regression / Diagnose</pre>
+<p>只有知道性能变化来自模型、kernel、JS orchestration、GPU driver 还是 Browser milestone，自动优化才有可靠的入口。</p>
+
+<h2>浏览器 × AI</h2>
+
+<h3>Run Artifact 应成为 Browser Agent 的稳定接口</h3>
+<p>WebPilot 这类 local-first Browser Agent 开始把 step trace、artifact、timing 与 final result 一起保存。对工程系统来说，这些信息比对话 history 更适合作为失败分析输入。</p>
+<pre>Agent task
+   ↓
+Browser Runtime
+   ↓
+Run Artifact
+├─ action trace
+├─ browser/profile context
+├─ network / console
+├─ screenshots
+├─ timing
+└─ final state
+   ↓
+Diagnose / Replay / Eval</pre>
+
+<h2>Browser Self-Improvement</h2>
+
+<h3>今天的新原则：Attribution Before Diagnosis（先归因，再诊断）</h3>
+<p>过去几期已经逐渐补齐 Persistent Runtime、Semantic Ground Truth、Post-condition Verification、Capability Budget。今天 Chrome 的 CrUX 实践提醒了更靠前的一层：Telemetry 如果不能把异常可靠归因到具体 subsystem / frame / resource / action，后面的自动 Diagnose 很容易只是相关性猜测。</p>
+<pre>Telemetry / Regression
+        ↓
+Attribution
+├─ component
+├─ frame / origin
+├─ resource
+├─ agent action
+└─ model / kernel
+        ↓
+Attribution confidence gate
+        ↓
+Diagnose
+        ↓
+Candidate patch
+        ↓
+Build / Benchmark
+        ↓
+Verify
+        ↓
+Canary / Field telemetry
+        ↓
+Learn</pre>
+<p><strong>业界走到哪：</strong>Chrome 在广告场景已经把真实用户 field telemetry、资源分类和 CPU/network attribution 接起来，并用于理解和干预高资源消耗体验；但它不是 AI 自动 Patch 闭环。</p>
+<p><strong>能否迁移：</strong>很适合迁移到 Browser Runtime / Agent Harness。Trace Agent 不应该只看到“P95 变慢 12%”，而应得到 attribution evidence；只有归因在多次运行、多个环境中稳定，才启动昂贵的 culprit / bisect / patch Agent。</p>
+<p><strong>对 Harness 的启发：</strong>Observation schema 应包含 value + attribution + provenance + confidence，而不是只有 value。Learn 时也要保存归因条件，避免把只在某类页面/GPU/版本成立的规律扩散成全局规则。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+
+<h3>WebPilot：值得观察的本地 Browser Runtime 样本</h3>
+<p>WebPilot 的价值主要在工程组合：本地 Ollama、Playwright Chromium/installed browser/CDP、profile 策略、运行记录、smoke test 和版本化 tool schema。当前规模和成熟度仍有限，适合作为 Runtime 架构样本，而不是直接视作 Browser Agent 基础设施标准。</p>
+<p><a href="https://github.com/ahamSel/WebPilot">项目源码</a></p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 的 Observe 层不能停在“发现指标变差”，必须继续回答“这次变化到底归因给谁”。</strong></blockquote>
+<p>浏览器是多进程、多 frame、多资源、多线程、多 GPU/driver 的系统。没有 attribution，Agent 很容易把相关性当因果关系。今天 Chrome 的 CrUX 广告指标提供了一个很实际的参考：先把真实用户资源消耗分解到可解释对象，再谈自动 Diagnose 和 Improve。</p>
+<p>因此近期主线可以继续收敛为：</p>
+<pre>Persistent Runtime
+→ Semantic Ground Truth
+→ Context-Bound Capability
+→ Post-condition Verification
+→ Capability Budget
+→ Attribution Ground Truth
+→ Diagnose / Verify / Learn</pre>
+
+<p><em>筛选说明：过去 24 小时没有发现达到门槛的新 Firefox / WebKit 正式发布，也没有新的高价值端侧模型 Runtime，因此今天保持较低条目数。</em></p>
