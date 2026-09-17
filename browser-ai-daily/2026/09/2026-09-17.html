@@ -1,0 +1,240 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-09-17 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-09-17"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-09-17"/>
+
+  <meta property="displaydate" content="2026-09-17T09:53:59.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-09-17</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<h2>今天最值得看</h2>
+
+<h3>1. agent-browser 0.38.0 把 Observation 从“每轮全量截图/快照”推进到增量状态流</h3>
+<p>Vercel Labs 的 agent-browser 9 月 16 日发布 v0.38.0：新增 <code>screenshot --if-changed</code> 与像素变化阈值、<code>snapshot --delta</code> 自动结构增量、跨同文档变化保持的 persistent snapshot refs；导航、iframe 替换或元素被替换时才使 ref 失效。它还修复 CDP transport recovery，并明确建议优先等待页面特定 selector/text/URL/JS condition，而不是泛用 <code>networkidle</code>。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 的 observation 成本不应随页面大小 × Agent step 数线性增长。真正稳定的 Runtime 应维护 baseline，然后只把“变化”送给模型；同时 element identity 要跨局部更新保持稳定，避免每轮重新 grounding。</p>
+<p><strong>工程启发：</strong>Trace、DOM/AX、截图、network 都可以逐步采用 baseline + delta + stable identity。对 Browser Self-Improvement，这还让 Regression 的输入从“两个巨大快照”变成“哪一部分状态发生了变化”。</p>
+<p><a target="_blank" rel="noopener" href="https://agent-browser.dev/changelog">agent-browser changelog</a> · <a target="_blank" rel="noopener" href="https://github.com/vercel-labs/agent-browser/releases/tag/v0.38.0">GitHub release</a></p>
+
+<h3>2. DarwinX：WebArena-Infinity 从 43.5% 到 93%，关键不是换模型，而是保留多条 Harness 演化分支</h3>
+<p>Salesforce AI Research / Agentforce 的 DarwinX 本周重新受到关注。研究保持基础模型冻结，不沿一条 Harness 路径持续改写，而是维护多个 prompts/tools/skills/control-flow 变体；候选必须满足 preserve-and-extend——扩展能力的同时限制已解决任务的回退——并保留历史 lineage 供后续重组。WebArena-Infinity 的 audit-clean pass@1 从 43.5% 提升到 93.0%；研究还把 evolution 与最终 verifier 分离，并在高保真阶段重跑已解决任务确认没有 regression。</p>
+<p><strong>为什么值得关注：</strong>这直接命中 Browser Self-Improvement 的核心难点：修好一类网页任务，经常会破坏另一类任务。单一“当前最佳 Harness”会丢掉局部有价值但总分较低的行为。</p>
+<p><strong>工程启发：</strong>Chromium / Browser Harness 自动改进也应保留 candidate archive，而不是每次覆盖上一版。性能 Patch、WGSL kernel、诊断 Skill 可以先作为分支存在，只有跨 regression suite 验证后才 merge/promote。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2608.07545">DarwinX 论文</a> · <a target="_blank" rel="noopener" href="https://venturebeat.com/orchestration/salesforce-researchers-took-an-ai-agent-from-finishing-43-5-of-browser-tasks-to-93-without-touching-the-model">VentureBeat 技术解读</a></p>
+
+<h3>3. Chrome 153 / Firefox 156 同周大规模安全修复：真实 Browser Regression 仍然需要跨组件、跨版本验证</h3>
+<p>9 月 16 日的安全汇总显示，Chrome 153 修复 42 个安全问题，其中 3 个 Critical，涉及 WebGL、Workers 等组件；Firefox 156 同期修复 73 个问题。Chrome 的 Critical 项包括 WebGL 越界读取以及 Internals / Workers 的 use-after-free。</p>
+<p><strong>为什么值得关注：</strong>安全修复是最严格的一类 Browser Self-Improvement 闭环：问题发现之后不仅要 Patch，还必须确认没有引入跨组件回归，并快速进入 Stable rollout。对于 AI 自动发现/修复浏览器缺陷，最终评价标准仍应是现有浏览器工程的 build/test/security/canary gate，而不是 Agent 自评。</p>
+<p><strong>工程启发：</strong>把安全修复形成的 regression tests、affected component、版本范围和 rollout evidence 一起沉淀，未来可以成为 Security Agent 的高质量 Learn 数据。</p>
+<p><a target="_blank" rel="noopener" href="https://chromereleases.googleblog.com/">Chrome Releases</a> · <a target="_blank" rel="noopener" href="https://www.mozilla.org/security/advisories/">Mozilla Security Advisories</a></p>
+
+<h3>4. 端侧 AI：过去 24 小时没有达到门槛的新 WebGPU/WASM 推理底座</h3>
+<p>今天没有用普通模型发布补数量。相比新模型，更值得把 agent-browser 的 delta observation 思路迁移到端侧多模态/Browser Agent：截图、DOM、AXTree 和模型上下文都尽量只处理变化部分，从系统层减少 prefill、视觉编码和 GPU/CPU 数据搬运。</p>
+
+<h2>浏览器技术</h2>
+
+<h3>Observation Delta 正在变成 Browser Runtime 的一等能力</h3>
+<p>agent-browser v0.38.0 的三个能力应放在一起看：conditional screenshot 解决视觉重复；snapshot delta 解决结构重复；persistent refs 解决 element identity 重建。它们共同把 observation 从 stateless request/response 改造成 stateful stream。</p>
+<pre>Baseline
+  ├─ DOM / AX snapshot
+  ├─ screenshot
+  └─ element refs
+       ↓
+Browser mutation
+       ↓
+Delta
+  ├─ changed structure
+  ├─ changed pixels
+  └─ invalidated refs only
+       ↓
+Agent</pre>
+<p>这对长任务尤其重要：模型不需要每一步重新理解整个页面。</p>
+
+<h2>端侧 AI</h2>
+
+<h3>减少 Observation 本身，就是减少端侧推理成本</h3>
+<p>端侧 Browser Agent 的瓶颈不只在模型 kernel。视觉截图重复编码、DOM/AX 重复序列化、长上下文重复 prefill 都是系统成本。可以把 benchmark 增加 observation efficiency：</p>
+<pre>Task success
++ tokens / step
++ changed bytes / step
++ visual frames encoded / step
++ prefill time
++ GPU/CPU transfer
++ end-to-end latency</pre>
+<p>同等成功率下，能够稳定利用 delta 的 Runtime 应被视为更好的 Runtime。</p>
+
+<h2>浏览器 × AI</h2>
+
+<h3>从 Snapshot API 走向 Stateful Observation Protocol</h3>
+<p>Browser Agent 的接口过去主要围绕 <code>snapshot()</code> / <code>screenshot()</code>。今天更值得关注的是 Runtime 是否能回答：“从 Agent 上一次确认的状态到现在，发生了什么？”</p>
+<p>这会自然连接 Telemetry、Replay 和 Learn：每个 action 都对应一个 before-state、action、delta、post-condition，形成紧凑且可重放的 state transition evidence。</p>
+
+<h2>Browser Self-Improvement</h2>
+
+<h3>今天的新原则：Delta-First Observation + Population-Based Improvement</h3>
+<p>今天两条主线可以组合起来：agent-browser 解决“每一步只观察真正变化的部分”，DarwinX 解决“每一轮改进不要只保留一个当前版本”。前者降低运行时 observation 成本，后者降低 Self-Improvement 的路径依赖。</p>
+<pre>Telemetry / Regression
+        ↓
+Baseline + Delta Observation
+        ↓
+Attribution / Diagnose
+        ↓
+Generate candidate variants
+A / B / C / D
+        ↓
+Cheap screening
+        ↓
+Archive useful lineages
+        ↓
+High-fidelity regression verification
+        ↓
+Merge / Promote
+        ↓
+Canary / Telemetry
+        ↓
+Learn</pre>
+<p><strong>业界走到哪：</strong>agent-browser 已经在真实 Browser Runtime 做 delta snapshot、conditional screenshot 和 stable refs；DarwinX 则在 Agent Harness 层证明了多 lineage + regression gate 能显著提高 WebArena-Infinity 表现。</p>
+<p><strong>能否迁移：</strong>很适合。Chromium 性能优化不应该只有一个“自动修改中的 HEAD”。可以保留多个候选 patch / scheduler policy / kernel / Skill，各自绑定 benchmark evidence；局部 specialist 即使总分不最高，也可能包含可重组的有效改进。</p>
+<p><strong>对 Browser Runtime 的启发：</strong>Observation 层需要 stable identity 和 delta protocol；Improvement 层需要 candidate identity、lineage、evidence 和 promotion gate。两边其实是同一种思想：不要每轮丢掉历史状态再从头开始。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+
+<h3>agent-browser v0.38.0：值得直接实测 delta observation</h3>
+<p>建议重点测三组指标：长 SPA 任务的 token/step；同页面小范围 mutation 时 snapshot delta 大小；React/复杂 DOM 更新后 persistent ref 的稳定率。再与全量 AXTree/screenshot 的 Browser Harness 做 end-to-end 对照。</p>
+
+<h3>DarwinX：真正值得迁移的是 preserve-and-extend 与 archive，而不是“自然选择”比喻</h3>
+<p>对工程系统最实用的是两点：候选修改不能以破坏已解决任务为代价；低总分分支也不要立即删除，因为它可能拥有某一类任务唯一有效的能力。对于 Browser Self-Improvement，这比单线循环“失败→改 prompt→重测”可靠得多。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 下一步应该同时减少两种“遗忘”：Runtime 不要每一步忘掉上一帧页面状态；Improvement Loop 不要每一轮忘掉上一代候选里有价值的局部能力。</strong></blockquote>
+<p>前者靠 baseline / delta / stable refs，后者靠 lineage archive / regression gate / merge。把两者连起来后，Browser Runtime 可以产生紧凑的 state-transition evidence，Self-Improvement 系统再用这些 evidence 比较和选择不同 Harness / Patch 分支。</p>
+<p>近期主线可以继续收敛为：</p>
+<pre>Persistent Runtime
+→ Delta Observation
+→ Semantic / Attribution Ground Truth
+→ Diagnose
+→ Candidate Population
+→ Independent Regression Verification
+→ Promote / Canary
+→ Evidence-backed Learn</pre>
+
+<p><em>筛选说明：过去 24 小时没有发现达到门槛的新 WebKit 正式发布，也没有新的高价值端侧 WebGPU/WASM 模型 Runtime，因此今天保持较低条目数。</em></p>
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
