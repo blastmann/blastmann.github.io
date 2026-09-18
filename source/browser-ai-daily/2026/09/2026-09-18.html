@@ -1,0 +1,126 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-09-18
+date: 2026-09-18 09:37:52
+---
+
+<h2>今天最值得看</h2>
+
+<h3>1. Chrome 153 Stable 修复 Dawn Critical UAF：WebGPU 已经进入必须长期做安全回归的 Browser Runtime 核心层</h3>
+<p>Chrome 9 月 17 日更新 Stable 到 153.0.8010.52/.53，本次包含 16 个安全修复。最值得端侧 AI 关注的是 Critical CVE-2026-93374：Dawn 的 use-after-free；同批还有 Critical WebGL buffer overflow、Tracing reference resolution、Skia state validation、V8 type confusion 等问题。Chrome 也再次说明其安全缺陷大量依赖 ASan、MSan、UBSan、CFI、libFuzzer、AFL 等自动化发现体系。</p>
+<p><strong>为什么值得关注：</strong>Dawn 是 Chrome WebGPU 实现的关键层。随着浏览器内模型把越来越多不透明 WGSL、buffer layout 和 GPU workload 交给 WebGPU，Runtime 优化不能只测 tok/s 和 correctness；安全 regression 也必须成为 kernel / runtime 更新的固定 gate。</p>
+<p><strong>工程启发：</strong>Browser Self-Improvement 若允许 Agent 自动改 WGSL、Dawn 周边代码或 buffer 策略，Verify 应同时包含 GPU correctness、性能、sanitizer/fuzz 与真实 Chrome 多平台回归，不能把“benchmark 更快”直接视为可晋级候选。</p>
+<p><a href="https://chromereleases.googleblog.com/2026/09/stable-channel-update-for-desktop_0194356994.html">Chrome Stable Channel Update</a></p>
+
+<h3>2. Chrome 155 Beta：Streaming HTML、WebTransport headers 与可重试 module load 都在增强“长连接 + 增量 UI”能力</h3>
+<p>Chrome 155 Beta 在 9 月 16 日进入 Beta。对 AI Native Web 应用最值得看的不是 CSS，而是三项 Runtime 能力：新增一组返回 <code>WritableStream</code> 的 HTML streaming insertion API；WebTransport 可在 CONNECT 时发送自定义 headers 并读取 response headers；失败的 JavaScript module load 不再永久缓存失败结果，应用可以重新 <code>import()</code> 重试。</p>
+<p><strong>为什么值得关注：</strong>端云协同 Agent 常见路径就是云端持续产生结构化/HTML 增量、浏览器逐步渲染，同时维持低延迟 transport；网络抖动后还需要恢复模块或能力。过去这些恢复逻辑往往由框架自己拼装。</p>
+<p><strong>工程启发：</strong>AI Native Browser 产品可以把 benchmark 从“首屏完成时间”扩展到 first useful partial UI、stream stall recovery、transport reconnect、module retry success，并把这些真实状态转移纳入 Agent 的 post-condition evidence。</p>
+<p><a href="https://developer.chrome.com/blog/chrome-155-beta">Chrome 155 Beta</a></p>
+
+<h3>3. Firefox Smart Window 接入 Mistral Small 4：AI 浏览器开始明确把“模型可替换”做成产品架构</h3>
+<p>Mozilla 与 Mistral 9 月 16 日宣布合作：Mistral Small 4 加入 Firefox Smart Window Beta，美国和加拿大用户可选择该模型，Smart Window 同时扩展到法国并加入正式法语支持。Mozilla 明确表示 Smart Window 仍允许用户选择多个 AI 模型；Mistral 则强调浏览器中的模型提供方不应与浏览器本身绑定。</p>
+<p><strong>为什么值得关注：</strong>这不是单纯“Firefox 加了一个聊天模型”。浏览器正在形成 Browser Context / Memory / Tabs 与 Model Provider 解耦的产品层。模型可以变化，而浏览器保留用户上下文、权限、数据策略与交互入口。</p>
+<p><strong>工程启发：</strong>AI Native Browser Runtime 最好把 Browser Context API、Model Router、Retention Policy、Memory Scope 分开设计。这样本地小模型、云模型和区域模型都可以共享同一套浏览器能力，而不是每换一个模型重做 Agent 集成。</p>
+<p><a href="https://blog.mozilla.org/en/firefox/mozilla-mistral-partnership/">Mozilla 官方公告</a> · <a href="https://mistral.ai/news/mistral-x-mozilla/">Mistral 官方公告</a></p>
+
+<h3>4. DeepSeek Harness × Open Browser Use 出现“薄 Preset”集成：能力挂到 Agent，而不是污染 Host root</h3>
+<p>9 月 17 日，DeepSeek Harness 的 WebMCP discussion 新增一个独立 <code>dsh-browser-use</code> Agent Preset 实现。Phase 1 刻意保持很薄：直接挂载 Open Browser Use 的 <code>obu mcp</code> stdio server，通过 <code>@deepseek-ai/dsh-mcp-client</code> 同步工具；WebMCP discovery、<code>document.modelContext</code>、registration-id snapshot 与 stale-id rejection 继续由 Open Browser Use 负责，不在 Harness 重写。作者已验证当前 0.1.5 Harness 下 preset installation、Session 创建、MCP tool sync 和端到端 ping。</p>
+<p><strong>为什么值得关注：</strong>它体现了一个很实用的 Harness 原则：Browser capability 应作为特定 Agent Preset 的能力挂载，而不是默认进入整个 Host 的根能力集合。</p>
+<p><strong>限制也很关键：</strong>当前一个 mounted preset 只拥有一个长生命周期 <code>obu mcp</code> 进程，并发 Browser Use 会 fail closed；严格 per-session process/session-id isolation 被明确留到下一阶段。这正好暴露了 Browser Agent Runtime 的下一层问题：Capability Scope 不只要按 Agent，还要按 Session 隔离。</p>
+<p><a href="https://github.com/deepseek-ai/deepseek-harness/discussions/4971">DeepSeek Harness WebMCP discussion</a></p>
+
+<h2>浏览器技术</h2>
+
+<h3>Chrome 155 的 Streaming HTML 值得和 Browser Agent 的增量状态流放在一起看</h3>
+<p>昨天的主线是 observation delta；今天 Chrome 155 又在输出方向加入 HTML streaming insertion。两者可以组合成双向增量 Runtime：</p>
+<pre>Cloud / Agent
+   ↓ streamed partial result
+Browser DOM / UI
+   ↓ state delta
+Agent observation
+   ↓ next action / continuation
+Browser</pre>
+<p>对长任务，这比“云端等完整答案 → 一次性 innerHTML → Agent 再抓完整 snapshot”更适合低延迟交互，也更容易记录每个 partial update 对页面造成的实际变化。</p>
+
+<h2>端侧 AI</h2>
+
+<h3>WebGPU 优化需要新增 Security / Robustness 维度</h3>
+<p>Dawn Critical UAF 是一个很直接的提醒：端侧 AI benchmark 不能只围绕模型输出和吞吐。尤其自动生成或自动调优 WGSL kernel 时，建议固定记录：</p>
+<pre>Correctness
++ tokens/s / latency
++ peak GPU memory
++ Browser milestone
++ GPU / driver
++ sanitizer / validation result
++ crash / device-lost rate
++ repeated-run stability</pre>
+<p>优化候选只有同时通过 correctness、性能与安全/稳定性 gate，才应该进入可复用 kernel 资产。</p>
+
+<h2>浏览器 × AI</h2>
+
+<h3>Firefox Smart Window 给出一种 Model-Swappable Browser AI 形态</h3>
+<p>浏览器拥有 tabs、history、当前页面、权限和本地状态，模型只是消费这些能力的一种推理后端。Smart Window 保留多模型选择，说明 Browser AI 产品可以把模型从“产品本体”降为可替换 provider。</p>
+<pre>Browser Context / Tabs / History
+          ↓
+   Policy + Memory Scope
+          ↓
+      Model Router
+   ├─ Mistral
+   ├─ other cloud model
+   └─ local model
+          ↓
+ Browser Action / UI</pre>
+<p>这也为端云协同留出空间：轻量分类、摘要或隐私敏感任务可以本地执行，复杂 reasoning 再路由云端，而 Browser Runtime 不需要改变。</p>
+
+<h2>Browser Self-Improvement</h2>
+
+<h3>今天的新原则：Promotion Gate 必须覆盖 Correctness × Performance × Safety</h3>
+<p>昨天讨论 Candidate Population：不要只保留一个不断自改的 HEAD。今天 Chrome 的 Dawn 安全修复进一步说明，候选的晋级标准也不能只有 benchmark winner。</p>
+<pre>Telemetry / Regression
+        ↓
+Attribution / Diagnose
+        ↓
+Candidate Population
+A / B / C / D
+        ↓
+Cheap screening
+        ↓
+High-fidelity Promotion Gate
+├─ Functional correctness
+├─ WPT / regression
+├─ Performance benchmark
+├─ Sanitizer / fuzz / crash
+├─ Multi-platform runtime
+└─ Capability / permission check
+        ↓
+Promote
+        ↓
+Canary / Field Telemetry
+        ↓
+Evidence-backed Learn</pre>
+<p><strong>业界走到哪：</strong>Chrome 安全工程已经长期把 sanitizer/fuzzer → issue → patch → Stable rollout 做成真实闭环；Browser Agent/Harness 社区则正在补 session scope、capability isolation、delta observation 等 Runtime 基础设施。</p>
+<p><strong>能否迁移：</strong>非常适合。尤其 Agent 自动生成 Chromium/V8/Skia/Dawn/WGSL 改动时，现有 Chromium build/test/security infrastructure 应直接成为 verifier，而不是重新发明一套 Agent 自评。</p>
+<p><strong>对 Agent Harness 的启发：</strong>Verifier 本身最好是不可被 candidate patch 同时修改的独立角色；候选可以改代码、Skill 或 kernel，但不能顺带降低 sanitizer、删 regression test 或改 benchmark threshold。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+
+<h3>DeepSeek Harness 的薄 Browser Preset：值得继续跟踪 per-session isolation</h3>
+<p>这个实现当前最值得看的不是功能数量，而是边界选择：WebMCP discovery 和 stale-id 语义留在 Browser Use 层，Harness 只负责挂载能力；并发无法安全隔离时直接 fail closed，而不是偷偷共享 Browser session。下一阶段如果演进为 per-DSH-Session process/session-id isolation，会是一个很好的 Browser Runtime capability-scope 样本。</p>
+
+<h3>Chrome 155：建议实测 AI Native Streaming UI</h3>
+<p>可以用一个流式 Agent 结果页面做小实验，对比传统 chunk → JS parse → DOM patch 与新的 streaming HTML insertion：测 first useful UI、长流期间 main-thread cost、断流恢复、Trusted Types / sanitizer 行为，以及 Agent observation delta 的大小。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 的候选生成可以越来越激进，但“晋级”必须越来越保守：性能更快只是一个维度，真实浏览器 correctness、安全性、权限边界和重复稳定性必须共同决定一个改动能不能进入下一代 Runtime。</strong></blockquote>
+<p>因此最近两天的主线可以连成：</p>
+<pre>Persistent Runtime
+→ Delta Observation
+→ Attribution / Diagnose
+→ Candidate Population
+→ Multi-dimensional Promotion Gate
+→ Canary / Telemetry
+→ Evidence-backed Learn</pre>
+<p>而 Firefox Smart Window 与 DeepSeek Harness 的两个信号又补上另一条产品/Runtime 原则：模型与 Browser capability 都应该是可替换、可挂载、可按 Session 收窄的组件，不应与 Browser Runtime 本体绑死。</p>
+
+<p><em>筛选说明：过去 24 小时没有发现达到门槛的新 WebKit 正式发布，也没有比近期 1-bit WebGPU / WebGPU kernel fleet 更高价值的新端侧推理底座，因此今天没有用普通模型发布补数量。</em></p>
