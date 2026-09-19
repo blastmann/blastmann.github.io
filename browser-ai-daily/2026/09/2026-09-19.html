@@ -1,0 +1,256 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-09-19 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-09-19"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-09-19"/>
+
+  <meta property="displaydate" content="2026-09-19T09:48:53.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-09-19</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<h2>今天最值得看</h2>
+
+<h3>1. WindTunnel v1.2：WebMCP 首次有了较完整的同场 Benchmark，Jev + WebMCP 49/49，而纯 DOM ultrafast 只有 25/49</h3>
+<p>WindTunnel 9 月 18 日发布 canonical board v1.2：21 种配置、49 个任务、8 个真实开源站点、每项 3 次重复，共 3,087 次 attempt。九种 WebMCP 配置全部解决 49/49 任务；新增的 Jev + Mercury 2.5 在 WebMCP 上解决 49/49，median agent time 3.2 秒、median cost $0.0011；同一套 Jev + Mercury 2.5 若只用 ultrafast DOM controls，则只解决 25/49，median 5.4 秒。GPT-6 Astra code execution 也能 49/49，但 median 16.4 秒、$0.119。</p>
+<p><strong>为什么值得关注：</strong>这组结果把“模型能力”和“Browser Action Surface”第一次较清楚地拆开了：同一个快速决策模型，换成语义化 WebMCP 后成功率可以从 25/49 到 49/49。对 Browser Agent 来说，接口设计本身就是能力的一部分，不应只拿 base model 分数解释任务成功率。</p>
+<p><strong>工程启发：</strong>Browser Runtime 应优先做 capability discovery：有 WebMCP 就调用结构化 action；没有时再降级到 DOM/AX、generated Playwright code 或视觉操作。同时 benchmark 要固定 model、site state、scorer 和 repeat policy，否则不同 interface 的比较很容易失真。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/nekuda-ai/WindTunnel">WindTunnel GitHub / v1.2 results</a></p>
+
+<h3>2. Jev Ultrafast 把 Browser Loop 拆成“快速决策 + 极少数生成”：7.1 秒背后真正重要的是 1,092 → 101 次 browser protocol calls</h3>
+<p>Browser Use 与 TypeSafe 的 Jev Ultrafast 最近两天快速传播。它每轮把可交互 DOM 压成 indexed element table，让 Jev 一次请求同时选择 operation 和 compatible target；只有 TYPE_TEXT 时才调用小型生成模型。官方给出的 6 次交替实验中，两版都 3/3 成功，median task time 从 9.450 秒降到 7.092 秒，而 browser protocol calls 从 1,092 降到 101。Google Flights 单次展示为 7.073 秒。</p>
+<p><strong>为什么值得关注：</strong>这里最值得复制的不是 Jev 这个具体模型，而是把 Browser Agent 的高频循环从“每一步都让大模型重新理解页面”改成受约束的分类/选择问题。Runtime 还会在执行前重新检查 page freshness、geometry 和 click occlusion，DONE 也必须经过独立 outcome verification。</p>
+<p><strong>限制：</strong>官方明确说明目前仍不覆盖 Shadow DOM、frames、canvas、uploads、popup tabs、nested scrolling 和任意 keyboard widgets；3/3 也只是一个任务、一个 browser profile，不应解读成通用可靠性结论。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/browser-use/jev-ultrafast">Jev Ultrafast GitHub</a></p>
+
+<h3>3. Dream-RSI：历史探索树可以直接成为“免费 replay simulator”，很适合迁移到 Browser Patch / Perf / Kernel 搜索</h3>
+<p>Google、Google DeepMind、UMD 与 UVA 的 Dream-RSI 本周论文值得补推。它不修改模型权重，而是修改 exploration policy：真实在线探索产生 discovery tree，历史 tree 直接成为 replay simulator；候选 policy 可以在已发生过的分支上离线重放，只有胜出的 policy 才重新进入昂贵的在线环境。论文在算法、数学优化和 GPU kernel engineering 上报告了更低的 discovery cost；相对 fixed exploration，部分 GPU kernel 任务减少约 1.79–2.43× generations。</p>
+<p><strong>为什么值得关注：</strong>这与 Browser Self-Improvement 非常贴近。Chromium build、Pinpoint、benchmark、真实浏览器 replay 都很贵，但过去的 candidate / trace / benchmark outcome 本身已经是一套可以重放的搜索历史。先在历史上筛 exploration policy，再让少量候选进入真实 build/benchmark，可以显著降低自我改进成本。</p>
+<p><strong>边界：</strong>它的 simulator 只能重放历史真正探索过的节点，不能凭空预测没执行过的 Chromium patch 结果；因此最终 ground truth 仍必须来自真实 build、benchmark 和 Canary。</p>
+<p><a target="_blank" rel="noopener" href="https://www.dream-rsi.com/">Dream-RSI 项目页</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.14858">论文</a></p>
+
+<h3>4. WebGPU 神经渲染 demo：147 MB 模型 + 约 1 MB JS runtime 能跨 NVIDIA / macOS 跑，但仍是 1–2 秒级</h3>
+<p>开发者 MAAN 展示了一个用 WebGPU compute shaders 重实现神经渲染网络的浏览器 demo，报道给出的模型权重约 147 MB、压缩 JavaScript runtime 约 1 MB，并称可在 macOS 与非 NVIDIA GPU 上运行。Tom's Hardware 在 RTX 40 系桌面测试时，每次神经渲染仍需约 1–2 秒。</p>
+<p><strong>为什么值得关注：</strong>它说明 WebGPU 已经可以承载不只是 LLM kernel，而是更完整的 neural graphics pipeline；跨平台 GPU abstraction 的价值很明确。</p>
+<p><strong>但需要谨慎：</strong>这不是 NVIDIA 官方 WebGPU DLSS 支持，源码尚未公开，使用的模型权重来源和完整执行路径也需要进一步核验。因此今天把它作为 WebGPU capability signal，而不是成熟产品结论。</p>
+<p><a target="_blank" rel="noopener" href="https://www.tomshardware.com/pc-components/gpus/modder-gets-nvidias-dlss-5-working-in-a-web-browser-using-webgpu-147mb-browser-port-runs-on-non-nvidia-gpus-and-macos-but-takes-two-seconds-per-render">Tom's Hardware 报道</a></p>
+
+<h2>浏览器技术</h2>
+
+<h3>今天没有新的 Chrome / Firefox / WebKit 正式引擎级发布，重点转向 Browser Interface 的可测量性</h3>
+<p>过去 24 小时没有发现比昨天 Chrome 155 Beta / Chrome 153 security update 更高价值的新正式引擎发布。今天更重要的是 WindTunnel 把 Browser Agent 的四类 interface —— screenshot computer use、DOM/a11y、code execution、WebMCP —— 放进同一套 outcome-based harness。</p>
+<p>对浏览器工程而言，这意味着未来 Agent API 的设计也应该有独立 benchmark，而不是只看 demo：同一模型、同一站点、同一 seeded state、同一最终状态 scorer，才能回答“新的 Browser API 是否真的减少步骤、token 和失败”。</p>
+
+<h2>端侧 AI</h2>
+
+<h3>快速 Browser Agent 的优化重点正在从“更小模型”转向“减少昂贵决策次数”</h3>
+<p>Jev Ultrafast 给出的 1,092 → 101 protocol calls 是今天更值得关注的数据。端侧小模型如果以后进入这类循环，真正有价值的不是把 frontier planner 全部本地化，而是承接高频、低熵、强约束的 ACTION / TARGET / DONE / NEEDS_GENERATION 判断。</p>
+<pre>Frontier / slow planner
+        ↓ goal / recovery
+Fast decision layer
+├─ ACTION
+├─ TARGET
+├─ DONE
+└─ NEEDS_GENERATION
+        ↓
+Browser Runtime
+        ↓
+Post-condition / stale-state verification</pre>
+<p>这种分层也更适合 NPU / WebGPU 小模型：高频决策本地完成，真正需要长文本生成或复杂恢复时再升级到云端模型。</p>
+
+<h2>浏览器 × AI</h2>
+
+<h3>Action Surface 本身已经成为 Browser Agent 的主要性能变量</h3>
+<p>WindTunnel v1.2 最有价值的结果不是“WebMCP 赢了”，而是说明同一个 Agent 系统换接口后会出现数量级差异。WebMCP 的优势来自网站直接暴露 typed action，省掉“看页面 → 猜控件 → 操作 → 再确认”的中间推理。</p>
+<p>因此 Browser Runtime 更合理的执行路径是：</p>
+<pre>Discover capabilities
+        ↓
+WebMCP available?
+├─ Yes → typed semantic action
+└─ No
+    ↓
+DOM / AX / generated code
+    ↓
+Need vision?
+└─ Yes → screenshot / VLM
+        ↓
+Independent outcome verification</pre>
+<p>这不是要用 WebMCP 取代 Browser Use，而是把 expensive perception 变成 fallback。</p>
+
+<h2>Browser Self-Improvement</h2>
+
+<h3>今天的新原则：Replay Before Re-run</h3>
+<p>昨天我们把候选晋级扩展成 Correctness × Performance × Safety 的多维 Gate。Dream-RSI 今天补上了“怎么降低探索成本”：历史实验不是日志垃圾，而是一个有限但免费的 replay world。</p>
+<pre>Telemetry / Regression
+        ↓
+Attribution / Diagnose
+        ↓
+Candidate / Search Policy
+        ↓
+Historical Replay
+├─ old traces
+├─ old Pinpoint branches
+├─ old patches
+├─ benchmark outcomes
+└─ failed experiments
+        ↓
+Cheap policy ranking
+        ↓
+Real Build / Benchmark / Browser
+        ↓
+Multi-dimensional Promotion Gate
+        ↓
+Canary / Field Telemetry
+        ↓
+Append new evidence to replay pool</pre>
+<p><strong>业界走到哪：</strong>Dream-RSI 已经在 GPU kernel engineering 上验证“历史 discovery tree → replay → policy improvement → 再上线探索”的闭环；WindTunnel 则展示了 Browser interface benchmark 如何保留 raw attempt、provenance、seeded state 和 deterministic scorer。</p>
+<p><strong>能否迁移：</strong>非常适合迁移到 Chromium 性能与 Browser Harness，但只能用于“已经探索过的空间”。例如历史 Pinpoint / culprit CL、scheduler 参数、WGSL kernel、Browser action strategy 都可以 replay；没执行过的 patch 仍必须真实 build。</p>
+<p><strong>对 Agent Harness 的启发：</strong>以后每次真实实验都应该产出可重放资产，而不是只保留最后结论。至少保存 input state、candidate、action sequence、verifier、outcome、cost、environment 和 lineage。这样一次昂贵实验可以反复用于后续 policy / routing / skill 优化。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+
+<h3>EconSkills：成功轨迹应该抽象成带 Scope / Verification / Recovery 的 Skill，而不是直接 replay 原始 trajectory</h3>
+<p>9 月 17 日提交的 EconSkills 把 EconWebArena 的已验证成功轨迹蒸馏成参数化 SOP，每个 Skill 明确记录 scope、导航步骤、站点 guidance、verification checks 和 recovery steps。论文发现 matched skill 能提高成功率并减少步骤，而抽象后的 procedure 明显优于直接 replay 原始 trajectory；但 library retrieval 在未覆盖任务上会被近似匹配拖累。</p>
+<p>这和 Browser Self-Improvement 的 Learn 层高度一致：Skill 不能只是“上次怎么点”，而应包含适用范围与验证条件；检索时还必须知道什么时候没有可靠 Skill。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.19523">EconSkills 论文</a></p>
+
+<h3>WindTunnel 的 scorer correction 也是一个重要提醒</h3>
+<p>WindTunnel v1.2 披露独立 review 发现 canonical merge 曾在 corrected predicates 应用前生成，重新评分修复了 19 个 false negatives。Benchmark 自己也会有 bug，因此 Self-Improvement 的 verifier 同样需要 provenance、版本和独立审查，不能把 evaluator 当成永远正确的黑盒。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 下一阶段最值钱的资产，可能不是更多 Skill，而是“可重放的真实实验历史”：每次昂贵的 Browser / Build / Benchmark 都应该留下足够证据，让未来的 exploration policy、router 和 Harness 可以先在历史上学习，再决定哪些候选值得重新进入真实浏览器。</strong></blockquote>
+<p>今天的几条线可以连成：</p>
+<pre>Semantic Action Surface
+        ↓
+Fast constrained decision
+        ↓
+Real Runtime Verification
+        ↓
+Evidence / Trajectory / Cost
+        ↓
+Replay Simulator
+        ↓
+Improve exploration policy
+        ↓
+Only promising candidates re-run live</pre>
+<p>这比单纯“让 Agent 多试几次”更接近可持续的 Browser Self-Improvement：真实执行负责产生 ground truth，历史 replay 负责把 ground truth 的价值重复利用。</p>
+
+<p><em>筛选说明：过去 24 小时没有发现达到门槛的新 Chrome / Firefox / WebKit 正式引擎级发布，因此没有用普通版本日志补数量；WebGPU 神经渲染 demo 因源码尚未公开，按 capability signal 而非成熟实现处理。</em></p>
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
