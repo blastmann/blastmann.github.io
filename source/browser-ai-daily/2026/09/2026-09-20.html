@@ -1,0 +1,94 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-09-20
+date: 2026-09-20 09:53:46
+---
+
+<h2>今天最值得看</h2>
+
+<h3>1. EvoSkill-GUI：GUI Agent 的 Skill 不再是静态提示词，而是部署中可局部修订的工程资产</h3>
+<p>浙江大学等团队提出 EvoSkill-GUI，把每个 Skill 做成结构化多文件包：检索元数据、可执行计划、备用定位、失败恢复、Accessibility 工具和失败案例分开保存。执行器可在 rollout 中即时修订；隔离的 critic 诊断失败轨迹，再通过受限编辑接口修改指定 Skill 文件。论文在 MobileWorld、AndroidWorld、OSWorld 上报告多个基础模型均有提升，最大增益分别为 +16.2%、+6.0%、+10.5%，且演化后的 Skill 可以继续帮助相关任务。</p>
+<p><strong>为什么值得关注：</strong>这比“失败后让模型重写一整段 prompt”更接近 Browser Self-Improvement：把 Learn 的对象拆成可审查、可回滚、可验证的小资产，而且 critic 与 executor 有信息隔离，降低自证式学习。</p>
+<p><strong>工程启发：</strong>Browser Skill 应显式保存适用范围、主路径、fallback、失败样本和 verifier；一次失败只修改对应局部，不应直接污染全局 Harness。</p>
+<p><a href="https://arxiv.org/abs/2609.17653">EvoSkill-GUI 论文</a> · <a href="https://github.com/ZJU-REAL/EvoSkill-GUI">GitHub</a></p>
+
+<h3>2. Long-Horizon Agent Architecture：先做到“跨进程不忘”，才谈得上 Continual Learning</h3>
+<p>Erik Nijkamp 等人的新工作提出 Levels、Ticks、Cascaded Intelligence 三层设计：不同时间尺度各维护一个有界状态文件；tick 是持续自治的基本单位；低成本模型先工作，只有 review 失败才升级到更强模型。作者报告一个 10 天实验，在上下文重置和 session 边界之间保持任务连续性，早期写入的 operating knowledge 能在不改模型权重的情况下改变后续行为。</p>
+<p><strong>为什么值得关注：</strong>这与 Browser Agent 的 persistent runtime 方向高度一致。浏览器工程任务可能跨越 trace 收集、Pinpoint、build、benchmark、Canary 数小时甚至数天；如果 Harness 自己跨 session 就丢状态，Continual Improvement 无从谈起。</p>
+<p><strong>工程启发：</strong>把 Browser Runtime 状态、实验资产和长期 Learn 层放在 Agent process 之外；模型与短生命周期 worker 可以替换，但证据链和任务状态必须持久。</p>
+<p><a href="https://arxiv.org/abs/2609.19519">论文：An Architecture for Long-Horizon Agents</a></p>
+
+<h3>3. agent-browser 的 WebGPU CI 路径值得补推：GPU-less 容器也能做“真实渲染语义”验证</h3>
+<p>agent-browser 文档给出专门的 <code>--webgpu</code> 启动 preset：Linux 无真实 GPU 时可通过 Vulkan + SwiftShader 运行 WebGPU，适合 CI screenshot / rendering verification；同时特别提醒 three.js 可能静默回退 WebGL2、WebGPU 初始化是异步的，过早截图会得到黑 canvas，而通用 canvas snapshot 在部分平台也不可靠。其 doctor probe 使用 offscreen texture + <code>copyTextureToBuffer</code> + <code>mapAsync</code> 做确定性 readback。</p>
+<p><strong>为什么值得关注：</strong>对 WebGPU / 端侧 AI 的 Verify，最危险的不是测试失败，而是“测试显示成功但实际根本没跑 WebGPU”。这与 Browser Agent 的 post-condition verification 是同一类问题。</p>
+<p><strong>工程启发：</strong>WebGPU CI 必须验证 adapter/backend、等待真实 ready signal，并使用 deterministic GPU readback；截图成功不能作为 GPU pipeline 成功的证据。</p>
+<p><a href="https://agent-browser.dev/webgpu">agent-browser WebGPU 文档</a></p>
+
+<h3>4. 过去 24 小时没有新的高价值 Chrome / Firefox / WebKit 正式发布</h3>
+<p>周末窗口内没有发现比本周 Chrome 155 Beta、Chrome 153 安全更新和 Safari Technology Preview 252 更值得推送的引擎级发布。今天不拿普通 commit 或低信息量模型发布补数量，重点放在 GUI Skill 演化、长周期 Harness 与 WebGPU 可验证 CI。</p>
+
+<h2>浏览器技术</h2>
+<h3>WebGPU CI 的关键不是“能启动”，而是证明真正走了目标 GPU backend</h3>
+<p>Headless Chrome 在 GPU-less CI 中经常出现 silent fallback：页面加载正常、screenshot 命令成功，但 canvas 是黑的，或者 three.js 自动回退 WebGL2。Browser 工程的 GPU 测试因此需要把 runtime backend 也纳入 evidence，而不能只检查页面没有报错。</p>
+<pre>launch preset
+→ adapter/backend check
+→ app-specific ready signal
+→ deterministic texture readback
+→ image / numeric assertion
+→ artifact + environment provenance</pre>
+
+<h2>端侧 AI</h2>
+<h3>端侧推理 benchmark 应把“实际 backend”作为一等指标</h3>
+<p>同一个 WebGPU 模型在 hardware adapter、SwiftShader、WebGL fallback 或 CPU/WASM 上可能都能给出结果，但性能与语义完全不同。以后端侧 AI benchmark 除 tok/s、TTFT、显存外，应固定记录 Browser milestone、adapter、backend、driver、fallback 状态与 cold/warm run。</p>
+
+<h2>浏览器 × AI</h2>
+<h3>Skill 演化与 Browser Runtime 应分层：Skill 可以变，Runtime contract 不应随它一起漂移</h3>
+<p>EvoSkill-GUI 的受限编辑接口值得直接迁移。Browser Agent 可以修改 selector strategy、recovery rule、site procedure，但不应该修改权限策略、ground-truth verifier 或历史证据。这样 Learn 才是受约束的局部演化，而不是 Harness 任意自改。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天的新原则：Persistent Evidence, Local Mutation</h3>
+<p>过去几天我们形成了 Replay Before Re-run、Multi-dimensional Promotion Gate。今天再补两个约束：长期证据必须跨进程持久；学习修改必须尽量局部。</p>
+<pre>Telemetry / Regression
+        ↓
+Persistent Evidence Store
+├─ trace / crash
+├─ browser state
+├─ patch lineage
+├─ benchmark outcome
+└─ environment
+        ↓
+Diagnose
+        ↓
+Local Mutation
+├─ skill plan
+├─ fallback
+├─ recovery rule
+├─ helper
+└─ candidate patch
+        ↓
+Independent Verify
+        ↓
+Promote / Canary
+        ↓
+Evidence returns to store</pre>
+<p><strong>为什么重要：</strong>如果 Agent 每次失败都重写整个 Harness，系统很难知道究竟是哪项修改带来改善；如果 evidence 只存在当前 context，下一轮又会重复探索。Browser Self-Improvement 应让 evidence 的生命周期长于 Agent，让 mutation 的作用域小于 Harness。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<h3>EvoSkill-GUI：把失败案例本身纳入 Skill package</h3>
+<p>最值得借鉴的是 Skill 不只有“成功 SOP”，还保存 failure cases、backup localization 和 recovery rules。对 Browser Agent，这意味着 Learn 不应该只沉淀成功轨迹；失败轨迹同样应该变成可检索资产，用于避免重复犯错。</p>
+<h3>Long-Horizon Architecture：Harness checks 是 learner 最自然的插入点</h3>
+<p>论文的一个重要判断是：持续学习不应凭空加一个后台“自我改进器”，而应接在 Harness 已经存在的 review/checkpoint 上。迁移到 Chromium 工程，就是在 build、WPT、benchmark、sanitizer、Pinpoint 和 Canary 这些已有 Gate 上产生学习信号。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 真正需要长期存在的不是某个 Agent，而是 Evidence 与 Runtime Contract；真正应该频繁变化的，是局部 Skill、策略和候选 Patch。</strong></p>
+<p>因此更合理的结构不是“一个永不退出、不断重写自己的超级 Agent”，而是：</p>
+<pre>Persistent Runtime + Evidence
+        ↓
+Replaceable Agents
+        ↓
+Local, reviewable mutations
+        ↓
+Independent verification
+        ↓
+Promote only with evidence</pre>
+<p>这条路线同时降低了遗忘、错误学习和 verifier 被自我修改的风险，也更容易接入 Chromium 现有工程体系。</p>
