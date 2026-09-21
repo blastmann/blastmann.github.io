@@ -1,0 +1,95 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-09-21
+date: 2026-09-21 09:25:37
+---
+
+<h2>今天最值得看</h2>
+
+<h3>1. BrowserSkill 暴露本地 daemon 身份校验问题：Browser Agent 的“本地”并不等于可信</h3>
+<p>BrowserSkill 的公开 issue #273 指出，0.3.0 附近版本的本地 WebSocket daemon 只检查连接方 Origin 是否长得像 Chrome Extension ID，却没有确认它是不是 BrowserSkill 自己的扩展。由于 daemon 能操作真实、已登录浏览器，这意味着同一 profile 中其他扩展理论上可能连接本地 daemon 并获得页面读取、截图、表单交互等能力。该 issue 目前仍为 open；9 月 20 日有更新，因此今天值得重点跟踪。</p>
+<p><strong>为什么值得关注：</strong>我们过去几周一直强调 Context-Bound Capability 与 Persistent Runtime。这次问题说明还缺一层：Runtime 与 Extension/Agent 之间必须建立<strong>可验证的身份绑定</strong>。localhost、extension-shaped Origin、同机进程都不能自动视作可信。</p>
+<p><strong>工程启发：</strong>Browser Runtime 应使用明确 pairing、extension-id allowlist、短期 session credential，并把 capability 绑定到具体 Agent / Session / Tab；高权限真实浏览器桥接层还应保留连接与动作审计。</p>
+<p><a href="https://github.com/Tencent/BrowserSkill/issues/273">BrowserSkill issue #273</a></p>
+
+<h3>2. Safari 27 把 Safari MCP 正式带进稳定浏览器：Browser Agent 的 Observe / Verify 接口正在成为浏览器原生能力</h3>
+<p>WebKit 9 月 17 日发布 Safari 27.0 总览，Safari MCP 已正式可用。它通过本地 <code>safaridriver --mcp</code> 向 Claude Code、Codex 等 Agent 暴露 DOM、network requests、screenshots、console output，并支持检查表单状态、比较 computed style、辅助发现 accessibility 问题和分析 navigation/resource timing。WebKit 强调 MCP server 本身完全在本机运行，不自行发起网络请求。</p>
+<p><strong>为什么值得关注：</strong>这不再只是第三方 Browser Use 工具，而是浏览器厂商把“Agent 可观察、可验证浏览器真实行为”做成官方开发接口。Chrome DevTools MCP 与 Safari MCP 正在形成一条很清楚的趋势：Agent 不应靠用户手工转述浏览器状态。</p>
+<p><strong>工程启发：</strong>Browser Self-Improvement 可以直接复用浏览器官方 observation surface 做独立 verifier：Patch Agent 改代码，Safari/Chrome Runtime Agent 负责 DOM、Network、Console、Performance 与最终状态验证。</p>
+<p><a href="https://webkit.org/blog/18325/webkit-features-for-safari-27-0/">WebKit：Safari 27.0</a></p>
+
+<h3>3. Safari 27 的重点其实是 Quality：844 项修复比新增 API 更接近 Self-Improvement 的真实训练资产</h3>
+<p>Safari 27 从 WWDC 时公布的 525 项修复增加到 844 项。WebKit 把这些工作归为 Compatibility、Foundations、Depth、Alignment、Integration：包括重写 ES module loader、系统性处理 HTML table、深入修复 MSE/EME、对齐 <code>innerText</code> 与 HTTP cache 语义，以及处理多个功能组合后才出现的问题。</p>
+<p><strong>为什么值得关注：</strong>Browser Self-Improvement 最有价值的数据并不只是新功能 commit，而是这种“真实网站问题 → 根因 → 修复 → 标准/兼容性验证”的修复历史。尤其 Integration 类 bug 很适合训练 Agent 学会跨 subsystem 诊断，而不是看到指标异常就只盯单一组件。</p>
+<p><strong>工程启发：</strong>可以把浏览器历史修复按 Compatibility / Foundation / Depth / Alignment / Integration 自动分类，关联 bug、CL、WPT、review 与 regression，形成 Browser Repair Dataset。</p>
+<p><a href="https://webkit.org/blog/18325/webkit-features-for-safari-27-0/#quality">WebKit Safari 27 Quality</a></p>
+
+<h3>4. 过去 24 小时没有新的高价值端侧 AI Runtime 发布</h3>
+<p>周末窗口内没有发现比近期 1-bit WebGPU、WebGPU kernel fleet、LiteRT.js 更值得替换主线的新端侧推理底座。今天不拿普通模型发布补数量；更值得继续跟踪的是 Browser Runtime 的身份边界，以及官方 MCP observation surface 如何进入真实验证闭环。</p>
+
+<h2>浏览器技术</h2>
+<h3>Safari 27：除了 Safari MCP，Web 平台质量修复本身值得做结构化数据</h3>
+<p>Safari 27 同时覆盖 WebAssembly、JavaScript、Web API、Web Inspector、Media、Networking、WebGPU、WebRTC、Storage、WebDriver、WKWebView 等大量子系统。对浏览器工程 Agent，更有价值的不是把 release note 当新闻阅读，而是把每个 resolved issue 映射到 subsystem、spec/WPT、触发条件、修复 commit 和验证方式。</p>
+
+<h2>端侧 AI</h2>
+<h3>端侧 Browser Agent 的安全边界需要覆盖“模型之外”的本地桥接层</h3>
+<p>本地模型并不会天然让 Browser Agent 更安全。即使 inference 完全在设备上，只要模型通过高权限 daemon / extension 控制已登录浏览器，桥接层的身份认证、session isolation、capability scope 与审计就成为安全边界的一部分。端侧 AI benchmark 因此不能只有 latency、tok/s、内存，还应加入 capability exposure 与 session isolation 测试。</p>
+
+<h2>浏览器 × AI</h2>
+<h3>官方 Browser MCP 与第三方 Browser Runtime 应明确分工</h3>
+<pre>Browser Engine / Official MCP
+├─ DOM / AX / Console
+├─ Network / Timing
+├─ Screenshot
+└─ Browser ground truth
+        ↓
+Agent Harness
+├─ Diagnose
+├─ Generate candidate
+└─ Select tools
+        ↓
+Privileged Runtime Bridge
+├─ authenticated pairing
+├─ session capability
+└─ audit evidence</pre>
+<p>官方 MCP 最适合作为真实浏览器 ground truth；第三方 Runtime 可以提供跨浏览器抽象、持久 session、Skill 和 orchestration，但不能因为“跑在 localhost”就降低身份校验要求。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天的新原则：Authenticated Runtime Boundary</h3>
+<p>过去的 Persistent Runtime、Context-Bound Capability、Capability Budget 还需要增加身份层。一个能力在授予之前，必须知道调用者是谁；在执行期间，还要知道它属于哪个 session、tab/origin 和任务。</p>
+<pre>Observe / Diagnose
+        ↓
+Agent identity
+        ↓
+Authenticated pairing
+        ↓
+Session-scoped capability
+        ↓
+Browser action
+        ↓
+Post-condition evidence
+        ↓
+Independent Verify
+        ↓
+Learn</pre>
+<p><strong>闭环位置：</strong>BrowserSkill 这类问题位于 Runtime Contract / Execute 之前；Safari MCP 则补强 Observe / Verify。两者放在一起说明 Self-Improvement 不只是“Agent 会不会改”，还取决于 observation 是否来自真实浏览器、执行能力是否只交给正确主体。</p>
+<p><strong>可迁移性：</strong>Chromium 工程 Agent 同样应把 Trace reader、Pinpoint runner、source writer、benchmark runner 分成不同身份和 capability；Verifier 不应自动继承 Patch Agent 的写权限。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<h3>BrowserSkill：把安全问题转化成 Runtime Contract Test</h3>
+<p>这类问题最适合沉淀成自动回归：非配对扩展连接必须失败；session credential 过期必须失败；跨 profile / 跨 session capability 复用必须失败。安全修复如果只改实现、不把攻击路径固化成测试，Self-Improvement 之后仍可能重新引入。</p>
+<h3>Safari 27 Quality：Browser Repair Dataset 的天然来源</h3>
+<p>844 项修复提供了比纯 benchmark 更接近真实浏览器工程的数据。后续可以重点抽取“问题现象 → subsystem attribution → culprit → patch → test → review rationale”，用来评估 Diagnose、Patch 与 Learn，而不是只评估网页操作成功率。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 要继续往真实工程闭环走，下一块基础设施不是更聪明的 Planner，而是“可信观察 + 认证执行”。</strong></p>
+<pre>Official browser ground truth
+        +
+Authenticated capability boundary
+        ↓
+Diagnose / Patch
+        ↓
+Independent real-browser verification
+        ↓
+Evidence-backed learning</pre>
+<p>Safari MCP 代表浏览器正在原生提供 Agent ground truth；BrowserSkill 的身份校验问题则提醒我们，高权限 Browser Runtime 的本地边界必须像远程服务一样认真认证。两者合起来，才是 Browser Agent 可以长期自我改进的可信底座。</p>
