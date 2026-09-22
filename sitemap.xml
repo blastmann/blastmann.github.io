@@ -2,15 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://blastmann.github.io/index.html</loc>
-    
-    <lastmod>2026-09-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://blastmann.github.io/browser-ai-daily/index.html</loc>
     
     <lastmod>2026-09-22</lastmod>
@@ -20,7 +11,25 @@
   </url>
   
   <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-12.html</loc>
+    <loc>https://blastmann.github.io/index.html</loc>
+    
+    <lastmod>2026-09-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-10.html</loc>
+    
+    <lastmod>2026-09-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-11.html</loc>
     
     <lastmod>2026-09-22</lastmod>
     
@@ -30,15 +39,6 @@
   
   <url>
     <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-13.html</loc>
-    
-    <lastmod>2026-09-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-14.html</loc>
     
     <lastmod>2026-09-22</lastmod>
     
@@ -101,6 +101,24 @@
   </url>
   
   <url>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-12.html</loc>
+    
+    <lastmod>2026-09-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-14.html</loc>
+    
+    <lastmod>2026-09-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-21.html</loc>
     
     <lastmod>2026-09-22</lastmod>
@@ -111,69 +129,6 @@
   
   <url>
     <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-22.html</loc>
-    
-    <lastmod>2026-09-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-23.html</loc>
-    
-    <lastmod>2026-09-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-24.html</loc>
-    
-    <lastmod>2026-09-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-25.html</loc>
-    
-    <lastmod>2026-09-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-26.html</loc>
-    
-    <lastmod>2026-09-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-27.html</loc>
-    
-    <lastmod>2026-09-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-29.html</loc>
-    
-    <lastmod>2026-09-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-28.html</loc>
     
     <lastmod>2026-09-22</lastmod>
     
@@ -236,6 +191,33 @@
   </url>
   
   <url>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-07.html</loc>
+    
+    <lastmod>2026-09-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-08.html</loc>
+    
+    <lastmod>2026-09-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-09.html</loc>
+    
+    <lastmod>2026-09-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-05.html</loc>
     
     <lastmod>2026-09-22</lastmod>
@@ -254,7 +236,7 @@
   </url>
   
   <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-07.html</loc>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-23.html</loc>
     
     <lastmod>2026-09-22</lastmod>
     
@@ -263,7 +245,7 @@
   </url>
   
   <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-09.html</loc>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-24.html</loc>
     
     <lastmod>2026-09-22</lastmod>
     
@@ -272,7 +254,7 @@
   </url>
   
   <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-08.html</loc>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-25.html</loc>
     
     <lastmod>2026-09-22</lastmod>
     
@@ -281,7 +263,7 @@
   </url>
   
   <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-10.html</loc>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-26.html</loc>
     
     <lastmod>2026-09-22</lastmod>
     
@@ -290,7 +272,25 @@
   </url>
   
   <url>
-    <loc>https://blastmann.github.io/browser-ai-daily/2026/09/2026-09-11.html</loc>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-27.html</loc>
+    
+    <lastmod>2026-09-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-28.html</loc>
+    
+    <lastmod>2026-09-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blastmann.github.io/browser-ai-daily/2026/08/2026-08-29.html</loc>
     
     <lastmod>2026-09-22</lastmod>
     
