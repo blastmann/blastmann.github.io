@@ -1,0 +1,96 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-09-22
+date: 2026-09-22 09:46:07
+---
+
+<h2>今天最值得看</h2>
+
+<h3>1. RSIAgent：Self-Improvement 不一定先改模型权重，先让环境教会 Agent“这里真实怎么工作”</h3>
+<p>过去 24 小时浏览器引擎级更新较少，因此今天补推过去一周尚未进入日报主线、但与 Browser Self-Improvement 高度相关的 RSIAgent。它采用 training-free 的 Curriculum / Actor / Verifier 多 Agent 结构：先广泛探索新环境，再针对失败、边界条件和未知约束做深挖；只有经过验证的环境知识才进入持久 Memory，模型权重保持不变。论文在 OSWorld-v2 与 Agent's Last Exam 上报告了明显收益。</p>
+<p><strong>为什么值得关注：</strong>这比泛泛的“RSI”更容易迁移到真实浏览器工程。Chromium/V8/Skia/WebGPU 的很多知识并不是语言模型缺少常识，而是具体 milestone、平台、GPU、benchmark、构建参数和历史 CL 形成的局部规律。先通过真实环境探索和 verifier 学这些规律，通常比立即微调模型更现实。</p>
+<p><strong>工程启发：</strong>Browser Self-Improvement 可以增加 Exploration 阶段：Curriculum Agent 主动选择尚未覆盖的 trace、benchmark、WPT、GPU/driver 和失败类型；Actor 做诊断或候选修改；Verifier 用真实 build、test、benchmark 判断；只有可复现的因果/约束才进入 Memory。</p>
+<p><a href="https://arxiv.org/abs/2609.15364">RSIAgent 论文</a> · <a href="https://github.com/AetherLabsAI/RSIAgent">RSIAgent GitHub</a></p>
+
+<h3>2. Jev Browser 把“小模型做高频 Browser Decision”做成独立 MCP / CLI / Library</h3>
+<p>新近开源的 Jev Browser 使用 TypeSafe Jev 模型，每一步只从页面当前可点击、可输入、可选择元素中挑一个动作，同时给出 goal / stuck 概率；真正的循环、预算、恢复与停止 Gate 由代码控制。它可以作为 MCP server、CLI 或 library 使用，并输出最终页面、带 confidence 的 step trace、console errors 和 screenshot。最新 v0.4.1 还修复了 Chromium 首次安装下载失败的问题。</p>
+<p><strong>为什么值得关注：</strong>它延续了 Jev Ultrafast 的方向，但更像可直接嵌入 Harness 的工程组件：小模型不负责“自由生成一切”，只负责高频、低熵 decision；Runtime 负责预算、恢复、证据和 stop gate。这非常适合端云协同 Browser Agent。</p>
+<p><strong>工程启发：</strong>可以把 Browser Agent 分成 Slow Planner / Fast Decision / Runtime Verifier 三层；端侧模型优先承接 element ranking、ACTION/TARGET、goal/stuck 等低延迟判断，复杂规划和文本生成再升级到云模型。</p>
+<p><a href="https://github.com/jkudish/jev-browser">Jev Browser GitHub</a> · <a href="https://github.com/jkudish/jev-browser/releases/tag/v0.4.1">v0.4.1</a></p>
+
+<h3>3. Firefox Mobile 再次展示端云混合 AI：同一个 Summarize 功能按设备能力切本地 / 云端</h3>
+<p>Mozilla 9 月 21 日的移动 Firefox 文章再次说明 Shake to Summarize 的部署方式：在 iPhone 15 Pro 或更新机型、iOS 26+ 上使用 Apple Intelligence 本地生成；其他设备则把文本安全发送到 Mozilla 的云端 AI，使用 Mistral Small。功能目前覆盖 iOS 与 Android，并扩展到多种语言。</p>
+<p><strong>为什么值得关注：</strong>这是已经落地的 Hybrid Inference，而不是概念架构。同一个 Browser Feature 保持统一 UI / product contract，Runtime 根据设备能力决定 inference provider。</p>
+<p><strong>工程启发：</strong>Browser AI Router 不应该只按“模型质量”路由，还应考虑隐私、设备能力、TTFT、能耗、网络状态和任务复杂度；本地失败或能力不足时再升级云端。</p>
+<p><a href="https://blog.mozilla.org/en/firefox/stay-focused-wherever-you-work-with-firefox-mobile-browsers/">Mozilla：Firefox mobile productivity</a></p>
+
+<h2>浏览器技术</h2>
+<h3>过去 24 小时引擎级更新较少，今天不拿普通版本日志补数量</h3>
+<p>没有发现达到日报门槛的新 Chromium / WebKit 正式引擎级发布。Firefox 9 月 21 日的更新以移动产品能力为主；其中值得保留的是端云混合 Summarize 的 Runtime 选择，而不是一般性的生产力功能介绍。</p>
+
+<h2>端侧 AI</h2>
+<h3>端侧模型最适合先吃掉 Browser Agent 的“高频低熵判断”</h3>
+<p>Jev Browser 进一步强化了一个方向：端侧模型未必需要承担长链规划。element ranking、action selection、goal/stuck classification、页面变化判断等任务结构更窄、调用频率更高，也更适合低延迟小模型。</p>
+<pre>Browser State
+    ↓
+Fast local decision
+├─ action
+├─ target
+├─ goal probability
+└─ stuck probability
+    ↓
+Runtime Gate
+    ↓
+复杂情况 → Cloud Planner</pre>
+<p>对应 benchmark 应同时记录 task success、每步 decision latency、升级云端比例、token / protocol calls、恢复次数与总成本。</p>
+
+<h2>浏览器 × AI</h2>
+<h3>Hybrid Browser Agent：Model Router 与 Runtime Contract 分离</h3>
+<p>Firefox 的本地/云端 Summarize 与 Jev Browser 的 Fast Decision Layer 可以拼出一条更现实的 Browser AI Runtime：Browser 保有 Context、权限、Session、Evidence 与 Stop Gate；模型只是可替换 provider。这样本地模型、云模型甚至不同厂商模型都不需要重新定义 Browser Runtime。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天的新原则：Explore Before Learn</h3>
+<p>此前我们已经强调 Probe Before Learn：准备写入长期 Memory 之前，要重新回到真实环境核验。RSIAgent 再补上一层：系统不应该只被动等待生产故障，还可以主动探索自己尚不了解的环境区域。</p>
+<pre>Telemetry / Regression / Coverage Gap
+        ↓
+Curriculum Agent
+├─ broad exploration
+└─ targeted deep exploration
+        ↓
+Actor
+        ↓
+Independent Verifier
+├─ build
+├─ WPT / regression
+├─ benchmark
+└─ real browser evidence
+        ↓
+Verified Environment Knowledge
+        ↓
+Frozen / scoped Memory
+        ↓
+Downstream Diagnose / Patch
+</pre>
+<p><strong>闭环位置：</strong>RSIAgent 主要补强 Learn 之前的主动 Exploration，以及 Verify → Memory 的门禁。它并没有完成 Chromium Patch → Canary 的工程闭环，但方法可以直接放到浏览器工程现有 verifier 前面。</p>
+<p><strong>可迁移性：</strong>高。Browser 工程本来就拥有大量可重置、可验证环境：WPT、Telemetry benchmark、Pinpoint、Perfetto trace、WebGPU CTS、fuzzer corpus、历史 regression。Curriculum 可以优先挑“知识覆盖薄弱但验证成本可控”的区域练习。</p>
+<p><strong>关键限制：</strong>Verifier 错误会污染 Memory。因此 Memory 不能只保存结论，还必须保存 evidence、scope、环境版本和不确定性；模型 verifier 不能替代真实 build/test/benchmark。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<h3>RSIAgent：把“因果经验”而不是完整 trajectory 作为长期资产</h3>
+<p>最值得借鉴的是它试图保存 action、condition、consequence 之间可复用的关系。迁移到浏览器工程，Memory 应更像“在 M155 + Windows + 某 GPU driver 下，这类 Dawn device-lost 由某 buffer 生命周期触发，并由哪些测试验证”，而不是把一次 Agent 对话原样塞进知识库。</p>
+
+<h3>Jev Browser：代码拥有 loop，模型拥有 decision</h3>
+<p>Jev Browser 的边界也很清楚：预算、recovery、stop gate 留在确定性代码中，模型只返回有限决策和概率。对于需要长期稳定运行的 Browser Harness，这比让模型同时控制循环、工具和成功判定更容易审计。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 下一阶段不应只从“出了问题再学习”开始，而应该拥有自己的主动课程：系统知道哪些 Runtime 区域、平台组合、失败类型和性能规律还没有可靠证据，然后主动去探索、验证并补齐知识。</strong></p>
+<pre>Persistent Runtime
+→ Coverage / Uncertainty Map
+→ Active Exploration
+→ Grounded Verification
+→ Scoped Memory
+→ Diagnose / Patch
+→ Independent Verify
+→ Canary / Telemetry
+→ 更新 Coverage / Uncertainty</pre>
+<p>这样 Recursive / Continual Improvement 才从“反复改 Harness”变成真正的工程闭环：每次昂贵实验既解决当前问题，也降低下一次遇到相似问题时的不确定性。</p>
