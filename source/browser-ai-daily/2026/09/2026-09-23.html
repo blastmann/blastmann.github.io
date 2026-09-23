@@ -1,0 +1,94 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-09-23
+date: 2026-09-23 09:56:16
+---
+
+<h2>今天最值得看</h2>
+
+<h3>1. Chrome 154 进入 Stable：108 项安全修复，GPU / ANGLE / ServiceWorker 都出现 Critical</h3>
+<p>Chrome 团队 9 月 22 日将 Chrome 154 推入 Windows、macOS 与 Linux Stable。首个 Stable build 包含 108 项安全修复；公开列出的 Critical 问题包括 ANGLE buffer overflow、GPU out-of-bounds write、ServiceWorker use-after-free 与 Fullscreen use-after-free。</p>
+<p><strong>为什么值得关注：</strong>对 Browser Self-Improvement 来说，Stable promotion 本身就是一个现成的高保真 Verify / Canary 模板：candidate 不应只通过功能测试和 benchmark，还必须跨 GPU、renderer、ServiceWorker 等真实边界接受安全与稳定性 Gate。</p>
+<p><strong>工程启发：</strong>WebGPU / Browser Runtime 的 Agent 自动优化应把 sanitizer、GPU process crash、device-lost、跨平台 regression 与 Stable milestone revalidation 作为 promotion 条件，而不是只比较性能。</p>
+<p><a href="https://chromereleases.googleblog.com/2026/09/stable-channel-update-for-desktop_0856730748.html">Chrome 154 Stable 官方公告</a></p>
+
+<h3>2. MemCalib：Agent Memory 的问题不只是“记没记住”，而是“该信多少”</h3>
+<p>9 月 21 日提交的 MemCalib 专门评估 LLM 对记忆的使用强度。研究发现，前沿开源与闭源模型都会出现 memory over-use / under-use：有些旧经验被过度套用，有些真正相关的记忆又没有产生足够影响。作者进一步提出 MemCalib-RL，用双向反事实 credit assignment 分开处理“用太多”和“用太少”。</p>
+<p><strong>为什么值得关注：</strong>这直接击中 Browser Self-Improvement 的 Learn 层。把一次成功的 Chromium patch、某个 GPU 上的性能规律或某个网站的 Skill 写进 Memory，不代表以后遇到相似问题就应该强制复用。</p>
+<p><strong>工程启发：</strong>Browser Knowledge 不应只有 retrieval score，还应带 applicability / confidence / environment scope / last verified，并允许 Agent 明确判断“这条历史经验不该影响当前决策”。</p>
+<p><a href="https://arxiv.org/abs/2609.24259">MemCalib 论文</a></p>
+
+<h3>3. GPT-6 Sol / Luna 把 Computer Use 的成本曲线继续压低，同时强化长上下文缓存</h3>
+<p>OpenAI 9 月 22 日发布 GPT-6 Sol 与 Luna。官方给出的 OSWorld 2.0 offline 数据显示，Sol xhigh 为 60.5%；同时两档模型相较上一代大幅降低成本。面向 Agent 的另一个变化是 prompt caching：官方称提高默认 cache hit rate，cached input read 可获得 90% 折扣。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 的长期成本很大一部分来自重复页面上下文、规则、Skill 和历史轨迹的 prefill，而不是单次 action。更便宜的 fast model + 更有效的 context cache，会进一步推动 Slow Planner / Fast Executor 分层。</p>
+<p><strong>工程启发：</strong>Browser Harness benchmark 除 task success 外，应同时记录 cached-input ratio、cost / successful task、escalation rate 和重复 observation 的 prefill 成本。</p>
+<p><a href="https://openai.com/index/introducing-gpt-6-sol-and-luna/">OpenAI：GPT-6 Sol and Luna</a></p>
+
+<h3>4. GitHub Copilot 开始做 assisted tool approvals：Capability Budget 从设计原则进入产品</h3>
+<p>GitHub 9 月 22 日在 Copilot for JetBrains 1.18.0 中预览 assisted approvals：低风险 tool call 可以自动批准，高风险动作仍要求人工决定，同时加入持久 MCP tool controls。</p>
+<p><strong>为什么值得关注：</strong>这与 Browser Agent 的 Capability Budget 高度一致：不是所有 tool 都应一律询问，也不是所有 tool 都应默认放行，而应把风险、上下文和能力边界放进 Runtime。</p>
+<p><strong>工程启发：</strong>Browser Harness 可以把 read DOM / trace / screenshot、navigation、JS execution、credential、filesystem、source write、benchmark mutation 分成不同风险等级，并把 approval evidence 写入 trace。</p>
+<p><a href="https://github.blog/changelog/2026-09-22-new-features-and-improvements-in-copilot-for-jetbrains/">GitHub 官方公告</a></p>
+
+<h2>浏览器技术</h2>
+<h3>Chrome 154 Stable：把 milestone promotion 当成 Browser Agent 的强制再验证触发器</h3>
+<p>Chrome 154 的安全修复横跨 ANGLE、GPU、ServiceWorker、Fullscreen 等组件。对于长期运行的 Browser Harness，一个新的 Stable milestone 应自动触发关键 Skill、WebGPU workload、CDP/BiDi action semantics 与性能基线重跑，而不是假设上一版本通过就永久有效。</p>
+
+<h2>端侧 AI</h2>
+<h3>过去 24 小时没有达到门槛的新端侧推理 Runtime</h3>
+<p>没有发现比近期 1-bit WebGPU、WebGPU kernel fleet、WebLLM / WASM Runtime 进展更值得推送的新底座，因此今天不拿普通模型或 demo 补数量。更值得持续跟踪的是：浏览器 milestone 升级后，端侧 WebGPU 推理是否出现 correctness、adapter、driver、device-lost 或性能回归。</p>
+
+<h2>浏览器 × AI</h2>
+<h3>Fast Model + Cached Context + Risk-scoped Tools</h3>
+<p>今天 GPT-6 的成本/缓存变化与 GitHub 的 assisted approvals 可以拼出一个更现实的 Browser Agent Harness：高频低风险动作由更快模型执行并尽量复用缓存；高风险 capability 在 Runtime 层单独审批；复杂规划或失败恢复再升级强模型。</p>
+<pre>Persistent Browser Runtime
+        ↓
+Cached Context / Skills
+        ↓
+Fast Executor
+        ↓
+Risk-scoped Capability Gate
+        ↓
+Real Browser Action
+        ↓
+Post-condition Evidence
+        ↓
+复杂/失败 → Strong Planner</pre>
+
+<h2>Browser Self-Improvement</h2>
+<h3>新增主线：Memory Calibration Before Reuse</h3>
+<p>最近几期已经形成 Persistent Evidence → Explore → Verify → Learn。MemCalib 提醒我们，Learn 后面还缺一层：历史知识被检索出来，不代表它应该对当前 decision 产生同样强的影响。</p>
+<pre>Verified Experiment
+        ↓
+Scoped Memory
+├─ subsystem
+├─ milestone
+├─ platform
+├─ GPU / driver
+├─ evidence
+├─ confidence
+└─ last verified
+        ↓
+Retrieve candidates
+        ↓
+Memory Calibration
+├─ highly applicable
+├─ weak hint
+└─ ignore
+        ↓
+Diagnose / Patch
+        ↓
+Independent Verify
+        ↓
+更新 confidence / scope</pre>
+<p><strong>迁移到 Chromium 工程：</strong>例如“某 scheduler 改动改善 P95”只在 Windows + 某 milestone 验证过，那么它在 macOS 或新 milestone 上最多应是弱提示，而不能成为自动 Patch 规则。反过来，如果同一规律跨多轮 Pinpoint / benchmark / Canary 重复成立，影响权重才逐步提高。</p>
+<p><strong>闭环位置：</strong>MemCalib 对应 Learn → 下一轮 Diagnose 之间；Chrome Stable promotion 则提供 Verify / Canary 的现实触发点。两者组合后，知识不仅要被验证后写入，还要在每次复用时重新判断适用程度。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<h3>MemCalib 值得加入 Browser Harness 的 Memory Eval</h3>
+<p>Browser Agent 的长期 Memory benchmark 不应只测 recall。建议增加三类 case：应该强复用的已验证规则、只能作为弱提示的跨环境规则、必须忽略的过期/冲突规则；分别统计 over-use、under-use 与最终 task regression。</p>
+<p><a href="https://arxiv.org/abs/2609.24259">MemCalib</a></p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 的 Learn 层不能只解决“把成功经验存下来”，下一步必须解决“什么时候不该相信这条经验”。</strong></blockquote>
+<p>浏览器工程高度依赖 milestone、OS、GPU/driver、flag、网站状态和网络环境。真正可靠的 Continual Improvement 不是 Memory 越多越好，而是每条 Memory 都有边界、证据和置信度，并在新 Stable、新平台或新 regression 出现时自动降权或重新验证。</p>
