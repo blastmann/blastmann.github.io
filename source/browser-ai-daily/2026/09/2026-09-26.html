@@ -1,0 +1,119 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-09-26
+date: 2026-09-26 09:00:00
+---
+
+<h2>今天最值得看</h2>
+
+<h3>1. CyberAgent：Chrome DevTools MCP 已把 Observe → Diagnose → Patch → Verify 跑进真实工程</h3>
+<p>Chrome 官方披露 CyberAgent 在 Ameba 设计系统 Spindle 中使用 Chrome DevTools MCP，让 AI Agent 自动遍历 Storybook 的 32 个组件、236 个 Stories，读取真实 Chrome runtime state 与 console logs，定位问题、修改代码，再回到浏览器确认修复。整个巡检约一小时，实际修复了 1 个 runtime error 和 2 个 warnings；团队随后把 Chrome DevTools MCP 写进内部 Agents Guide，作为 AI Agent 的默认调试服务器。</p>
+<p><strong>为什么值得关注：</strong>这已经不是 Browser Agent 自动点网页，而是浏览器运行时证据直接驱动代码修改，并重新进入真实浏览器验证，实际覆盖 Browser Self-Improvement 的 Observe → Diagnose → Patch → Verify。</p>
+<p><strong>工程启发：</strong>下一步可把 Performance panel、Core Web Vitals、Trace 与 regression benchmark 接入同一闭环，让 runtime error fixing 扩展到性能回归诊断与优化。</p>
+<p><a href="https://developer.chrome.com/blog/autofix-runtime-devtools-mcp">Chrome 官方：CyberAgent automated runtime error fixing</a></p>
+
+<h3>2. Growing Harness：成熟经验不必一直占 Context，可以编译成 Harness Code</h3>
+<p>Growing Harness 从 strategy-free scaffold 开始，通过 function-level execution trace 把失败定位到有限代码面，再修改 Harness code；修改必须经过 success-first held-out gate，若损害已有能力就回滚。论文在 BrowseComp-Plus 与 WebArena-Verified 上报告，相比普通 Tool-Calling Agent，LLM calls 减少 76.0%–91.8%，部署推理成本减少 74.4%–98.6%。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 中大量 recovery、locator fallback、页面变化检测、benchmark orchestration 等控制逻辑具有重复性。经过真实 Browser 多次验证后，它们不一定还需要每次交给 LLM 重新推理。</p>
+<p><strong>工程启发：</strong>给 Learn 增加 Practice → Compile：重复成功的经验可从 Memory/Skill 下沉成 Test 或 Harness Code，把 LLM 留给真正具有语义不确定性的部分。</p>
+<p><a href="https://arxiv.org/abs/2609.26760">Grow the Harness, Not the Context</a></p>
+
+<h3>3. Privileged Self-Practice：Diagnosis 不能直接变成长期知识，应该先重新实践</h3>
+<p>Privileged Self-Practice（PSP）研究发现，在 multi-turn Agent 中，把 teacher 拥有的 privileged information 直接通过 self-distillation 教给 student，可能让 Agent 表现得很自信，却没有真正获得支撑该判断的观察。PSP 改为在任务频繁失败时，由 analyzer 生成短提示，再让 Agent 带提示重新执行任务并从新的 rollout 学习。</p>
+<p><strong>为什么值得关注：</strong>这与浏览器工程中的 Pinpoint、Trace、Code Review 很相似：分析器给出的 hypothesis 不应该直接进入长期 Memory。</p>
+<p><strong>工程启发：</strong>Diagnosis → hypothesis → Replay/Experiment → Real Browser Verify → Rule/Skill/Test。只有重新实验成立的诊断，才升级成可复用知识。</p>
+<p><a href="https://arxiv.org/abs/2609.29051">From Self-Distillation to Self-Practice</a></p>
+
+<h3>4. Chrome DevTools MCP 1.10.x：补齐 CSS 与大 Trace 的工程观察面</h3>
+<p>过去一周值得补推的 Chrome DevTools MCP 1.10.0 新增 CSS formatter 与 get_css_style，并为大型 Performance recording 加入 chunked trace buffer parser；1.10.1 随后修复 Rollup bundle 的 Node export conditions 问题。</p>
+<p><strong>为什么值得关注：</strong>DevTools MCP 正从“让 Agent 控制 Chrome”逐渐变成 Browser Engineering Observation API：DOM/Runtime、CSS、Console、Network、Heap、Performance Trace 都可以进入统一 Diagnosis Agent。</p>
+<p><strong>工程启发：</strong>Patch Agent 与 Verifier 可以进一步隔离：Patch Agent 改代码；Verifier 只通过真实 Chrome 的 Runtime、Console、Trace 与 benchmark 判断结果。</p>
+<p><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/releases">Chrome DevTools MCP Releases</a></p>
+
+<h2>浏览器技术</h2>
+<h3>真实 Chrome Runtime 正成为 Agent 工程验证环境</h3>
+<p>CyberAgent 的案例说明，浏览器自动化价值正在从 UI 操作向工程观测迁移。相比只读 DOM，Console、Runtime state、Performance Trace、Network 与 Heap 更适合作为浏览器工程 Agent 的 Ground Truth。Chrome DevTools MCP 的工具面也在沿这个方向扩张。</p>
+
+<h2>端侧 AI</h2>
+<h3>Harness 增长会反过来降低对大模型的依赖</h3>
+<p>Growing Harness 的结果对端侧 AI 很有启发：如果 recovery、routing、verification 和重复控制逐渐编译进 Harness，模型只需处理剩余的语义决策。这样 Browser Agent 可以把更多高频步骤交给端侧小模型或确定性代码，复杂规划再升级云端模型。</p>
+
+<h2>浏览器 × AI</h2>
+<h3>Browser Runtime → Evidence → Agent → Code → Browser Verify 已出现真实案例</h3>
+<pre>Real Browser
+    ↓
+Runtime Evidence
+├─ Console
+├─ DOM / CSS
+├─ Network
+└─ Performance Trace
+    ↓
+Diagnosis Agent
+    ↓
+Candidate Patch
+    ↓
+Build / Reload
+    ↓
+Real Browser Verify</pre>
+<p>这比“让 Agent 操作浏览器”更接近 AI Native Browser Engineering：Browser Runtime 不只是 Action Target，同时还是验证改动是否成立的 Evidence Source。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>新增主线：Learn → Practice → Compile</h3>
+<pre>Telemetry / Regression
+        ↓
+Real Browser Evidence
+        ↓
+Attribution
+        ↓
+Diagnosis / Hypothesis
+        ↓
+Practice / Replay
+        ↓
+Candidate Patch
+        ↓
+Independent Browser Verify
+        ↓
+Held-out Regression
+        ↓
+重复成功？
+   ├─ No → 保存实验与负证据
+   └─ Yes
+        ↓
+Compile
+├─ Test
+├─ Rule
+├─ Skill
+└─ Harness Code
+        ↓
+Canary / Telemetry</pre>
+<p><strong>闭环位置：</strong>Diagnose → Verify → Learn → Recursive Improvement。</p>
+<p><strong>业界做到哪：</strong>CyberAgent 已在真实 Storybook/Chrome Runtime 中跑通自动发现、修复与重新验证；Growing Harness 则展示了把反复出现的控制决策从 Context 下沉成可执行 Harness code，并用 held-out gate 防止破坏旧能力。</p>
+<p><strong>迁移到浏览器工程：</strong>Pinpoint/Trace 给出的 diagnosis 先生成 experiment，不直接写入长期知识；成功模式经真实 Chrome、WPT、benchmark 和 held-out 环境反复验证后，再选择沉淀为 Rule、Skill、Test 或 Harness Code。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<h3>知识沉淀应该分层，而不是全部塞进 Memory</h3>
+<pre>Model
+→ 处理未知问题与语义推理
+
+Memory / Rule
+→ 保存为什么、适用范围与证据
+
+Skill
+→ 保存可复用操作策略
+
+Test
+→ 保存可执行的验证条件
+
+Harness Code
+→ 保存已经稳定学会的重复控制
+
+Browser Runtime
+→ 提供真实执行与观测环境
+
+Independent Verifier
+→ 决定改进是否成立</pre>
+<p>这与前几期的 Immutable Verification Root、Memory Calibration、Executable Learning 可以连接起来：知识首先需要验证；验证后的知识仍要判断适用范围；高频稳定策略最终可以退出 LLM Context，成为低成本可执行代码。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 下一阶段值得尝试的，不是让 Agent 拥有越来越大的 Context，而是让它逐渐把经过真实 Browser 验证的经验“编译”进 Runtime。</strong></blockquote>
+<p>CyberAgent 已经证明 Browser Runtime → Agent → Code Change → Browser Verify 在真实工程中可行；Growing Harness 又说明重复控制可以从 LLM Context 下沉成 executable code。长期来看，模型负责未知问题，Memory/Skill 保存可解释经验，Harness Code 承担已经学会的重复控制，而 Independent Verifier 保持独立。</p>
