@@ -1,6 +1,88 @@
 ---
 layout: page
-title: Browser AI Daily 2026-09-27
+title: 浏览器 × 端侧 AI 日报｜2026-09-27
+date: 2026-09-27 10:30:00
 ---
 
-Draft placeholder.
+<h2>今天最值得看</h2>
+<h3>1. AlohaJet：Browser Agent 开始竞争 Observation / Token / Latency 成本</h3>
+<p>Aloha 本周发布 AlohaJet，定位为面向 AI Agent 的浏览器 runtime。公开材料声称，在其 WebArena 测试中，相比 Chrome DevTools MCP 可减少约 54% token 使用，并报告 88% 对 51% 的任务成功率；速度对比采用了不同基线。由于这些数字来自厂商自己的 benchmark，目前更适合作为值得独立复测的工程信号，而不是已经验证的结论。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 的成本很大一部分来自反复把页面状态编码给模型。真正决定吞吐的，不只是模型 tok/s，而是每一步 observation 大小、浏览器协议往返次数、动作成功率和失败重试。</p>
+<p><strong>工程启发：</strong>Browser Harness benchmark 应同时记录 Observation Tokens、Protocol Calls、Action Latency、Retry Rate、Success/Task 和 Cost/Success。</p>
+<p><a href="https://www.alohabrowser.com/alohajet">AlohaJet</a></p>
+
+<h3>2. IterSynth：长时 Browser Agent 不必保留完整轨迹，可以维护当前可信摘要</h3>
+<p>腾讯与浙江大学团队的 IterSynth 把深度搜索拆成 Planner 与 Synthesizer：Planner 根据原始问题和当前 summary 决定下一步搜索；Synthesizer 把新证据合并进 summary，完整搜索历史不再持续进入下一轮 context。IterSynth-8B 在五个长时搜索 benchmark 上平均 50.7，比论文中此前最强的 ≤8B agent 高 4.2 个百分点。</p>
+<p><strong>为什么值得关注：</strong>这与 Browser Agent 状态管理高度相似。DOM/AXTree/Network/Console/Trace 每轮都可能很大，但真正需要跨 step 保存的通常只是任务进度、关键证据、已验证假设和未解决问题。</p>
+<p><strong>工程启发：</strong>Browser Runtime 保存完整原始 Evidence，Agent Context 只保存带 evidence reference 的 Working Summary；需要追溯时再取回原始 Trace/DOM。</p>
+<p><a href="https://arxiv.org/abs/2609.29444">IterSynth 论文</a> · <a href="https://github.com/Tencent/IterSynth">GitHub</a></p>
+
+<h3>3. AgentX-Model：生产系统已出现“实验结果决定下一轮实验”的持续改进闭环</h3>
+<p>AgentX-Model 把长期模型研究拆成 Research Agent 与 Model Agent：前者提出并审阅研究方案，后者在 sandbox 中执行多轮代码与实验，再把 measurements、失败和未解决问题返回，决定下一轮 Reproduce、Follow-up、Composition 或 Diagnose。论文报告 636 个完成的模型改动实验中有 560 个 AUC 高于对应业务 baseline，并提供线上 A/B 结果。</p>
+<p><strong>为什么值得关注：</strong>它不是浏览器项目，但闭环非常接近 Browser Self-Improvement：真实反馈触发 Diagnose，实验结果进入历史 lineage，下一轮研究由上一轮 evidence 决定。</p>
+<p><strong>工程启发：</strong>Browser Harness 可采用双角色隔离：Research/Diagnosis Agent 提 hypothesis，Build/Experiment Agent 只负责修改、构建和测量，最终由独立 verifier 决定晋级。</p>
+<p><a href="https://arxiv.org/abs/2609.30001">AgentX-Model 论文</a></p>
+
+<h3>4. Locagent：单 HTML + WebGPU + 本地 Agent 展示完整浏览器端 AI Runtime</h3>
+<p>过去一周值得补推的 Locagent 把本地模型、Document RAG、Pyodide Python 和 Agent 工具放进浏览器应用：模型通过 LiteRT-LM + WebGPU 在本地 GPU 运行，文档、会话和分析数据默认留在浏览器内，并支持离线运行。</p>
+<p><strong>为什么值得关注：</strong>浏览器可以同时承担 Model Runtime、Storage、RAG、Python Sandbox 和 UI Runtime，部分 Agent Workspace 可以完全下沉客户端。</p>
+<p><strong>工程启发：</strong>端侧小模型可作为长期驻留 fast path：页面分类、element ranking、摘要更新、隐私敏感处理留在本地，复杂规划再升级云端。</p>
+<p><a href="https://github.com/wonderbyte/locagent">Locagent GitHub</a></p>
+
+<h2>浏览器技术</h2>
+<p>过去 24 小时没有发现足够重要且此前未推送的 Chromium / Chrome / WebKit / Firefox 引擎级正式更新。今天不为了数量重复 Stable release 或普通 commit。更值得跟踪的是 Browser Agent runtime 对 observation、真实 profile、DevTools 数据和本地 daemon 的工程化，因为这些直接影响成本和可靠性。</p>
+
+<h2>端侧 AI</h2>
+<p>Locagent 说明 WebGPU 已足以承载完整本地工作区；IterSynth 则说明长时任务不必保留全部历史。两者结合后，更实际的端云结构是：Browser Runtime 保存原始 evidence，本地小模型维护 compact state 和高频决策，云模型只接收必要状态并处理复杂推理。</p>
+
+<h2>浏览器 × AI</h2>
+<h3>Observation 应成为 Browser Runtime 的一等预算</h3>
+<pre>Browser Runtime
+    ↓
+Raw Evidence Store
+DOM / AXTree / Network / Console / Trace
+    ↓
+Delta + Attribution
+    ↓
+Local Summarizer / Fast Model
+    ↓
+Bounded Working State
+    ↓
+Cloud Reasoner（按需）
+    ↓
+Action → Verifier</pre>
+<p>相比每轮完整 snapshot，这种结构更适合长时运行：原始证据不丢失，但模型看到的状态保持有界，需要诊断时通过 evidence reference 回查。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>新增主线：Evidence Retention, Context Bounded</h3>
+<p><strong>Evidence 可以长期保留，但 Agent Context 不应该无限增长。</strong></p>
+<pre>Telemetry / Regression
+        ↓
+Persistent Raw Evidence
+        ↓
+Attribution / Delta
+        ↓
+Bounded Working Summary
+        ↓
+Diagnose
+        ↓
+Candidate / Experiment
+        ↓
+Independent Verify
+        ↓
+Experiment Lineage
+        ↓
+Learn
+        ↓
+更新 Summary / Skill / Test</pre>
+<p><strong>闭环位置：</strong>Observe → Diagnose → Learn，同时影响 Verify 成本。</p>
+<p>AlohaJet 把 token / protocol overhead 暴露成 Browser Agent 的现实成本；IterSynth 展示 compact persistent state 的价值；AgentX-Model 则说明完整 experiment lineage 应存在于 Context 之外，供后续研究和 replay 使用。</p>
+<p><strong>迁移方式：</strong>Trace、DOM、benchmark output、patch、review 和 Canary telemetry 全部作为 Persistent Evidence 保存；当前 Agent 只拿 scope、confidence、关键结论和 evidence refs，发生冲突或低置信度时再展开原始证据。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p><strong>IterSynth</strong> 值得直接拿 BrowserGym/WebArena 做无训练对照：Full History ReAct vs Delta Observation + Evidence-backed Summary，比较 success、context tokens、protocol calls、P95 step latency 与错误恢复次数。</p>
+<p><strong>AgentX-Model</strong> 值得迁移 experiment lineage：每个 Browser candidate 保存 parent、hypothesis、patch、benchmark、environment、verifier version 和 outcome，让下一轮 Agent 可以 Follow-up、Compose 或 Diagnose。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Agent 的长期记忆应该“证据无限、上下文有界”：完整 Trace 和实验历史可以保存，但不应该全部重新进入模型。</strong></blockquote>
+<p>这能把 Delta-First Observation、Persistent Evidence、Replay Before Re-run、Memory Calibration 串起来：Browser Runtime 负责保存真实世界，Agent Harness 决定当前只看哪一小部分。下一阶段值得测的不是继续增加 Context Window，而是在相同成功率下能把 Observation / Context 压到多小。</p>
