@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-09-29 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-09-29"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-09-29"/>
+
+  <meta property="displaydate" content="2026-09-29T09:00:00.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-09-29</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<h2>今天最值得看</h2>
+<h3>1. WebKitGTK / WPE：Skia compositor 继续稳定化，验证边界跨到 ANGLE / Skia</h3>
+<p>Igalia 9 月 29 日周报显示，新 Skia compositor 继续修复 3D transform、damage region、paint order、filter surface 与 background artifact；同时修复退出阶段的跨线程 EGL 生命周期 crash：现在会等 GPU process 停止 WebGL thread、Web process 关闭页面后，再由主线程销毁 EGL display。</p>
+<p><strong>为什么值得关注：</strong>这类问题由 GPU process、WebGL thread、EGL 与 compositor 生命周期共同决定。WSA-2026-0006 还首次把 bundled ANGLE 与 Skia 的安全修复纳入 WebKitGTK/WPE advisory，说明验证边界不能只停在 WebKit 自身源码。</p>
+<p><strong>工程启发：</strong>Self-Improvement verifier 应建立 dependency-aware regression matrix：Browser Engine、GPU process、ANGLE、Skia、driver/backend 与平台生命周期属于同一验证面。</p>
+<p><a target="_blank" rel="noopener" href="https://planet.webkit.org/">Planet WebKit：WebKit Igalia Periodical #79</a></p>
+
+<h3>2. Firefox 157 Nova：Sidebar / Vertical Tabs 进一步成为一等 Browser UI</h3>
+<p>Mozilla 9 月 29 日宣布 Firefox 157 已发布 Nova，这是自 2021 Proton 以来最大的一次 Firefox UI refresh。Toolbar 与 Sidebar 贴合窗口边缘，Sidebar 的角色更重，Vertical Tabs 成为 first-class layout；现有主题大多继续工作，但背景图、颜色落点和部分属性的可见效果发生变化。</p>
+<p><strong>为什么值得关注：</strong>对 AI Native Browser 来说，Sidebar 越来越接近浏览器框架的一部分。Agent、AI history、task state 和用户确认长期存在时，比网页 overlay 更适合作为稳定 UI surface。</p>
+<p><strong>工程启发：</strong>AI 功能应优先进入 Browser Chrome 层，同时把 theme/add-on compatibility 纳入 UI regression。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.mozilla.org/addons/2026/09/29/nova-is-here-what-changes-for-your-firefox-theme/">Mozilla：Nova is here</a></p>
+
+<h3>3. peerd：把 Agent Harness 直接建立在 Browser Primitives 上</h3>
+<p>过去一周值得补推的 peerd 是直接运行在浏览器内部的 Agent Harness：使用 Workers、Origins、Sandbox、OPFS、WASM/WASI、WebRTC、WebAuthn 与 WebExtensions，能够操作真实登录 Tab，同时启动 JS notebook、WASM Linux VM 等本地计算环境；推理可选择云模型、localhost 模型或实验性的 WebGPU local model。</p>
+<p><strong>为什么值得关注：</strong>它不是把 Browser 当成远程工具，而是把 Browser 本身当 Agent Runtime。Identity、Storage、Sandbox、Origin、Tab、Compute 与 UI 都可直接利用浏览器原生边界。</p>
+<p><strong>工程启发：</strong>重点观察 capability、signed-in session、sandbox 与 local compute 的组合，这条路线与 Local Small Model + Browser Harness + Cloud Model 很接近。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/NotASithLord/peerd">peerd GitHub</a></p>
+
+<h3>4. EVOHARNESSBENCH：Harness 自己升级也会让 Agent 遗忘旧能力</h3>
+<p>过去一周未推送的重要 benchmark EVOHARNESSBENCH 把 non-stationarity 放到 tools、skills、specialist agents 组成的 Harness 本身。它包含 17 个多阶段 harness streams、802 个任务、520 个 tools、42 个 skills 和 62 个 agents。实验发现，仅扩展 Harness 就可能让以前已解决的任务退化，而且 retention 与适应新能力并不总是同方向。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 会持续增加 DevTools、WebMCP、Memory、Skill、Verifier 和 local model routing。工具越多不保证系统越强，新增 capability 本身就是 regression source。</p>
+<p><strong>工程启发：</strong>每次 Browser Harness 增加 Tool / Skill / Agent，都应像浏览器代码变更一样跑旧 capability regression。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.04280">EVOHARNESSBENCH 论文</a></p>
+
+<h2>浏览器技术</h2>
+<p>WebKitGTK/WPE 今天的信息主要集中在 graphics：3D projection、damage、paint ordering、filter pixel alignment 与 GPU lifecycle 都在继续修正。Compositor replacement 的 promotion gate 不能只看 MotionMark 或平均帧率，还应覆盖视觉 correctness、damage correctness、process teardown、WebGL/Canvas、ANGLE/Skia security 与多 backend。</p>
+
+<h2>端侧 AI</h2>
+<p>peerd 说明 Browser 内已经能组合 OPFS + WASM/WASI + Worker + WebGPU + WebExtension。端侧模型可承担高频 fast path，WASM sandbox 承担确定性计算和工具执行，复杂推理再升级云端。关键不再只是“模型能否在 WebGPU 跑”，而是模型如何进入受浏览器权限和生命周期约束的 Runtime。</p>
+
+<h2>浏览器 × AI</h2>
+<p>Firefox Nova 强化 Sidebar/Vertical Tabs，peerd 把 Harness 放进 Browser Primitives。组合来看，Agent 的持久任务状态、权限确认、运行日志和本地模型状态适合存在 Browser Chrome；网页只作为被观察和操作的内容环境。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>新增主线：Dependency-Aware Verification</h3>
+<pre>Regression / Candidate
+        ↓
+Engine-level Verify
+        ↓
+Dependency Matrix
+├─ Browser Engine
+├─ GPU Process
+├─ ANGLE / Skia
+├─ WebGL / WebGPU
+├─ Driver / Backend
+├─ Process teardown
+└─ Platform
+        ↓
+Harness Capability Regression
+├─ old Tools
+├─ old Skills
+└─ old Agent routes
+        ↓
+Promote → Canary / Telemetry → Learn</pre>
+<p><strong>闭环位置：</strong>Build/Benchmark → Verify → Promote。</p>
+<p><strong>迁移到 Chromium：</strong>Candidate patch 不应只绑定一个 benchmark。Verifier 需要知道它触及哪些 dependency/failure domains，并自动选择对应 replay。例如 compositor CL 自动扩展到 GPU process crash、ANGLE/Skia、WebGL/WebGPU、visual diff、driver/backend 与 shutdown/restart tests。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>可以把 Browser Harness 的 Tool → Skill → Agent → Capability 关系显式建图。新增 Chrome DevTools tool、WebMCP capability 或 local model route 时，由 dependency graph 自动选出需要重放的历史任务，而不是每次全量运行，也避免只测新 capability。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 的 Verify 不应该只知道“改了什么文件”，还应该知道“这次改动可能影响哪些运行时依赖和旧能力”。</strong></blockquote>
+<p>浏览器本身就是跨进程、跨线程、跨图形库、跨平台的系统；Agent Harness 也正在变成 Tool、Skill、Memory、Model 与 Verifier 的依赖系统。下一步值得把 dependency graph 接到 regression selection：先做影响范围预测，再选择最小但覆盖充分的 replay/benchmark 集合，最后由 Canary/Telemetry 检查预测之外的长尾。</p>
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
