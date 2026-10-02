@@ -1,0 +1,115 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-01
+date: 2026-10-01 10:30:00
+---
+
+<h2>今天最值得看</h2>
+
+<h3>1. Yahoo Auction：Chrome Built-in AI 出现真正的生产级“跨页面端侧 AI”架构</h3>
+<p>Chrome 官方公开 Yahoo Taiwan Ecommerce 的生产实践：Yahoo Auction 已把浏览器端 Built-in AI 用到商品上架、个性化推荐、预测搜索、商品摘要、积分商品推荐与购物助手等九类场景。商品上架平均耗时从 20 分钟降到 2 分钟；上线后累计超过 100 万次交互、10 万独立用户，ambient intelligence 模块 CTR 接近 3%，高于原有推荐的 1.3%–1.8%。</p>
+<p><strong>为什么值得关注：</strong>更重要的不是指标，而是它暴露了 Browser-native AI 的真实生命周期问题。Prompt API 受 top-level document context 限制，页面跳转会中断推理，因此团队用 SharedWorker 做跨 Tab 资源编排：把请求委托给同源的平行 Tab 执行，结果带 TTL 缓存到 Web Storage，让推理跨 MPA navigation 存活。</p>
+<p><strong>工程启发：</strong>浏览器端 AI 需要独立于 Page 生命周期的 AI Runtime/Session 层。SharedWorker 目前是应用层 workaround；更理想的 Browser Runtime 应原生管理 model session、任务队列、跨导航 continuation、缓存与权限边界。</p>
+<p><a href="https://developer.chrome.com/blog/built-in-ai-ambient-intelligence">Chrome 官方：Yahoo Taiwan Ecommerce built-in AI</a></p>
+
+<h3>2. STITCH：Harness 不必每次重写，可以从失败轨迹提炼 Primitive 再按任务组合</h3>
+<p>STITCH 从失败任务轨迹中提炼 Harness Primitives，每个 primitive 都带明确适用范围和 composition contract；运行新任务时只选择并组合已有 primitive，而不是现场生成一套新的 Harness。论文报告相对 fixed harness 最高提升 12 个百分点，test-time composition overhead 约 2.7%。</p>
+<p><strong>为什么值得关注：</strong>它给 Browser Self-Improvement 的 Learn 层提供了比“无限积累 Skill”更工程化的形式：失败轨迹可以沉淀成可测试、可组合、有作用域的 Harness Primitive。</p>
+<p><strong>工程启发：</strong>浏览器侧可以形成 Trace Analysis、Pinpoint、Visual Diff、WPT Replay、GPU Evidence、Network Capture、Crash Triage 等 primitives，再根据 regression 类型组合最小 Harness。</p>
+<p><a href="https://arxiv.org/abs/2609.38912">STITCH：Composing Task-specific Agent Harnesses</a></p>
+
+<h3>3. Turbo Harness：把历史优化实验变成 Playbook，再为当前实例生成局部 Harness Patch</h3>
+<p>Turbo Harness 不再把一次全局 Harness 优化的中间产物丢掉，而是将历史优化 artifacts 总结成 structured playbook，并训练 Harness Editor 针对当前任务给 global harness 生成 instance-specific patch。论文在七类 interactive、software engineering 与 long-horizon benchmark 上均优于所比较的 global harness baselines。</p>
+<p><strong>为什么值得关注：</strong>这和浏览器工程高度匹配。同一个“页面卡顿”在低端 Android、桌面独显、不同 GPU backend 或弱网下，需要的 observation、benchmark 和 verifier 并不相同。</p>
+<p><strong>工程启发：</strong>Global Browser Harness 保持稳定；针对具体 regression，只允许生成 scoped overlay，并在任务结束后决定是否把有效部分提升为 Primitive，而不是持续污染全局 Harness。</p>
+<p><a href="https://arxiv.org/abs/2609.40330">Turbo Harness 论文</a></p>
+
+<h3>4. Self-Evolving Harness：同一个冻结模型开始同时扮演 Solver 与 Harness Optimizer</h3>
+<p>这项工作从 49 行 seed harness 出发，让同一个 frozen model 先执行任务，再读取完整 run records 直接修改运行自己的 Harness；训练任务覆盖五类 benchmark，并严格区分 held-out 与额外 OOD benchmark。第一阶段平均在分布内提升 4.48 分、OOD 提升 12.64 分；演化过程中自然出现 output truncation、history compaction 和 independent review 等机制。</p>
+<p><strong>为什么值得关注：</strong>它更接近真正的 Recursive Improvement：不是单独一个更强 proposer 帮弱 Agent 写 Harness，而是执行者利用自己的失败证据修改自己的运行环境。</p>
+<p><strong>工程启发：</strong>迁移到 Chromium 时仍必须保留独立 Verification Root；Solver 可以兼任 Harness proposer，但不能同时控制 WPT、benchmark、promotion gate 和 Canary 判定。</p>
+<p><a href="https://arxiv.org/abs/2609.38372">Self-Evolving Harness on Multiple Tasks</a></p>
+
+<h2>浏览器技术</h2>
+<h3>Chrome 156 Beta 已进入 Beta，但当前官方摘要信息较少</h3>
+<p>Chrome 156 于 9 月 30 日进入 Beta。当前 Chrome for Developers 的 Beta 页面主要指向 Chrome Status，并没有列出足够值得单独展开的新能力，因此本期不为数量罗列普通 feature。</p>
+<p><a href="https://developer.chrome.com/blog/chrome-156-beta">Chrome 156 Beta</a></p>
+
+<h2>端侧 AI</h2>
+<h3>生产问题从“模型能不能在浏览器跑”转向“推理任务怎样跨页面生命周期存活”</h3>
+<p>Yahoo Auction 的实践很有代表性：本地模型已经能承担真实业务，但 MPA navigation、模型下载状态、跨 Tab 协调和缓存生命周期开始成为主要工程问题。端侧 AI Runtime 需要任务级 identity，而不能只依附某个 Document。</p>
+
+<h2>浏览器 × AI</h2>
+<h3>值得抽象一个 Browser AI Session Runtime</h3>
+<pre>Page / Tab
+   ↓ request
+Browser AI Session Runtime
+├─ model lifecycle
+├─ task identity
+├─ queue / cancellation
+├─ permission
+├─ local context
+├─ cache / TTL
+└─ cross-navigation continuation
+   ↓
+Local Model / Cloud Model
+   ↓
+result
+   ↓
+Page / Agent / UI</pre>
+<p>Yahoo 当前用 SharedWorker + parallel same-origin tab 解决的，本质上就是 Browser Runtime 尚未原生提供的长生命周期 AI session。对 AI Native Browser，这层能力比再增加一个 Prompt API method 更基础。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>新增主线：Primitive Library + Scoped Harness Overlay</h3>
+<pre>Failure / Regression
+        ↓
+Reproduction Artifact
+        ↓
+Diagnosis
+        ↓
+Select Harness Primitives
+├─ Trace
+├─ Bisect
+├─ WPT
+├─ Visual Diff
+├─ GPU / Network Evidence
+└─ Independent Review
+        ↓
+Scoped Harness Overlay
+        ↓
+Patch / Build / Benchmark
+        ↓
+Independent Verify
+        ↓
+有效？
+   ├─ No → 保存负实验
+   └─ Yes → 提炼 / 更新 Primitive
+        ↓
+Capability Regression
+        ↓
+Canary / Learn</pre>
+<p><strong>闭环位置：</strong>Diagnose → Improve → Verify → Learn → Recursive Improvement。</p>
+<p><strong>业界做到哪：</strong>STITCH 展示了从失败轨迹提炼 reusable primitive；Turbo Harness 展示了利用历史 optimization artifacts 为单个实例做 scoped adaptation；Self-Evolving Harness 则展示同一个 frozen model 可以基于自己的 run record 修改 Harness。</p>
+<p><strong>迁移建议：</strong>Browser Harness 不要在每个 regression 上重新生成整套控制逻辑。稳定能力做成版本化 Primitive，具体问题只产生短生命周期 overlay；只有经过 held-out regression 和 Canary 验证的 overlay 才有资格晋升到共享 Primitive Library。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<h3>Browser Harness 的学习资产可以从 Skill 进一步结构化</h3>
+<pre>Raw Evidence
+→ Experiment
+
+重复成功的 Experiment
+→ Rule / Skill
+
+作用域清晰、可独立测试的 Skill
+→ Harness Primitive
+
+当前实例的 Primitive 组合
+→ Scoped Overlay
+
+跨实例持续有效
+→ Shared Primitive Library</pre>
+<p>这样 Learn 不再等于“把经验写进一个越来越大的 prompt”，而是形成有版本、有契约、有 regression test 的工程资产。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 的 Harness 不应该只有“全局固定”和“每次重新生成”两个极端；更可行的是稳定 Primitive Library + 每个问题的 Scoped Overlay。</strong></blockquote>
+<p>这同时吸收了最近几天的几个信号：Self-Improving Branches 说明不同任务需要不同策略；Dependency-Aware Verification 说明验证必须知道影响范围；Reproduce Before Diagnose 让每次改进有稳定起点；今天的 STITCH/Turbo Harness 则进一步给出了如何把历史经验重新组合到当前实例的方法。</p>
