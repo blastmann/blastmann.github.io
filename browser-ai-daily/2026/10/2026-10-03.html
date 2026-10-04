@@ -1,0 +1,228 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-10-03 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-10-03"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-10-03"/>
+
+  <meta property="displaydate" content="2026-10-03T17:00:00.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-10-03</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<h2>今天最值得看</h2>
+
+<h3>1. Browy：真实登录态 Chrome + AXTree + DevTools 正在收敛成一个本地 Browser Agent Runtime</h3>
+<p>Browy 是近期出现的 Chromium Extension Browser Agent：Extension 侧提供 Side Panel 与 DevTools CLI，本地 Native Messaging host 连接模型；Agent 直接操作用户真实 Chrome/Edge/Brave profile，通过 <code>chrome.debugger</code> 使用 CDP，主要 observation 来自带索引的 Accessibility Tree，同时把 Network、Console、Cookie、Storage 与 JavaScript execution 做成一等工具。</p>
+<p><strong>为什么值得关注：</strong>它不是重新启动一个无状态 headless browser，而是复用用户已经登录、已有扩展与真实 session 的浏览器。与此同时，shell/filesystem/web_fetch 默认关闭、没有后台自动执行、每次 tool call 都可见，说明 Browser Agent 的 Runtime Policy 开始和 Observation/Action 一样成为产品主体。</p>
+<p><strong>工程启发：</strong>Chromium-native Agent 可以把 Profile/Session/Credential 留在 Browser Runtime，只向模型暴露 AXTree reference 和当前任务需要的 DevTools evidence；高风险 host capability 由浏览器设置控制，而不是由 prompt 控制。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/BrowyHQ/browy">Browy GitHub</a></p>
+
+<h3>2. WebKit main 持续高速推进，但过去 24 小时没有足够重要的单项引擎发布</h3>
+<p>WebKit Build Archives 显示 10 月 3 日 main revision 已推进到 322607，过去 24 小时持续产生 Tahoe / Sequoia / Sonoma 构建。本期没有发现值得脱离具体 commit context 单独放大的 WebGPU、网络或媒体正式发布，因此不以普通 main build 凑数量。</p>
+<p><strong>为什么值得关注：</strong>对于 Browser Self-Improvement，Nightly/main 的价值仍然很高：它是稳定版之前最早的真实验证目标，可以持续触发 WPT、real-site 与性能 smoke test。</p>
+<p><strong>工程启发：</strong>把 engine-head revision 当成 Revalidation Trigger，而不是新闻源；只有出现 regression delta 时才进入自动 attribution / bisect。</p>
+<p><a target="_blank" rel="noopener" href="https://webkit.org/build-archives/">WebKit Build Archives</a></p>
+
+<h3>3. agent-browser 的 WebGPU CI 经验值得补推：页面“成功打开”不代表 GPU 输出正确</h3>
+<p>agent-browser 已把 headless WebGPU 做成显式 launch preset：Linux CI 通过 Vulkan + SwiftShader 路径运行，无物理 GPU 也可以截图 WebGPU canvas；项目文档特别指出，如果没有正确配置，页面加载和 screenshot 命令都可能成功，但 canvas 实际是黑的。</p>
+<p><strong>为什么值得关注：</strong>这是 Browser Self-Improvement Verify 阶段非常典型的“假成功”：process 没 crash、API call 返回成功，并不等于视觉或计算结果正确。</p>
+<p><strong>工程启发：</strong>WebGPU/WebGL/媒体类验证需要 Output Oracle：截图 diff、像素/帧 checksum、GPU error/device-lost、adapter/backend 与 trace 一起记录，不能只用 exit code。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/vercel-labs/agent-browser/blob/main/skill-data/core/references/webgpu.md">agent-browser WebGPU reference</a></p>
+
+<h3>4. ModularRSI 值得作为过去一周补推：Harness 自我改进应按模块归因，而不是整套重写</h3>
+<p>ModularRSI 把可演化 Harness 拆成 Agent Loop、Tool Use、Observation Management、Context Management、Task Completion Detection 五个模块；通过同一任务成功/失败轨迹的对比和跨任务证据聚合定位重复缺陷，各模块在受限范围内独立演化，最后再做 integration。论文还专门使用与最终 benchmark 分离的 2,000 个 executable evolution tasks。</p>
+<p><strong>为什么值得关注：</strong>这与 Chromium 工程的小 CL 原则非常接近：如果一次 Harness evolution 同时改 observation、tool policy、context 和 completion，收益很难 attribution，回归也很难定位。</p>
+<p><strong>工程启发：</strong>Browser Harness 应建立 Module Ownership + Module-level Regression；只有 integration 阶段才验证模块之间的冲突。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.14857">ModularRSI 论文</a></p>
+
+<h2>浏览器技术</h2>
+<h3>Engine Head 更适合作为自动 Revalidation Trigger</h3>
+<p>今天没有高价值的 Chrome/Firefox/WebKit 正式 feature 发布。WebKit main 的持续构建反而提醒我们：浏览器工程自动化不应该把每个 revision 当新闻，而应把 revision range 绑定到 WPT、real-site、GPU/媒体和 perf smoke tests。出现 delta 后再自动缩小 culprit range。</p>
+
+<h2>端侧 AI</h2>
+<h3>端侧模型的优势越来越依赖 Runtime 给它“更小、更可信”的输入</h3>
+<p>Browy 的 AXTree indexed observation 与 agent-browser 的 compact reference 都指向同一方向：端侧小模型不必吞完整 DOM。Browser Runtime 可以先做结构化、去噪、权限过滤和 evidence selection，再把低熵 decision 交给本地模型；复杂规划才升级云端。</p>
+
+<h2>浏览器 × AI</h2>
+<h3>Real Profile Agent 的核心不只是登录态，而是 Runtime Trust Boundary</h3>
+<pre>Real Browser Profile
+├─ Session / Cookie
+├─ Extensions
+├─ Credential
+├─ DevTools Evidence
+└─ Runtime Policy
+        ↓
+Compact Observation
+        ↓
+Local / Cloud Model
+        ↓
+Requested Action
+        ↓
+Browser Policy Gate
+        ↓
+Execution + Audit</pre>
+<p>真实 profile 能显著提升 Agent 可用性，但同时扩大风险面。因此 Browser Runtime 必须拥有 credential、host capability、background execution 和 destructive action 的最终控制权。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>新增主线：Output Oracle Before Learn</h3>
+<pre>Regression / Candidate
+        ↓
+Build / Run
+        ↓
+Process-level Success
+        ↓
+Output Oracle
+├─ screenshot / visual diff
+├─ pixel / frame checksum
+├─ WPT assertion
+├─ GPU error / device-lost
+├─ network/media correctness
+└─ trace invariants
+        ↓
+Module-level Attribution
+        ↓
+Independent Verify
+        ↓
+Promote
+        ↓
+Canary / Telemetry
+        ↓
+Learn</pre>
+<p><strong>闭环位置：</strong>Build/Benchmark → Verify → Learn。</p>
+<p><strong>为什么现在值得单列：</strong>WebGPU headless 的黑屏案例说明“命令成功”与“结果正确”是两件事；ModularRSI 又说明，确认结果变化后还需要知道是哪一个 Harness module 带来的变化。</p>
+<p><strong>迁移到 Chromium：</strong>Compositor/WebGPU/媒体/网络栈的 Agent patch 应为每类输出定义独立 oracle。只有 oracle 通过且收益能归因到受限修改范围，实验才有资格进入长期 Skill/Rule。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<h3>把 Runtime Policy、Output Oracle、Module Attribution 放进同一实验资产</h3>
+<pre>Experiment Artifact
+├─ candidate SHA
+├─ browser revision
+├─ harness module diff
+├─ runtime policy version
+├─ environment / adapter / backend
+├─ raw evidence
+├─ output oracle result
+└─ promotion decision</pre>
+<p>这样未来 Replay 时，不只是知道“当时 benchmark 提升了”，还可以知道当时使用什么权限、什么 GPU/backend、什么 verifier，以及结果为什么被接受。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 的 Verify 阶段需要从“程序有没有跑完”升级成“真实输出是否正确，而且能否归因到一个受控改动”。</strong></blockquote>
+<p>Browser Runtime 越复杂，假成功越常见：WebGPU 可以黑屏但没有 crash，媒体可以播放但帧序/延迟错误，Browser Agent 可以完成页面动作却越过权限边界。下一阶段值得优先建设的不是更多 Patch Agent，而是一组面向 Browser Runtime 的 Output Oracle，并把它们和 module-level attribution、独立 verifier 绑定。</p>
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
