@@ -1,0 +1,208 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-10-05 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-10-05"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-10-05"/>
+
+  <meta property="displaydate" content="2026-10-05T09:25:00.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-10-05</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<h2>今天最值得看</h2>
+<h3>1. OpenAI Computer Use 的 10× 提速：Harness + 独立 Guardian</h3>
+<p>10 月 4 日公开的访谈转述中，OpenAI Codex 负责人 Thibault Sottiaux 将过去一年 computer-use 的约 10× 提速归因于模型与 Harness 共同优化：减少每次 action 前不必要的 reasoning、消除 Harness 小停顿并提高并行度；同时由第二个 AutoReview（内部称 Guardian）Agent 观察主 Agent。10× 目前应视为团队口径，而不是可独立复现 benchmark。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 延迟不只是模型 tokens/s；Action 前思考、工具往返、并行 observation 和 verifier 共同决定端到端体验。</p>
+<p><strong>工程启发：</strong>分别记录 Reasoning Latency、Observation Latency、Tool RTT、Idle/Stall、Verifier Latency；Guardian 与主 Agent 解耦后，可独立换成更快的小模型或规则系统。</p>
+<p><a target="_blank" rel="noopener" href="https://dotsfeed.com/news/tibo-breaks-down-openai-s-10x-computer-use-speedup-model-harness-guardian-agent">访谈内容转述</a></p>
+
+<h3>2. DeepSeek Harness v0.2.1-alpha.1：Agent 开始直接生成自己的 Plugin Runtime</h3>
+<p>官方预发布版加入实验性 Claude Code Mods 兼容层，并明确当前目标是验证 Mods API 能力大致属于 DSH plugin 能力的子集；Plugin Manager 新增“让 Agent 创建插件”，Creator mode 可按需求直接生成插件；Developer Tools bundle 提供 raw session logs、对话双向定位和 Host diagnostics。</p>
+<p><strong>为什么值得关注：</strong>这已经接近 Recursive Harness Improvement：Agent 不只是使用 Tool，而是可以生成和调试自己的能力模块。</p>
+<p><strong>工程启发：</strong>迁移到 Browser Self-Improvement 时应采用 Plugin Candidate → sandbox → replay → capability/security regression → signed promotion，Plugin 本身也成为 versioned experiment artifact。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.1-alpha.1">DeepSeek Harness 官方 Release</a></p>
+
+<h3>3. Firefox 小模型实践：先用网页结构做确定性 Routing，再调用专用 Prompt</h3>
+<p>Mozilla 最近公开 Shake to Summarize 的 recipe 优化：通用摘要 prompt 经常漏掉关键配料和步骤。团队没有增加模型分类 pass，而是优先读取网页 structured data，确定性识别 recipe，再路由到专用 prompt；在 curated recipe sites 测试中，完整且准确的摘要概率提高到原来的两倍以上。</p>
+<p><strong>为什么值得关注：</strong>Browser Runtime 已知的结构化事实，不应该再让小模型猜一次。</p>
+<p><strong>工程启发：</strong>DOM、Schema.org、MIME、Navigation type、权限状态、Tab/Frame identity 先成为 deterministic feature；只有语义不确定部分进入模型。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.mozilla.org/en/firefox/firefox-ai/prompt-tuning-firefox-shake-to-summarize-recipes/">Mozilla 官方工程文章</a></p>
+
+<h3>4. Vivaldi 8.2 在 10 月 4 日继续回合 Chromium 154 安全修复</h3>
+<p>Vivaldi 10 月 4 日发布 Desktop 8.2 第八次小更新，将 Chromium 152 ESR 基线更新到 152.0.7977.155，并说明包含 Chromium 154 的安全修复。</p>
+<p><strong>为什么值得关注：</strong>浏览器安全修复并不总以升级同一 major 传播；下游可能通过 ESR/backport 消化上游变化。</p>
+<p><strong>工程启发：</strong>验证资产应绑定 security fix / patch lineage，而不只绑定 milestone；自动选 regression 时要知道安全修复是否已 backport 到当前 branch。</p>
+<p><a target="_blank" rel="noopener" href="https://vivaldi.com/blog/desktop/minor-update-eight-8-2/">Vivaldi 官方更新</a></p>
+
+<h2>浏览器技术</h2>
+<p>过去 24 小时没有发现值得单独展开的 Chrome/WebKit/Firefox 新平台 API 或引擎级正式发布。WebKit main 在 10 月 4 日持续推进至 322640@main，更适合作为持续 CI/revalidation 信号。Vivaldi 的 Chromium 安全 backport 则说明版本号不能替代 patch lineage。</p>
+<p><a target="_blank" rel="noopener" href="https://webkit.org/build-archives/">WebKit Build Archives</a></p>
+
+<h2>端侧 AI</h2>
+<h3>Deterministic Router Before Model</h3>
+<p>Firefox 的 recipe 案例说明，小模型不需要承担 Browser Runtime 已经能确定的分类工作。更合理的端侧 pipeline 是：结构化特征 → deterministic router → task-specific prompt/model → output oracle。</p>
+
+<h2>浏览器 × AI</h2>
+<pre>Browser Runtime Facts
+├─ DOM / structured data
+├─ MIME / navigation
+├─ permission
+├─ tab / frame identity
+└─ local session state
+        ↓
+Deterministic Router
+        ↓
+Task-specific Prompt / Small Model
+        ↓
+Cloud escalation（必要时）
+        ↓
+Output Oracle</pre>
+
+<h2>Browser Self-Improvement</h2>
+<h3>Harness Change 也必须走 Promotion Gate</h3>
+<pre>Telemetry / Regression
+        ↓
+Reproduce → Diagnose
+        ↓
+Candidate
+├─ Browser Patch
+├─ Prompt / Policy
+├─ Skill
+└─ Plugin / Harness Module
+        ↓
+Sandbox
+        ↓
+Replay + Output Oracle
+        ↓
+Capability / Security Regression
+        ↓
+Independent Guardian
+        ↓
+Promote → Canary → Learn</pre>
+<p><strong>业界做到哪：</strong>DeepSeek Harness 已允许 Agent 进入 Creator mode 生成插件；OpenAI computer-use 的访谈则显示独立 Guardian/AutoReview 已参与主 Agent 执行链。两者组合后，更合理的方向不是让 Agent 随意改自己，而是把 Harness change 当作与 Browser patch 同等级的候选产物。</p>
+<p><strong>迁移到 Chromium：</strong>如果 Agent 自动修改 Trace parser、bisect policy、benchmark selector 或 verifier prompt，这些改动同样必须有 candidate SHA、独立 replay、held-out regression 和 rollback，否则 Self-Improvement 很容易通过修改验证逻辑制造假提升。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>今天没有发现比过去几期已覆盖的 RRSI、ModularRSI、STITCH 更值得新增的 Self-Improvement 论文，因此不重复报道。更值得跟踪的是这些思想正在产品 Harness 中落地：Plugin 变成可生成对象、Verifier 变成独立执行角色、Browser Runtime 的确定性事实承担更多 routing。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 不能只管理 Browser Code 的变更；Prompt、Skill、Plugin、Router、Verifier 和 Harness 本身都应该进入同一套版本化 Promotion Pipeline。</strong></blockquote>
+<p>一旦 Harness 可以由 Agent 自己生成或修改，真正需要保护的就不只是源码仓库，而是“决定如何观察、如何判断成功、如何晋升”的整个控制面。Browser Patch 与 Harness Patch 应共享同一套 evidence、replay、regression 和 rollback 语义。</p>
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
