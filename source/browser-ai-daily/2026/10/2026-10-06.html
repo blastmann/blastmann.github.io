@@ -1,0 +1,85 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-06
+date: 2026-10-06 09:56:00
+---
+
+<h2>今天最值得看</h2>
+<h3>1. WebKitGTK/WPE：Skia Compositor 正把“正确性 + IPC 成本 + 显示时序”一起收敛</h3>
+<p>Igalia 10 月 5 日发布的 WebKit 周报包含一组很有工程价值的图形栈改动：修复 stacked backdrop-filter、filter source area、SVG clip/hit-test/repaint 等问题；Layer-Based SVG Engine 在 GPU process 渲染时，移除冗余 save/restore 后，每个 transformed SVG shape 的 IPC 从约 8.5 条降到约 6.5 条；WPE 还恢复了 DRM vertical blank monitor，使渲染重新按真实显示刷新周期 pacing，而不是退回固定 60 Hz timer。</p>
+<p><strong>为什么值得关注：</strong>这是典型的 Browser Runtime 多目标优化：视觉正确、IPC 数量、GPU process 行为和 frame pacing 相互关联。只看 benchmark 或 crash 都不足以判断改动是否真的更好。</p>
+<p><strong>工程启发：</strong>Browser Self-Improvement 的 compositor verifier 应同时保存 visual oracle、IPC/trace counters、frame pacing 和 WPT 结果；同一 patch 的性能收益必须以输出正确为前提。</p>
+<p><a href="https://planet.webkit.org/">Planet WebKit / Igalia WebKit Periodical #80</a></p>
+
+<h3>2. Chrome Email Verification：从 Origin Trial 走向可发布，Browser Runtime 正承担更强的身份验证职责</h3>
+<p>Chrome 10 月 5 日更新 Email Verification Origin Trial：Chrome 154 加入 Android 支持、third-party origin trials，并调整 token validation 的 key discovery 和 provider header。Chrome 团队表示目前不预期再有 breaking change，正在准备正式发布；同时提醒这次仍包含 verifier 与 provider 两侧的不兼容变化。</p>
+<p><strong>为什么值得关注：</strong>这类能力不是“网页调用一个 AI API”，而是 Browser Runtime 参与身份与凭证验证。未来 Agent 在真实登录态浏览器中执行操作时，Identity / Credential / Permission 应属于浏览器控制面，而不是交给模型自行判断。</p>
+<p><strong>工程启发：</strong>Browser Agent 的 action policy 应能消费浏览器已经验证的身份状态，但不能读取或复制底层 credential；Verified Identity 可以成为 capability gate 的输入。</p>
+<p><a href="https://developer.chrome.com/blog/email-verification-october-2026">Chrome for Developers：Email verification updates, October 2026</a></p>
+
+<h3>3. Browsentic：录制一次、确定性 Replay，失败时才重新唤醒 Agent</h3>
+<p>过去一周值得补推的 Browsentic 把真实登录态 Chrome/Firefox/Edge/Brave/Arc 交给本机已有的 Claude Code、Codex 等 CLI Agent。更值得关注的是它的 recording/replay：用户演示一次流程后，后续 replay 不需要 Agent、不会消耗模型 token；每一步仍会与 live page 检查，只有页面不再匹配时才需要重新进入 Agent 路径。</p>
+<p><strong>为什么值得关注：</strong>这给 Browser Agent 一个很实用的 Learn 形态：稳定成功的轨迹不必永远作为自然语言 Memory，也不必每次重新规划，可以编译成带 live precondition 的 deterministic workflow。</p>
+<p><strong>工程启发：</strong>把 Learn 分成 Memory → Skill → Replay Program 三层；重复成功且页面约束稳定的 Skill 可以晋升成 Replay Program，执行失败再 fallback 到 Agent，并把失败页面作为新的学习证据。</p>
+<p><a href="https://browsentic.com/">Browsentic 官方站点</a></p>
+
+<h3>4. ego-jev：快决策模型只负责“选哪个动作”，Verifier 决定 done 是否真的完成</h3>
+<p>ego-jev 把 Browser inner loop 限制成 typed choice：Jev 只能从当前 snapshot 的候选操作与目标中选择，executor 再把 opaque candidate 映射回同一 snapshot 的 browser ref；自由文本、登录、支付、删除、上传、低置信度等情况升级给更强 planner。项目明确把 <code>done</code> 视为候选决策，而不是最终事实——是否真的完成由独立 verifier 判断。</p>
+<p><strong>为什么值得关注：</strong>它把 fast path 与 correctness boundary 分开：端侧/小模型可以负责高频、低风险的下一步动作，但不能同时决定任务是否成功。</p>
+<p><strong>工程启发：</strong>Browser Runtime 可采用 Local Fast Decision → Execute → Independent Verify → Escalate 的双层结构；这比让小模型承担完整长链规划更现实。</p>
+<p><a href="https://github.com/phd-peter/ego-jev">ego-jev GitHub</a></p>
+
+<h2>浏览器技术</h2>
+<p>今天浏览器本体最值得关注的是 WebKitGTK/WPE 的图形栈收敛和 Chrome Email Verification。前者说明 GPU-process compositor 的验证必须覆盖视觉、IPC 和 frame pacing；后者说明 Browser Runtime 正继续吸收身份验证职责。两者共同指向一个趋势：浏览器越来越不仅是页面执行器，也是安全与验证控制面。</p>
+
+<h2>端侧 AI</h2>
+<p>今天没有足够高质量的新端侧模型发布值得单列。更有价值的是架构侧：Browsentic 的无模型 replay 与 ego-jev 的 bounded fast decision 都在减少“所有步骤都调用大模型”的必要性。端侧小模型更适合承担分类、候选排序、下一步低风险动作；确定性逻辑则应继续下沉到 Runtime。</p>
+
+<h2>浏览器 × AI</h2>
+<pre>Deterministic Runtime
+        ↓ 无法匹配
+Local Fast Decision
+        ↓ 低置信 / 高风险
+Cloud Planner
+        ↓
+Browser Policy Gate
+        ↓
+Execute
+        ↓
+Independent Verifier</pre>
+<p>稳定流程优先 deterministic replay；变化但动作空间受限时用本地 fast model；真正开放式规划才调用云端模型。这样同时降低 latency、token cost 和权限暴露面。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天新增：Compile Stable Success Before Re-Reasoning</h3>
+<pre>Telemetry / Regression
+        ↓
+Reproduce / Diagnose
+        ↓
+Agent solves task
+        ↓
+Independent Verify
+        ↓
+Repeated Success?
+   ├─ No → Evidence / Memory
+   └─ Yes
+        ↓
+Compile
+├─ Test
+├─ Skill
+└─ Replay Program
+        ↓
+Live Preconditions
+   ├─ Match → Deterministic Execute
+   └─ Mismatch → Agent Fallback
+                     ↓
+                New Evidence</pre>
+<p><strong>业界做到哪：</strong>Browsentic 已经把“演示一次 → 以后无 Agent replay → live page 不匹配时再回退”做成产品能力；ego-jev 则展示 bounded fast decision 与独立 verifier 的分工。</p>
+<p><strong>迁移到浏览器工程：</strong>稳定的 build/repro/trace/bisect/benchmark 操作序列也可以编译成 Replay Program。例如已验证过的 compositor regression workflow 不必每次让 Agent 重新规划，只在 dependency graph、build topology 或输出 oracle 改变时重新进入 reasoning。</p>
+<p><strong>对 Harness 的启发：</strong>Learn 不只是“写 Memory”。真正成熟的知识应该逐渐降低推理自由度：Memory → Skill → Executable Replay；而每次 Replay 的失败又成为下一轮 Observe 的高价值 delta。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>今天没有找到比上述项目更值得补推的新论文。过去几期已经覆盖 AgentBug-Smith、Harness self-evolution、ModularRSI 等；今天更值得把这些研究和真实 Browser Runtime 的 replay / verifier 机制连接起来，而不是继续增加相似 Harness 论文数量。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 的终点不是让 Agent 对同一件事思考得越来越好，而是让已经学会且稳定的事情逐渐不再需要 Agent 思考。</strong></blockquote>
+<p>如果一个流程已经在真实 Browser 中多次通过 verifier，那么最有价值的 Learn 可能不是增加 prompt，而是把它编译成带前置条件、输出 oracle 和 fallback 的可执行程序。模型应该集中处理变化、异常和未知问题。</p>
