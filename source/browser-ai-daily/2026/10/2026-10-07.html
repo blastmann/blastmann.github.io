@@ -1,0 +1,77 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-07
+date: 2026-10-07 09:51:00
+---
+
+<h2>今天最值得看</h2>
+<h3>1. MESH-Harness：Self-Improvement 开始显式优化有限评测预算</h3>
+<p>MESH-Harness 把 Agent Harness 拆成明确接口的功能模块，并用 bandit-guided compositional search 预测哪些模块组合最值得实际评测，而不是穷举。论文在相同 candidate-evaluation budget 下，相对 Meta-Harness 在四类任务上分别提升 5.70、7.01、2.00 和 5.00 个百分点；报告配置的 test-time cost 低 44.2%，计入搜索后的总成本低 14.6%。</p>
+<p><strong>工程启发：</strong>Browser Self-Improvement 不可能对每个 Chromium/V8/Skia/Harness 候选都跑全平台、全 WPT、全 benchmark。应利用历史 Evidence 和不确定度排序候选，把昂贵 Build/Benchmark/Device Farm 留给高价值组合。</p>
+<p><a href="https://arxiv.org/abs/2610.05300">MESH-Harness 论文</a></p>
+
+<h3>2. Causal Improvement Graph：把实验历史变成显式 Improvement State</h3>
+<p>Causal Improvement Graph（CIG）把 Harness 优化外置成持久图，显式保存 Evidence、Hypothesis、Intervention 和 Outcome 及其关系。后续 proposer 围绕局部图关系提出下一次修改，而不是反复阅读越来越长的实验历史。</p>
+<p><strong>工程启发：</strong>Browser Experiment Store 应从日志库升级成 Improvement Graph，让成功和失败实验都成为下一轮 Diagnosis/Improve 的结构化输入。</p>
+<p><a href="https://arxiv.org/abs/2610.05039">Causal Improvement Graph 论文</a></p>
+
+<h3>3. Chrome Extended Stable 152 更新：Browser Revision 本身就是 Revalidation Trigger</h3>
+<p>Chrome 团队 10 月 6 日将 Extended Stable Desktop 更新到 152.0.7977.158，覆盖 Windows 和 macOS。长期运行的 Browser Agent、端侧模型和自动化 Harness 会受到浏览器 revision、Web Platform 行为、GPU/网络栈与安全 backport 变化影响。</p>
+<p><strong>工程启发：</strong>Browser revision 变化自动触发低成本 smoke replay；只有 Observation/Output Oracle 出现 delta，才升级到完整 regression、bisect 和 Diagnosis。</p>
+<p><a href="https://chromereleases.googleblog.com/2026/10/extended-stable-update-for-desktop_01274589277.html">Chrome Releases</a></p>
+
+<h3>4. Firefox：Agent 权限应继承 Browser Runtime 的安全边界</h3>
+<p>Mozilla 10 月 6 日集中介绍 Firefox 的密码管理、browser-based VPN、Relay、Tracking Protection 与 fingerprinting protection，再次说明 Browser Runtime 已经掌握身份、网络、隐私与凭据等高价值边界。</p>
+<p><strong>工程启发：</strong>Agent 应消费 Runtime 已授权后的 capability，而不是读取 credential 或自行决定权限。</p>
+<p><a href="https://blog.mozilla.org/en/firefox/free-firefox-cybersecurity-features/">Mozilla 官方文章</a></p>
+
+<h2>浏览器技术</h2>
+<p>过去 24 小时没有发现值得单独展开的 Chromium/WebKit/Firefox 引擎级新 API 或架构发布。Chrome Extended Stable 152.0.7977.158 是最明确的官方版本动作。对于长期 Browser Agent，浏览器版本变化应成为自动 Revalidation Trigger。</p>
+
+<h2>端侧 AI</h2>
+<p>今天没有足够高质量、且过去 24 小时首次发布的 WebGPU/WASM 端侧模型 Runtime 进展，因此不补低信息量内容。Browser Runtime 可确定的路由、权限与稳定 Replay 应优先确定性执行；端侧小模型负责高频语义判断，复杂未知问题再升级云端模型。</p>
+
+<h2>浏览器 × AI</h2>
+<pre>Browser Revision Changed
+        ↓
+Cheap Smoke Replay
+├─ Agent task
+├─ WebGPU/WASM
+├─ auth/session
+├─ network/media
+└─ output oracle
+        ↓
+No Delta → Stop
+Delta → Evidence → Regression Selection → Bisect / Diagnose</pre>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天新增：Budget-Aware Experiment Selection</h3>
+<pre>Telemetry / Regression
+        ↓
+Reproduce
+        ↓
+Evidence Graph
+        ↓
+Hypothesis / Candidate Pool
+        ↓
+Expected Value + Uncertainty
+        ↓
+Budget-Aware Selection
+        ↓
+Build / Benchmark / Device Farm
+        ↓
+Outcome
+        ↓
+Update Evidence Graph
+        ↓
+Promote / Reject / Next Experiment</pre>
+<p><strong>业界做到哪：</strong>MESH-Harness 已把有限 evaluation budget 明确放进 Harness optimization；CIG 则把 Evidence → Hypothesis → Intervention → Outcome 从隐式历史变成显式 improvement state。</p>
+<p><strong>迁移到浏览器工程：</strong>把 Pinpoint、historical regression、dependency graph、设备成本、benchmark 时间和 Candidate 不确定度一起用于下一轮实验选择。</p>
+<p><strong>对 Harness 的启发：</strong>Experiment Scheduler 应成为独立、版本化、可验证模块。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>今天两篇 Harness 工作共同指向一个实用设计：模块池保存可组合实现，Improvement Graph 保存证据和实验链，Runtime 保存原始 Trace，模型只读取当前决策所需的局部状态。长期 Self-Improvement 不应依赖模型每轮重新阅读全部历史。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 下一阶段的瓶颈可能不是 Agent 能生成多少改动，而是在有限 CI、GPU 和真机预算下，系统能否选对下一次实验。</strong></blockquote>
+<p>浏览器工程验证天然昂贵。随着 Agent 生成 Candidate 的成本下降，实验选择会越来越成为稀缺资源调度问题。因此 Evidence Graph + Candidate Pool + Budget-Aware Scheduler 很可能比继续扩大 Prompt 更值得投入。</p>
