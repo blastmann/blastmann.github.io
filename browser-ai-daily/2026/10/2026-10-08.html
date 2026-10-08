@@ -1,0 +1,206 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-10-08 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-10-08"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-10-08"/>
+
+  <meta property="displaydate" content="2026-10-08T09:44:00.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-10-08</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<p>观察窗口：2026-10-07 09:44 至 2026-10-08 09:44（北京时间）。部分 10 月 6 日发布的高价值资料标为补推。</p>
+<h2>今天最值得看</h2>
+
+<h3>1. Chrome 155：chrome.debugger 权限在浏览器接入点生效</h3>
+<p><strong>发生了什么：</strong>Chrome 155 的平台说明确认，受管理设备上的扩展在调用 <code>chrome.debugger.attach()</code> 时，可能因主机访问策略或截图/DLP 策略被拒绝。浏览器返回明确的拒绝原因，而非依赖 Agent 自行遵守提示词。</p>
+<p><strong>为什么值得关注：</strong>真实用户 Profile 上运行的 Browser Agent 越来越依赖 CDP；浏览器本身才应掌握 Session、截图与主机访问权限。</p>
+<p><strong>工程启发：</strong>将策略拒绝与普通工具错误分开处理；对授权变化进行回归测试，不能把权限拒绝当作自动重试条件。</p>
+<p><a target="_blank" rel="noopener" href="https://chromestatus.com/release-notes/155">Chrome 155 官方发布说明</a></p>
+
+<h3>2. WebGPU 155–156：fragment_depth、压缩纹理和线性色域</h3>
+<p><strong>发生了什么（10 月 7 日）：</strong>Chrome 官方公布 WGSL <code>fragment_depth</code>、<code>texture-compression-unaligned</code>、<code>srgb-linear</code>/<code>display-p3-linear</code>、<code>snorm10-10-10-2</code>，以及 Linux 较新 NVIDIA 驱动上的 <code>shader-f16</code> 支持。不同能力需要分别探测是否可用。</p>
+<p><strong>为什么值得关注：</strong>新特性涉及 early-Z、纹理边界、HDR 色彩以及端侧 GPU 计算环境。对小模型来说，<code>shader-f16</code> 值得实测，但不能仅凭支持就宣称推理变快。</p>
+<p><strong>工程启发：</strong>建立 GPU adapter/driver/backend 能力矩阵，验证 shader 输出、颜色、device-lost、显存与实际 tokens/s。</p>
+<p><a target="_blank" rel="noopener" href="https://developer.chrome.com/blog/new-in-webgpu-155-156">Chrome 官方 WebGPU 更新</a></p>
+
+<h3>3. Chrome 155 WebTransport：Datagram 优先级和流统计增强</h3>
+<p><strong>发生了什么（10 月 6 日版本）：</strong><code>datagramsReadableType: "bytes"</code> 支持 BYOB 读取；<code>WebTransportDatagramDuplexStream.createWritable()</code> 与 <code>sendGroup</code>/<code>sendOrder</code> 表达 Datagram 发送顺序；<code>WebTransportReceiveStream.getStats()</code> 分开记录网络收到与应用已读取的字节数。</p>
+<p><strong>为什么值得关注：</strong>对实时媒体和端云协同推理，网络到达、应用消费和发送排队是三种不同的延迟来源。优先级仅代表浏览器已定义的队列行为，不等于端到端网络保证。</p>
+<p><strong>工程启发：</strong>弱网验证应覆盖 loss、queue、backpressure、P95 延迟和多浏览器兼容，而不是只看连接是否成功。</p>
+<p><a target="_blank" rel="noopener" href="https://chromestatus.com/release-notes/155">Chrome 155 WebTransport 发布说明</a></p>
+
+<h3>4. HarnessSecurity-Bench：权限安全与正常任务完成率必须一起测（补推）</h3>
+<p><strong>发生了什么：</strong>10 月 6 日论文分析六种 Coding Agent Harness，包含 23 个任务、五类攻击面、约 2,500 次试验。其受控实验中，开启自动批准后，攻击成功率由 29.2% 上升至 95.6%。这些数据属于特定模型和测试集，不能直接外推到所有 Browser Agent。</p>
+<p><strong>为什么值得关注：</strong>仅禁止某个工具并不代表敏感操作无法从其他工具路径触达；安全限制也可能妨碍合法任务。</p>
+<p><strong>工程启发：</strong>同时衡量正常任务完成率、风险操作是否发生、工具开销，并使用独立的安全判定程序。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.07639">HarnessSecurity-Bench 论文</a></p>
+
+<h3>5. Chrome 155 JPEG XL：Rust 解码器进入 Blink（补推）</h3>
+<p><strong>发生了什么：</strong>Chrome 155 正式说明加入 <code>image/jxl</code> 解码，使用纯 Rust 的 <code>jxl-rs</code>，支持渐进解码、HDR、宽色域、高位深与动画。</p>
+<p><strong>为什么值得关注：</strong>新图片格式不仅是压缩率问题，还会影响渐进显示、解码成本和安全面。内存安全的解析器设计尤其值得浏览器工程参考。</p>
+<p><strong>工程启发：</strong>对新格式建立 fuzz corpus、视觉正确性、P95 解码耗时、内存峰值与旧版本回退验证。</p>
+<p><a target="_blank" rel="noopener" href="https://chromestatus.com/release-notes/155">Chrome 155 发布说明</a> · <a target="_blank" rel="noopener" href="https://github.com/libjxl/jxl-rs">jxl-rs 源码</a></p>
+
+<h2>浏览器技术</h2>
+<p>10 月 7 日，Chrome 156 在 Windows/macOS 小比例进入 Early Stable（<code>156.0.8078.12/.13</code>），Android 小比例进入 <code>156.0.8078.25</code>；这不意味着全部用户已升级。ChromeOS LTC 150 同日公布跨 Network、ServiceWorker、Skia、WebGL、GPU、FedCM、WebRTC 等组件的安全修复。长期分支应按修复 CL 和 backport 追踪，而不是只比较 major version。</p>
+<p><a target="_blank" rel="noopener" href="https://chromereleases.googleblog.com/2026/10/early-stable-update-for-desktop.html">Chrome Early Stable 官方公告</a> · <a target="_blank" rel="noopener" href="https://chromereleases.googleblog.com/2026/10/chrome-for-android-update_01286554645.html">Android 官方公告</a> · <a target="_blank" rel="noopener" href="https://chromereleases.googleblog.com/">ChromeOS 官方发布记录</a></p>
+<p>WebKit 10 月 7 日持续有 main 构建，但没有发现足以单列的正式引擎特性，今天不拿普通 revision 补数量。<a target="_blank" rel="noopener" href="https://webkit.org/build-archives/">WebKit Build Archives</a></p>
+
+<h2>端侧 AI</h2>
+<p>今天未找到足够重要的新端侧模型发布。更值得验证的是 WebGPU 新能力在真实设备上的收益：adapter feature detection、f16 kernel、OOM/device-lost、模型首 token 延迟、吞吐和耗电。API 支持与端侧推理性能是两件事。</p>
+
+<h2>浏览器 × AI</h2>
+<p>Browser Agent 应把 Browser Runtime 作为真实 Profile 的权限与证据所有者：Agent 请求操作，Runtime 负责授权和执行，独立 Verifier 检查结果。对于拒绝、暂不支持、临时错误，需要明确区分，避免错误恢复策略。</p>
+<pre>Agent 请求 → Runtime Capability Gate
+    ├─ 允许 → 执行 → 独立验证
+    ├─ 拒绝 → 停止 / 人工授权
+    └─ 不支持 → 选择符合相同策略的替代方案</pre>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天新增：Alternative-Path Security Replay + Utility-Aware Promotion</h3>
+<p><strong>业界做到哪：</strong>Chrome 155 已有浏览器侧的 attach-time 权限约束；HarnessSecurity-Bench 提供了分别测量合法任务成功和风险行为的实验方法。它们尚未构成“自动修复 Chromium”的完整闭环，但可以直接成为 Verify 的输入。</p>
+<pre>Telemetry / Report
+    ↓ Observe
+Reproducer + Security Property
+    ↓ Diagnose
+Browser Patch / Harness Candidate
+    ↓ Improve
+Build + Output Oracle
+    ↓ Verify
+Alternative-Path Security Replay
+    ↓
+Task Utility + Security + Cost
+    ↓
+Independent Promotion
+    ↓
+Canary / Telemetry
+    ↓ Learn: Executable Counterexample</pre>
+<p><strong>迁移到浏览器工程：</strong>针对同一受保护的敏感操作，验证不同工具调用方式都符合 Runtime 策略；同时确保正常网页和授权自动化没有明显退化。</p>
+<p><strong>对 Agent Harness 的启发：</strong>版本化保存 <code>policy</code>、<code>allowed/denied outcomes</code>、<code>utility</code>、<code>security oracle</code> 与原始证据；被优化的 Agent 不能同时自行改写验证标准。</p>
+<p><strong>闭环位置：</strong>重点补强 Build/Benchmark → Verify → Promote；尚无证据表明这两项工作已完成 Chromium Patch → Canary → Learn 的端到端自动闭环。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>优先精读 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.07639">HarnessSecurity-Bench</a>、<a target="_blank" rel="noopener" href="https://developer.chrome.com/blog/new-in-webgpu-155-156">WebGPU 155–156</a>、<a target="_blank" rel="noopener" href="https://github.com/libjxl/jxl-rs">jxl-rs</a>。CyberAgent 使用 DevTools MCP 检查 32 个组件、236 个 Story 的真实工程案例已在此前日报介绍，本期不重复计入新增。<a target="_blank" rel="noopener" href="https://developer.chrome.com/blog/autofix-runtime-devtools-mcp">CyberAgent 原文</a></p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 的安全验证不能只检查一条工具路径，还应检查同一敏感操作的其他可达路径，并同时衡量合法任务是否受损。</strong></blockquote>
+<p>这会让安全验证从“工具列表检查”变成“操作目标 + 权限策略 + 可执行反例”的工程资产，能随浏览器和 Harness 一起回归。</p>
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
