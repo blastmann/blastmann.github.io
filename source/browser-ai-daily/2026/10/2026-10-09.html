@@ -1,0 +1,88 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-09
+date: 2026-10-09 09:53:00
+---
+
+<p>观察窗口：2026-10-08 09:53 至 2026-10-09 09:53（北京时间）。优先收录 10 月 8 日发布的官方技术资料；10 月 6 日的 Chrome 安全公告明确标注为补推。实验性 Origin Trial 不等于已在 Stable 默认开放。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Anthropic OSS Scanner：AI 漏洞发现开始交付可复现报告，而不只是问题描述</h3>
+<p><strong>发生了什么（10 月 8 日）：</strong>Anthropic 推出可申请加入的 OSS Scanner，向符合条件的开源项目定期发送模型生成的安全报告。报告包含独立复现步骤、漏洞解释、可能的引入版本定位（bisect）及候选修复。项目称已找到逾 29,000 个候选漏洞，但人工审核约 6,000 个；在一次 48 个项目、97 个高危/严重问题的抽样复核中，85 个达到其协调披露标准。这里的抽样结果不能当成所有项目的总体准确率。</p>
+<p><strong>为什么值得关注：</strong>这是非常接近真实工程 Observe → Reproduce → Diagnose → Patch 的例子。关键不是“模型能报漏洞”，而是能提供可执行的 reproducer 和可验证的 patch 候选。</p>
+<p><strong>工程启发：</strong>Chromium/V8/Skia 安全扫描可先产出结构化 Finding，再在隔离环境中验证 reproducer、去重、确定影响版本，最后进入独立安全验证与维护者审查。官方明确说明新服务的报告<strong>未经人工复核</strong>，并不意味着已完成 Build/Benchmark → Verify → Canary。</p>
+<p><a href="https://www.anthropic.com/research/launching-opt-in-vuln-finding-service-for-open-source">Anthropic 技术说明（10 月 8 日）</a> · <a href="https://www.anthropic.com/news/anthropic-cyber-mission">官方计划介绍</a></p>
+
+<h3>2. Edge 155 把 WebMCP、浏览器托管 Telemetry 与 JS 自分析标记并列放入试验清单</h3>
+<p><strong>发生了什么（10 月 8 日）：</strong>Microsoft Edge 155 平台发布说明列出三个尤其值得追踪的 Origin Trial：<code>WebMCP</code>（网页向浏览器内 Agent 注册工具）、<code>Declarative Performance Observer</code>（通过响应头配置浏览器管理的性能观测）、<code>JS Self-Profiling Markers</code>（为采样结果标记 script/gc/style/layout/paint）。另有 Long Animation Frame 拆分 style/layout 耗时的试验。</p>
+<p><strong>为什么值得关注：</strong>三者恰好对应 Browser Agent 的工具入口、Observe 的稳定数据来源、Diagnose 的活动归因。如果工具调用和浏览器观测可共享时间线，就能更准确定位“Agent 操作后为什么页面变慢”。</p>
+<p><strong>工程启发：</strong>尝试将 WebMCP tool invocation、Trace ID、LoAF/JS profiler 标记与 WPT/真实页面回放关联。但<strong>它们是试验项目</strong>，不能作为所有 Edge 155 用户已默认可用的功能宣传。</p>
+<p><a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/155">Edge 155 官方平台说明（10 月 8 日）</a></p>
+
+<h3>3. Edge 155：HTML Streaming API 给 AI 逐段生成界面提供更明确的浏览器原生路径</h3>
+<p><strong>发生了什么（10 月 8 日）：</strong>Edge 155 发布说明列出 <code>setHTML()</code>/<code>appendHTML()</code> 及一组 <code>streamHTML()</code>/<code>streamAppendHTML()</code> 等接口；Streaming 方法返回 <code>WritableStream</code>。同时存在 <code>Unsafe</code> 版本及可运行脚本的选项。</p>
+<p><strong>为什么值得关注：</strong>浏览器内 AI 生成内容常是流式到达的。比起不断拼接字符串再替换整块 DOM，浏览器提供了更一致的增量插入接口；但安全与非安全路径必须严格区分。</p>
+<p><strong>工程启发：</strong>AI Native UI 可实验 token stream → HTML stream → 渲染的延迟与稳定性，同时测试跨块标签、取消、回滚、DOM 污染、脚本执行及 sanitizer 行为。未经信任的模型/网页输出不得直接进入 Unsafe API。</p>
+<p><a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/155">Edge 155：Updated HTML insertion and streaming methods</a></p>
+
+<h3>4. Chrome 155 安全公告中出现 AI 辅助发现的关键漏洞（10 月 6 日，补推）</h3>
+<p><strong>发生了什么：</strong>Chrome 官方 10 月 6 日 Stable 安全公告列出多项严重漏洞，其中 Navigation 和 Track 组件的两个 Critical use-after-free 问题，报告者注明由研究人员在 Claude 协助下发现。官方称该版本包含 247 项安全修复。</p>
+<p><strong>为什么值得关注：</strong>相比泛泛讨论 AI 能否发现漏洞，这已经是浏览器真实安全发布链中的公开记录。但公告并未证明 AI 独立完成定位、补丁、验证或上线。</p>
+<p><strong>工程启发：</strong>建立 <code>AI-assisted finding → reproducer → culprit revision → security fix → regression test → backport → Canary</code> 的追踪关系，记录 AI 参与了哪一步，而不是把“AI assisted”直接等同“自动修复”。</p>
+<p><a href="https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop.html">Chrome Releases 官方公告（10 月 6 日）</a></p>
+
+<h2>浏览器技术</h2>
+<p><strong>Edge 155（10 月 8 日）：</strong>新增跨源 iframe 预渲染响应头 <code>Supports-Loading-Mode: prerender-cross-origin-frames</code>，以及隐藏 iframe 的 <code>media-playback-while-not-visible</code> 权限策略。前者可以缩短部分嵌入式页面激活后的等待，后者允许对隐藏嵌入媒体的播放作更细控制。对浏览器网络/媒体工程，建议验证跨源授权、缓存、音视频状态恢复和真实页面性能。</p>
+<p><strong>网络/媒体试验：</strong>Edge 155 试验清单还包含 WebRTC SCTP Negotiation Acceleration Protocol（SNAP，目标是节省数据通道握手的最多两次网络往返）和 WebRTC Diagnostic Logging API。它们尚不能视为全量上线，值得作为端云实时推理/媒体的测试方向。<a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/155">Edge 155 原始来源</a></p>
+<p><strong>WebKit / Firefox：</strong>观察窗口内未发现足以单列的官方新架构发布；WebKit main 10 月 8 日仍持续构建，不能据此推断某个特性已正式发布。<a href="https://webkit.org/build-archives/">WebKit 构建归档</a></p>
+
+<h2>端侧 AI</h2>
+<p>今天没有找到足够可信的全新浏览器端侧模型或推理引擎正式发布，故不凑数。Edge 155 的 Origin Trial 清单中包括 Prompt API 的 <code>topK</code>/<code>temperature</code> 参数和 CPU Performance API；它们可以作为本地推理路由与采样策略实验输入，但不是端侧推理加速的实测证据。<a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/155">官方试验清单</a></p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>WebMCP + Streaming HTML：</strong>可以形成“网页注册明确工具 → Agent 经 Runtime 授权执行 → 浏览器流式展示可验证结果”的原型。需要分别记录网页工具来源、权限授予、执行前后 DOM/网络证据；对模型输出采用安全的 HTML 插入路径。WebMCP 仍处试验阶段，跨浏览器产品设计不应把它当成唯一接入方式。</p>
+<pre>Web Page / WebMCP Tool（试验）
+      ↓
+Browser Capability Gate
+      ↓
+Agent / Local Model / Cloud Model
+      ↓
+Verified Action Result
+      ↓
+Safe Streaming HTML UI</pre>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天新增：Finding-to-Reproducer Gate（先验证漏洞报告，再允许自动修复）</h3>
+<p><strong>业界做了什么：</strong>OSS Scanner 公开提供“模型发现 → 可复现说明 → 可能的 bisect → 候选补丁”的报告形式；Chrome 安全公告出现 AI 辅助发现的真实引擎漏洞；Edge 155 同时在试验更细的性能观测入口。三者可以组合成工程思路，但尚无证据证明它们已被整合为同一个 Chromium 自动改进系统。</p>
+<pre>Telemetry / Crash / WPT / Security Scanner
+                 ↓ Observe
+Finding Queue（含来源、去重、严重度）
+                 ↓
+Reproducer Gate（隔离重放 + 稳定性）
+       ├─ 失败 → 保存证据 / 人工复核
+       └─ 通过
+             ↓ Diagnose
+Trace / Bisect / Culprit CL
+             ↓ Improve
+Scoped Patch Candidate
+             ↓
+Build / Benchmark + Output Oracle
+             ↓ Verify
+Security Counterexample + Platform Replay
+             ↓
+Independent Review / Promotion
+             ↓
+Canary / Telemetry
+             ↓ Learn
+Executable Regression + Failure Pattern</pre>
+<p><strong>闭环走到哪：</strong>OSS Scanner 的可见能力主要覆盖 Observe → Reproduce → Diagnosis → Candidate Patch，验证与上线仍依赖维护者；Edge 观测能力中多项仍是 Origin Trial。不能把这几项直接描述为完整的自动改进闭环。</p>
+<p><strong>能否迁移：</strong>可以先在 Browser Harness 建立一个 Finding Queue，每条记录含组件、browser SHA、reproducer、环境指纹、重放成功率、疑似 culprit、patch SHA、独立验证结果。只有能稳定复现的候选才占用昂贵的 Chromium CI/GPU/真机预算；不稳定案例进入人工或增强观测队列。</p>
+<p><strong>对 Agent Harness 的启发：</strong>把报告可信度与验证可信度分离；Scanner/Diagnosis/Patch Agent 不得修改自己的独立判定规则。结合昨日的 Alternative-Path Security Replay，防止修复单一路径却留下同一安全问题的其他入口。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p><strong>优先精读：</strong><a href="https://www.anthropic.com/research/launching-opt-in-vuln-finding-service-for-open-source">OSS Scanner 的 reproducer/bisect/patch 报告机制</a>；<a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/155">Edge 155 WebMCP、Telemetry、HTML Streaming 和 WebRTC 试验清单</a>；<a href="https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop.html">Chrome 155 AI-assisted 安全披露</a>。本期不重复介绍已在近期日报报道过的普通 Browser Harness、WebGPU 155–156 或 HarnessSecurity-Bench。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 下一步需要优先扩大“可验证问题”的供给，而不是扩大未经验证的 AI Bug 报告数量。</strong></blockquote>
+<p>AI 发现候选问题越来越便宜，真正稀缺的是可重放的证据、准确的版本归因和独立的验证资源。把每份高质量报告编译成未来可以自动重跑的测试，才会形成可累积的浏览器工程改进。</p>
