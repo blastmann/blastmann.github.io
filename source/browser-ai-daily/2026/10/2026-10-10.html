@@ -1,0 +1,90 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-10
+date: 2026-10-10 09:50:00
+---
+
+<p>观察窗口：2026-10-09 09:50 至 2026-10-10 09:50（北京时间）。优先收录过去 24 小时可核验更新；Google ML Drift（10 月 8 日）与 Agent Plasticity（10 月 6 日）明确标记为过去一周补推。项目方性能声明不等于独立实测。</p>
+
+<h2>今天最值得看</h2>
+<h3>1. Google 开源 ML Drift：浏览器和移动端 AI 共用 GPU 推理引擎（10 月 8 日，补推）</h3>
+<p><strong>发生了什么：</strong>Google AI Edge 公开 ML Drift（Apache 2.0），作为 LiteRT GPU 推理引擎，支持 OpenCL、Metal、OpenGL ES 和 WebGPU；WebGPU 后端通过 Chromium Dawn 还能在 Windows/Linux 原生运行。关键技术包括 Tensor Virtualization（逻辑张量与物理 GPU 存储解耦）、统一 Shader 模板、Prefill/Decode 分阶段 Kernel、KV cache 布局与量化优化。Google 明确表示 Chrome Built-in AI 的 Gemini Nano 推理使用 ML Drift。</p>
+<p><strong>为什么值得关注：</strong>这不是普通的 WebGPU demo，而是浏览器 AI Runtime 与跨平台端侧推理基础设施的交汇。官方称 YouTube Shorts 的部分视频效果平均帧延迟最多降低 40%、特定 Gemma 测试内存开销最多降低约 12%；这两项不能直接当成所有浏览器 LLM 的加速比。</p>
+<p><strong>工程启发：</strong>将 WebGPU/Dawn、Metal、OpenCL 纳入同模型 GPU Capability Matrix，分别测 TTFT、decode TPS、峰值内存、GPU 竞争、页面帧率与耗电；Kernel/量化修改必须跑数值正确性 Oracle。官方还介绍了引导 Coding Agent 编写、注册、验证自定义 Shader 的 SKILL.md，适合迁移到受控的 Browser Self-Improvement 实验。</p>
+<p><a href="https://developers.googleblog.com/ml-drift-next-gen-gpu-aiml-inference-at-the-edge/">Google 官方技术文章（10 月 8 日）</a> · <a href="https://github.com/google-ai-edge/ml-drift">ML Drift 源码</a> · <a href="https://github.com/google-ai-edge/ml-drift/blob/main/docs/hello_world_webgpu.md">WebGPU/Dawn 测试示例</a></p>
+
+<h3>2. Webcmd 公开推广：让 Browser Agent 学过的网站变成可复用命令（10 月 9 日）</h3>
+<p><strong>发生了什么：</strong>AgentR 在 10 月 9 日公开推广 Webcmd；项目仓库早已存在，并非当天首次开源。它将网页学习分为真实浏览器控制、站点地图记忆、站点 CLI Adapter、确定性命令四层，支持登录会话和结构化输出。项目宣称在自有 BU Bench V1 对比中以更低成本完成更多任务，并提出最多节省 90% token 的目标；尚缺独立复现。</p>
+<p><strong>为什么值得关注：</strong>把反复 DOM/screenshot 观察与规划，逐步替换为可执行、可参数化、可版本化的站点命令，比单纯存储自然语言 Memory 更接近可累积的 Browser Agent 能力。</p>
+<p><strong>工程启发：</strong>为每个编译命令记录适用站点/URL、前置状态、权限范围、输出校验和失效回退；站点更新或 Browser Revision 变化时先 Smoke Replay，失败再回到 Agent。历史记忆不能绕过 Runtime 授权。</p>
+<p><a href="https://github.com/agentrhq/webcmd">Webcmd 官方仓库</a> · <a href="https://github.com/agentrhq/webcmd/blob/main/README.md">设计与项目方 Benchmark</a> · <a href="https://markets.businessinsider.com/news/stocks/agentr-launches-webcmd-open-source-browser-infrastructure-that-lets-ai-agents-learn-a-website-once-1036612154">10 月 9 日发布稿（非独立测评）</a></p>
+
+<h3>3. Chrome Dev 157 桌面与 Android 同步更新（10 月 9 日）</h3>
+<p><strong>发生了什么：</strong>Chrome 官方确认 Dev <code>157.0.8092.0</code> 已更新到 Windows、macOS、Linux 和 Android。公告没有披露足以单独宣称上线的新 AI/WebGPU API；这是 Dev 通道更新，不是 Stable 正式发布。</p>
+<p><strong>为什么值得关注：</strong>Browser Agent 与端侧模型的真实兼容性依赖浏览器 Revision、GPU 驱动、会话与权限行为。新 Dev 版本是自动化回归的明确触发点。</p>
+<p><strong>工程启发：</strong>跑登录态/Tab 生命周期、DevTools/Browser Agent、WebGPU device-lost、WASM 推理、网络/媒体和 Output Oracle 的低成本 Smoke；出现 Delta 才升级 Trace、Pinpoint/bisect 和多平台验证。</p>
+<p><a href="https://chromereleases.googleblog.com/2026/10/chrome-dev-for-desktop-update_0380080721.html">Chrome Desktop 官方公告</a> · <a href="https://chromereleases.googleblog.com/2026/10/chrome-dev-for-android-update_01912086225.html">Android 官方公告</a></p>
+
+<h3>4. Agent Plasticity：经验复用是否真的让 Agent 变强（10 月 6 日，补推）</h3>
+<p><strong>发生了什么：</strong>《Agent Plasticity: Measuring Self-Improvement Through Experience》研究固定权重 Agent 将经验沉淀为持久化资产后，未来未见任务的能力是否改善，并把收益除以学习成本。论文按训练内、未见同分布、分布外任务设置检查点；结果显示不同模型的持续改进差异很大，资产被调用不等于问题被解决。</p>
+<p><strong>为什么值得关注：</strong>Browser Self-Improvement 的 Learn 不能只统计 Skill、Prompt 或 Patch 数量，还需要证明未来真实回归解决率提升，且旧能力没有退化。</p>
+<p><strong>工程启发：</strong>建立 held-out Chromium Regression Pool，持续测新问题解决率、复现耗时、CI/GPU 成本、跨设备迁移与旧能力退化。不能用参与 Harness 优化的同一批任务宣称其自我改进。</p>
+<p><a href="https://arxiv.org/abs/2610.08902">arXiv 原文（10 月 6 日）</a></p>
+
+<h2>浏览器技术</h2>
+<p><strong>Chrome：</strong>10 月 9 日 Dev 157.0.8092.0 在桌面与 Android 同步推进，适合作为 Browser Runtime/Agent 兼容性回归触发器；不能把普通版本更新误报成新的 Stable API。<a href="https://chromereleases.googleblog.com/2026/10/">Chrome Releases 官方记录</a></p>
+<p><strong>WebKit / Firefox：</strong>本观察窗口未检索到足以单列的官方架构或平台 API 正式变化。WebKit 10 月 9 日持续有 main 构建，但单凭 revision 不足以判断某项能力正式发布。<a href="https://webkit.org/build-archives/">WebKit Build Archives</a></p>
+<p><strong>网络/媒体：</strong>未发现值得新增报道的可靠标准发布；建议将 WebTransport/WebRTC Smoke、媒体正确性 Oracle 与浏览器版本变更关联。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>ML Drift 是本期重点：</strong>同一计算图跨 WebGPU/Dawn、Metal、OpenCL 运行，有利于减少平台特定 Kernel 的重复维护，但统一 API 不代表驱动性能一致。官方性能数据来自特定模型、硬件和测试负载，必须在实际目标设备上复测 Prefill、Decode、显存、功耗与数值误差。<a href="https://developers.googleblog.com/ml-drift-next-gen-gpu-aiml-inference-at-the-edge/">官方性能与架构说明</a></p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>Runtime 双层学习：</strong>ML Drift 让底层 GPU Kernel 随设备优化，Webcmd 让上层 Browser Agent 将稳定站点操作编译为命令。二者都需要记录适用环境、执行证据、权限、版本与独立输出验证，不能把“更快”直接当作“更正确”。</p>
+<pre>Browser AI Task
+    ↓
+Runtime Permission / Capability Gate
+    ↓
+Site Command ──失效──→ Agent Replan
+    ↓
+Local Model / ML Drift Backend
+    ↓
+Browser Action / Render
+    ↓
+Output Oracle + Perf Trace
+    ↓
+Verified Result</pre>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天新增：Cross-Backend Kernel Promotion + Held-out Learning Check</h3>
+<p><strong>业界做了什么：</strong>ML Drift 已开源统一 GPU 计算抽象、WebGPU/Dawn 后端和自定义 Op；Google 公开了 Agent Shader Skill 的思路及实际产品使用情况。Webcmd 展示了将站点知识编译成 CLI 的方向；Agent Plasticity 给出了衡量经验迁移的实验方法。<strong>尚无证据证明这些工作已被整合为完整 Chromium 自动改进生产闭环。</strong></p>
+<pre>Telemetry / Perf / Device Regression
+            ↓ Observe
+Trace + Kernel / Model / Browser SHA
+            ↓ Diagnose
+Locate Prefill / Decode / GPU bottleneck
+            ↓ Improve
+Agent proposes scoped Shader / Kernel patch
+            ↓
+Build + Unit Test + Benchmark
+            ↓ Verify
+Numerical Oracle + Cross-backend Replay
+WebGPU / Dawn / Metal / OpenCL
+            ↓
+Page FPS + TTFT + TPS + RAM + Power
+            ↓
+Independent Promotion / Canary
+            ↓ Learn
+Versioned Kernel Skill + Negative Experiments
+            ↓
+Held-out Regression / OOD Transfer Check</pre>
+<p><strong>闭环走到哪：</strong>ML Drift 的底层 Runtime 和跨平台测试已公开，Google 展示了生产使用与性能优化；但“Agent 自动改 Kernel → 独立多端验证 → Canary → 持续学习”仍是迁移建议，不应描述为 Google 已交付的端到端系统。</p>
+<p><strong>迁移方案：</strong>先挑选 Chromium WebGPU/Dawn 上 1–2 个推理 Kernel，固定模型与输入，建立数值容差、device-lost、显存、P95 延迟、浏览器帧率的联合门禁。按 adapter/driver/backend 保存正负实验；新 Chrome Dev 版本触发低成本复测。</p>
+<p><strong>对 Harness 的启发：</strong>Kernel 优化 Agent 只生成 Candidate，不能修改独立验证规则；只有在未参与优化的 Regression Pool 上持续有效的改动，才晋升为共享 Skill/默认策略。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>建议精读 <a href="https://github.com/google-ai-edge/ml-drift">ML Drift</a> 的 <code>GpuModel</code>、UCL、Tensor Virtualization 与 WebGPU/Dawn 测试；<a href="https://github.com/agentrhq/webcmd">Webcmd</a> 的 Site Memory → CLI Adapter → Deterministic Command；<a href="https://arxiv.org/abs/2610.08902">Agent Plasticity</a> 的 held-out 评测和成本归一化。本期不重复昨日 OSS Scanner、Edge 155 Origin Trial 等已报道内容。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><strong>Browser Self-Improvement 要把“跨设备真实输出正确”与“在未见任务上持续获益”一起作为晋升条件；一次 Benchmark 变快，不足以证明 Runtime 或 Harness 真正变好。</strong></blockquote>
+<p>GPU Kernel 和 Browser Agent 的共同难点，是跨版本、跨设备、跨网站的长期可靠性。真正可累积的资产是可重放输入、独立 Output Oracle、环境指纹、版本化策略与未见任务验证结果。</p>
