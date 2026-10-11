@@ -1,0 +1,56 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-11
+date: 2026-10-11 09:15:00
+---
+
+<p>观察窗口：2026-10-10 09:15 至 2026-10-11 09:15（北京时间）。周末高质量正式公告较少：优先选择 10 月 10 日有完整实验记录的工程案例，另补充一项此前未报道的端侧 AI 开源实践。个人实验数据与尚未合并的 PR 均明确标注，避免将社区结果误写成浏览器官方发布。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. REA 的 Browser Agent/CDP 故障：问题不是 Chromium 隐藏 URL，而是浏览器根本没完成导航（10 月 10 日）</h3>
+<p><strong>发生了什么：</strong>REA 的 <code>inspect_web_page</code> 报 <code>target_not_allowed</code>，<code>Page.getFrameTree</code> 返回空 URL 或 <code>":"</code>。最初怀疑 Chromium 150/154 发生协议回归，甚至提出从已授权 Target URL 回填 Frame URL 的修复方案。开发者与另一位贡献者用相同 Chrome-for-Testing 构建、不同 Linux 环境对照，最终发现页面停在 <code>about:blank</code>，网络日志没有任何导航请求。进一步对环境变量进行二分排查，定位到可访问但处于锁定状态的 gnome-keyring/KWallet 通过 D-Bus 阻塞了无头 Chrome Profile 启动。</p>
+<p><strong>为什么值得关注：</strong>这不是一个“URL 变空”的浏览器协议错误，而是一个启动依赖故障被错误地解释成授权异常。早期的回填方案会在页面未加载时允许后续抓取，可能形成 fail-open。正确处理是保留 <code>target_not_allowed</code> 的拒绝行为，在测试浏览器的启动参数中加入 <code>--password-store=basic</code>，避免测试依赖交互式密钥环。</p>
+<p><strong>验证进度：</strong>修复已提交为 PR #1432，10 月 10 日的独立验证用模拟锁定密钥环复现了原始失败；加启动参数后，Chromium 154 和 Chrome-for-Testing 154 的 <code>verify:browser</code> 均通过。PR 页面仍显示 Open，不能宣称已经合并或进入正式发行。</p>
+<p><strong>工程启发：</strong>Browser Harness 必须在权限/DOM/Trace 观测之前，先验证真实导航已发生。为测试环境记录浏览器二进制 SHA、启动参数、Profile、D-Bus/密钥环状态、操作系统、导航网络证据。Agent 不应通过降低授权标准来修复环境故障。</p>
+<p><a href="https://github.com/morluto/rea/issues/1384">REA Issue #1384：复现、环境二分和纠正错误假设</a> · <a href="https://github.com/morluto/rea/pull/1432">PR #1432：修复及跨环境验证</a></p>
+
+<h3>2. llama.cpp 社区公开 Vulkan 百万 Token 推理优化：缓存和内存控制比峰值 TPS 更值得学（10 月 10 日）</h3>
+<p><strong>发生了什么：</strong>一位开发者在 llama.cpp Discussions 分享 AMD Ryzen AI Max+ 395（128 GB 统一内存）上的 Qwen3.8-Flash-Next 177B MoE 定制分支实验。作者报告 1,048,576 Token 上下文约占 102.7 GiB GPU 内存；解码速度在空上下文约 61 Token/s、524k 时约 45 Token/s、1M 时约 35.5 Token/s；首次填满百万上下文约需 1.1 小时。</p>
+<p><strong>为什么值得关注：</strong>工程细节包括稀疏注意力、MTP 推测解码、图与内存分配计划缓存、内存准入检查、磁盘 Prompt/循环状态恢复，以及 UI 中持续显示 Prefill/Decode/Cache/Tool 耗时。它揭示了长上下文端侧 Agent 的真正瓶颈：内存容量、首次填充时间和会话恢复，而不只是单次 Decode TPS。</p>
+<p><strong>边界：</strong>这些是作者在两台设备上自行测试的结果，基于 Vulkan/RADV 定制分支；并非上游 llama.cpp 正式基准，也没有验证 ROCm/NVIDIA，更不能推导为手机或浏览器 WebGPU 能运行 177B 模型。</p>
+<p><strong>工程启发：</strong>在浏览器端侧推理中增加 Prompt Cache 命中率、Context Depth、Prefill P95、恢复时间、内存准入失败率、页面 FPS 与 GPU 竞争观测；在 WebGPU/Dawn 上单独重测正确性与成本，不能照搬 Vulkan Kernel 的收益。</p>
+<p><a href="https://github.com/ggml-org/llama.cpp/discussions/30282">llama.cpp Discussions #30282：设备、数据与补丁说明</a> · <a href="https://github.com/vahpetr/llama.cpp-s1-fork">作者定制分支</a></p>
+
+<h3>3. HashAgent：一个 URL 携带 Agent 定义，WebGPU 在设备本地运行（补充开源观察，非当天首发）</h3>
+<p><strong>发生了什么：</strong>HashAgent 将 Agent 的系统提示、模型偏好等定义压缩为 <code>#agent=</code> URL fragment；模型使用 WebLLM/Transformers.js，在 Web Worker 内通过 WebGPU 本地推理。它对手机自动选择约 360M 参数的 SmolLM2，限制上下文与输出，并在首次下载模型前显示大小与内存估计。可选的搜索/读网页能力通过独立的轻量服务代理解决 CORS 限制。</p>
+<p><strong>为什么值得关注：</strong>产品设计把“可分享的 Agent 定义”和“接收设备实际允许的能力”分离：URL 中的模型提示不会强制手机加载超出预算的大模型；工具权限由应用控制，而不是由分享链接赋权。短链接会把 Agent 定义存入服务端 KV，和自包含的 fragment URL 有不同隐私边界。</p>
+<p><strong>工程启发：</strong>AI Native Browser 可以把 Agent 配置当成可移植声明，将实际模型选择、WebGPU 能力探测、工具授权、内存预算和失败恢复交给 Browser Runtime。项目 README 自述的内存估计和兼容性仍需独立真机验证。</p>
+<p><a href="https://github.com/mason131928/hashagent">HashAgent 源码及架构说明</a></p>
+
+<h2>浏览器技术</h2>
+<p>本观察窗口没有发现足以单列的 Chrome、Firefox 或 WebKit 正式新 API 公告。WebKit 的构建归档显示 10 月 10 日仍有多次 nightly build，但构建出现本身不代表某项新特性已交付，不以普通版本更新凑数量。今天真正值得浏览器工程关注的是 REA 发现的 <strong>Chrome 启动环境、系统密钥环、CDP 观测与权限门禁之间的依赖</strong>。</p>
+<p><a href="https://webkit.org/build-archives/">WebKit 官方 Build Archives</a> · <a href="https://github.com/morluto/rea/pull/1432">REA 验证浏览器启动修复</a></p>
+
+<h2>端侧 AI</h2>
+<p>llama.cpp Vulkan 长上下文实验表明：要支持持久 Agent，会话缓存、预填充耗时和内存预算与推理速度同样重要。HashAgent 则给出了手机 WebGPU 的保守实践：主动限制模型大小、Context、输出长度，并在模型加载失败时避免反复重试。两者分别对应高端统一内存设备和手机浏览器，不应混为同一性能级别。</p>
+<p><a href="https://github.com/ggml-org/llama.cpp/discussions/30282">Vulkan 长上下文实验</a> · <a href="https://github.com/mason131928/hashagent">HashAgent</a></p>
+
+<h2>浏览器 × AI</h2>
+<p>REA 说明 Browser Agent 的观测结果必须和真实导航证据对应；HashAgent 说明 Agent 定义与实际权限应分开；llama.cpp 则提示长任务需要显式记录缓存和恢复成本。可组合为：<code>Browser Launch Health → Authorized Session → Real Navigation Evidence → Model/Tool Execution → Independent Result Check</code>。对手机浏览器，额外增加 GPU 内存和前后台生命周期检查。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天新增：Environment-Bisect Before Browser Patch（先排除环境，再修改浏览器）</h3>
+<p><strong>业界做了什么：</strong>REA 的工程讨论在同一天完成了从“怀疑 CDP 协议回归”到“独立复现系统密钥环阻塞”的因果纠正：比较相同 Chromium Revision、用干净环境重跑、逐个恢复环境变量、检查页面自身 URL 与 NetLog，最后提交仅修改测试启动参数的补丁。另一位贡献者用模拟锁定的 gnome-keyring 和 KWallet 复验，避免依赖原始报告者的机器。</p>
+<p><strong>闭环位置：</strong>Observe（<code>target_not_allowed</code> 与空 Frame URL）→ Reproduce（真实浏览器 + CDP）→ Diagnose（环境变量 bisect、NetLog、D-Bus）→ Improve（测试 Launcher 增加 <code>--password-store=basic</code>）→ Verify（独立模拟密钥环 + Browser Harness 测试通过）。截至观察时，PR 仍未合并；Canary/Telemetry/Learn 的长期运行效果尚无证据。</p>
+<p><strong>迁移到 Chromium/Browser Harness：</strong>对每个 Regression 先做三层检查：① 浏览器进程/Profile/密钥环/导航是否正常；② CDP/DOM/Trace 与页面自身状态是否一致；③ Agent 任务是否成功。Agent 修改权限逻辑、DOM 采集或协议适配前，必须提供“页面已真正导航”的证据。将根因与错误假设一并写入可重跑的环境回归测试。</p>
+<p><strong>建议的实验资产：</strong>Browser SHA、Harness SHA、OS/Display Server、D-Bus 与密钥环状态、Launch Flags、Profile、Page URL、Network Log、CDP Snapshot、失败断言、最小复现、修复前后结果、独立验证记录。新一轮 AI 诊断应能检索此前已被证伪的假设，避免重复走错路。</p>
+<p><a href="https://github.com/morluto/rea/issues/1384">真实诊断全过程</a> · <a href="https://github.com/morluto/rea/pull/1432">可验证修复 PR</a></p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p><strong>REA #1432：</strong>两处 Browser Launcher 加启动参数、补充文档，未改动权限策略或捕获逻辑；独立复验覆盖模拟锁定密钥环。<a href="https://github.com/morluto/rea/pull/1432">PR 与验证记录</a>。</p>
+<p><strong>llama.cpp Strix Halo fork：</strong>长上下文 Vulkan 稀疏注意力、缓存恢复与内存准入实验，作者公开补丁清单，但尚未全部上游化。<a href="https://github.com/ggml-org/llama.cpp/discussions/30282">社区讨论</a>。</p>
+<p><strong>HashAgent：</strong>URL 声明式 Agent + WebGPU 本地模型 + 受控工具调用，可作为轻量 AI Native 浏览器交互样例；非 10 月 10 日首发。<a href="https://github.com/mason131928/hashagent">源码</a>。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 的关键能力之一，是让 Agent 能证明“自己的诊断错了”。</strong> 如果一个空 Frame URL 就让 Agent 去修改 CDP 授权逻辑，它可能把本来安全的 fail-closed 变成 fail-open。先证明页面真的加载，再归因协议和代码；先用可复现的环境差异排除外部因素，再让 Agent 生成 Patch。这比单纯提高自动补丁生成速度更值得成为 Harness 的默认门禁。</p>
