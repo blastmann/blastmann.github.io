@@ -1,0 +1,76 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-12
+date: 2026-10-12 09:52:00
+---
+
+<p>观察窗口：2026-10-11 09:52 至 2026-10-12 09:52（北京时间）。周末浏览器官方功能公告较少，本期重点是 10 月 11 日可核验的真实 Browser Agent 故障、Chromium WASM 性能问题，并补充 10 月 10 日 MCP 资源问题及此前未推送的端侧推理项目。用户提交的 Issue 不等于官方确认的根因或修复。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Codex Browser Use 的工作进程与 IPC Socket 累积，导致浏览器调用排队超时（10 月 11 日）</h3>
+<p><strong>发生了什么：</strong>Codex Issue #53040 的报告者在两台 Mac 上观察到，Browser Agent 的 <code>@Browser</code> 打开/读取请求进入队列并超时。在一台设备的一天内，11 批启动产生 38 个 <code>node_repl</code>/<code>cua-repl</code> 相关进程，没有观察到退出；另一台机器累积了多份 Socket 文件。报告者清理残留进程、Socket 并重启后，两台机器的浏览器控制能力恢复。</p>
+<p><strong>为什么值得关注：</strong>浏览器扩展、Native Messaging Host 和权限配置检查均可能正常，但 Agent 控制链路仍因 Harness 生命周期问题失效。进程/Socket 关联和清理后的恢复是用户侧复现证据，不能据此断言所有 Codex 安装均有相同泄漏，也没有上游修复已合并的证据。</p>
+<p><strong>工程启发：</strong>为 Browser Harness 增加 <code>session_id → worker_pid → socket → browser_target</code> 所有权追踪、会话关闭后的资源回收检查、进程/FD/Socket 数量上限、排队时长与超时指标；对清理操作保留授权边界，不能误杀其他会话的进程。</p>
+<p><a href="https://github.com/openai/codex/issues/53040">Codex Issue #53040：复现步骤与两台设备的资源证据</a></p>
+
+<h3>2. Chromium WebAssembly 编译成本问题：一次性启动函数耗时 22 秒、峰值内存 1.4 GB（10 月 11 日）</h3>
+<p><strong>发生了什么：</strong>Chromium Issue #572225700 在公开问题列表中被列为新问题：一个约 3.26 MB、只执行一次的 WASM 启动函数触发 TurboFan 优化，问题标题报告约 22 秒编译时间和每次加载约 1.4 GB 峰值内存。这是问题报告中的观测值，尚无公开修复或独立验证结论。</p>
+<p><strong>为什么值得关注：</strong>WASM 分层编译和优化本来是为了提升运行性能，但对于只执行一次的巨大函数，优化成本可能远大于后续收益。对浏览器端侧 AI 而言，首次加载、模型初始化、算子预热等阶段尤其容易被忽略。</p>
+<p><strong>工程启发：</strong>将 <code>compile_time</code>、<code>peak_compile_memory</code>、<code>execution_count</code>、<code>startup_TTFB</code>、<code>tier_up_count</code> 一起加入评测；建立一次性启动函数和重复热路径的独立测试，不只比较 steady-state TPS。</p>
+<p><a href="https://issues.chromium.org/issues/572225700">Chromium Issue #572225700</a> · <a href="https://issues.chromium.org/issues?q=componentid%3A1363614%2B">Chromium 问题列表（含该问题摘要）</a></p>
+
+<h3>3. Chrome 扩展和 Native Host 检查正常，但 Browser Runtime 无法发现 Chrome（10 月 11 日）</h3>
+<p><strong>发生了什么：</strong>Codex Issue #53058 报告 Chrome 扩展已安装并启用，侧边栏聊天正常，Chrome 进程与 Native Host Manifest 诊断均通过，但浏览器控制接口 <code>browsers.get("chrome")</code> 仍返回 <code>Browser is not available: chrome</code>。日志出现 Browser Session Route 不可用提示，但它与故障的因果关系尚未确定。</p>
+<p><strong>为什么值得关注：</strong>扩展安装成功、传输正常、会话路由可用和 Agent 获得实际操作权限，是不同层次的状态。单一 <code>connected</code> 布尔值不足以定位问题。</p>
+<p><strong>工程启发：</strong>把 Browser Runtime 的健康检查拆成 Extension、Native Host、Transport、Session Routing、Capability、Tab Navigation、Result Verification 七层，分别提供可观察错误码与 Trace。</p>
+<p><a href="https://github.com/openai/codex/issues/53058">Codex Issue #53058：浏览器发现与路由诊断</a></p>
+
+<h3>4. 28 个会话触发数百个 MCP 辅助进程：需要控制启动并发与空闲回收（10 月 10 日，补推）</h3>
+<p><strong>发生了什么：</strong>Codex Issue #52983 的用户在 macOS 桌面版本上观察到，长时间运行的 app-server 进程树一度包含约 470 个进程；清理 415 个辅助进程后，部分辅助进程又随着会话恢复而重新出现。日志记录了 28 个已加载聊天中的集中 MCP 启动与超时事件。</p>
+<p><strong>边界：</strong>报告者特别说明并非所有辅助进程都是孤儿进程，也未证明全部 CPU 压力由 Codex 导致；没有完全隔离的最小复现。它说明需要进一步调查资源放大，而不是已经确认了唯一根因。</p>
+<p><strong>工程启发：</strong>为多会话 Harness 引入 Host 级并发预算、延迟启动、空闲卸载、重试退避及状态事件去重；按每个 Session 记录真实资源使用，避免 Agent 不活动时持续占用大量进程。</p>
+<p><a href="https://github.com/openai/codex/issues/52983">Codex Issue #52983：进程树、事件统计与源码线索</a></p>
+
+<h2>浏览器技术</h2>
+<p>本窗口没有发现足以单列的 Chrome/Firefox/WebKit 正式新 Web API 公告。Chromium 的 WASM 编译问题提供了更实际的性能信号：对冷启动和只执行一次的初始化代码，分层优化应按收益/编译成本判断，而不是默认更高优化层级更好。Chromium 问题列表还包含 V8 JetStream2 性能回归、Skia WebP 解码初始化以及 macOS HDR 视频回归等待调查记录；本期不把未确认的 Issue 当作已修复的浏览器新特性。</p>
+<p><a href="https://issues.chromium.org/issues/572225700">WASM 编译成本问题</a> · <a href="https://issues.chromium.org/issues?q=componentid%3A1363614%2B">Chromium 问题列表</a></p>
+
+<h2>端侧 AI</h2>
+<p><strong>补充开源观察（非 24 小时首发）：</strong><code>@paulrobello/webllm</code> 尝试在浏览器内复用 llama.cpp 的 <code>ggml-webgpu</code> 后端，支持 GGUF 模型、WebGPU/WASM、<code>MemoryPool</code> 内存预算、Worker 运行、IndexedDB 会话持久化和浏览器驱动评测。其 README 明确说明主要在 Chrome 上回归测试，其他 WebGPU 浏览器未充分验证，GPU 路径变更还依赖人工 Smoke Test。</p>
+<p><strong>为什么值得关注：</strong>它把端侧模型的内存预算、持久会话与浏览器真实测试联系起来；但项目文档里的功能与性能描述不等于经过独立多设备验证。对移动浏览器应额外测量 GPU 与页面渲染争用、后台切换恢复、内存压力退出和首次模型加载。</p>
+<p><a href="https://github.com/paulrobello/webllm">项目源码与评测说明</a></p>
+
+<h2>浏览器 × AI</h2>
+<p>今天的两个 Codex Browser Runtime 问题分别暴露了 <strong>资源生命周期</strong> 与 <strong>浏览器发现/路由</strong> 的失效模式。它们说明 AI Native Browser 的核心不是给 Chrome 连接一个 LLM，而是让 Browser Runtime 能稳定管理 <code>Agent Session → Worker/MCP → IPC → Browser Target → Permission → Observation</code> 的完整关系。端侧推理引擎还要把模型 Worker/GPU 设备的生命周期纳入相同的资源管理框架。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天新增：Lifecycle Gate Before Observe（先确认 Harness 健康，再相信观测）</h3>
+<p><strong>业界做了什么：</strong>10 月 11 日的两份 Browser Agent 故障报告给出了可复现的资源/会话症状；10 月 10 日的多会话报告给出了进程树和 MCP 启动事件证据。这些目前处于 Observe → Reproduce → 部分 Diagnose 阶段，尚无证据表明已经形成自动 Patch → Verify → Canary → Learn 的完整闭环。</p>
+<p><strong>可迁移的工程设计：</strong>在 Chromium 性能/兼容性回归流水线之前增加 Harness 健康门禁，避免 Agent 把“自己连接不到浏览器”误判为“浏览器回归”。门禁需要可独立执行、无需模型自行宣布成功。</p>
+<pre><code>Harness Health Gate
+  ├─ Browser binary / Profile / Launch
+  ├─ Session → Worker → IPC ownership
+  ├─ Transport / Route / Capability
+  ├─ Real navigation and observable output
+  └─ Resource budget / timeout / cleanup
+             ↓
+Telemetry / Regression
+             ↓
+Reproduce / Diagnose
+             ↓
+Patch → Build / Benchmark
+             ↓
+Independent Verify
+             ↓
+Canary → Learn</code></pre>
+<p><strong>建议先做的实验：</strong>连续运行 1000 次 Browser Session 创建/导航/关闭，混入取消任务、Agent 崩溃、浏览器重启、扩展断连和模型 Worker 失败；统计残留 PID/FD/Socket、P95 首次操作延迟、浏览器发现成功率、资源峰值、错误码归因。先证明 Harness 可长期稳定运行，再用它验证 Chromium Patch。</p>
+<p><strong>Learn：</strong>每次资源泄漏或路由失效都应产出可回放的生命周期测试，而不只是增加一个提示词或重启脚本。将故障环境、Harness 版本、进程拓扑、恢复步骤、是否触及权限边界写入结构化实验记录。</p>
+<p><a href="https://github.com/openai/codex/issues/53040">进程/Socket 复现</a> · <a href="https://github.com/openai/codex/issues/53058">路由不可用复现</a> · <a href="https://github.com/openai/codex/issues/52983">多会话资源证据</a></p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p><strong>本期最值得实际复现的两个方向：</strong>一是 Codex Browser/MCP 的生命周期故障：构造长期多会话压力测试、跟踪 worker 与 IPC 的所有权；二是浏览器内 <code>ggml-webgpu</code> 推理：使用真实 Chrome + GPU 设备，验证 MemoryPool、Worker、模型加载、持久化和页面 FPS。今天没有找到足够高质量、可确认在窗口内首发的相关论文，因此不以旧论文凑数。</p>
+<p><a href="https://github.com/openai/codex/issues/53040">Browser/MCP 故障</a> · <a href="https://github.com/paulrobello/webllm">WebGPU/WASM 推理实践</a></p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 的第一个前置条件，是让负责观察浏览器的 Agent Harness 自身可以被独立验证。</strong> 否则进程泄漏、IPC 阻塞或 Session Routing 错误会污染 Trace 与任务结果，导致 Agent 错误诊断甚至生成不必要的 Chromium Patch。下一步应优先建设可长期运行的 Harness Lifecycle Benchmark 与清晰的 Runtime 状态模型。</p>
