@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-10-13 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-10-13"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-10-13"/>
+
+  <meta property="displaydate" content="2026-10-13T09:25:00.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-10-13</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<p>观察窗口：2026-10-12 09:25 至 2026-10-13 09:25（北京时间）。本窗口浏览器官方重大新功能较少；10 月 12 日的 Browser Agent 故障为当日更新，其余条目均标注为过去一周未推送的补充。公开 Issue 不是官方确认的根因或已修复问题。</p>
+
+<h2>今天最值得看</h2>
+<h3>1. WebFovea：模型判断对了，浏览器动作却执行错了（10 月 7 日，补推）</h3>
+<p>WebFovea 在 WebRetriever Challenge 2026 获得 57.0/100、排名第二。作者把 Browser Agent 一次操作拆为输出解析、页面执行、结果反馈、下一轮观测四个环节。真实故障包括坐标变换错误，所有点击落在目标坐标的 3/4；iframe、原生下拉框与输入框的静默失败；聊天模板标记混入文本框，影响 4.9% 的任务轮次。</p>
+<p>在保持模型不变的四次竞赛提交中，隐藏测试成绩从 31.0 提升至 57.0，说明 Harness 修复可能比换模型更有效，但真实网站存在波动，不能完全归因于单一改动。建议 Browser Runtime 保存 intended_action、resolved_target、executed_action 和 observed_delta，逐层检查，而不是相信模型声称“操作成功”。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.03036">原论文</a> · <a target="_blank" rel="noopener" href="https://github.com/jianganghan/WebFovea">开源代码</a> · <a target="_blank" rel="noopener" href="https://huggingface.co/papers/2610.03036">作者补充案例</a></p>
+
+<h3>2. Windows Browser Agent：可见页面与实际控制链路分离（10 月 12 日）</h3>
+<p>Codex Windows 桌面端的公开问题 #53306 报告：内嵌浏览器可显示页面，Chrome 设置也正常，但 browser-control 子 Agent 看不到浏览器；#53332 则记录 Browser Client 在 MXC 沙箱中加载时，realpath 返回 EPERM，连接尚未建立。同日 #53349 记录一例只读购物任务可能遭遇错误网站安全分类。它们分别指向发现、运行环境与策略三个层次，没有证据证明共同根因。</p>
+<p>工程上应把 provider_discovered、sandbox_ready、target_attached、policy_granted、action_verified 分开观测；技术故障与权限拒绝使用不同错误码。不能因为浏览器不可用而绕过安全策略。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/openai/codex/issues/53306">#53306</a> · <a target="_blank" rel="noopener" href="https://github.com/openai/codex/issues/53332">#53332</a> · <a target="_blank" rel="noopener" href="https://github.com/openai/codex/issues/53349">#53349</a></p>
+
+<h3>3. Safari Technology Preview 254：WebGPU 与 WebDriver 生命周期修复（10 月 8 日，补推）</h3>
+<p>WebKit 官方确认修复 WebGPU device lost 后异步 pipeline 创建 Promise 永不结束、重复使用 GPUShaderModule 时 pipeline shader cache 失效、少数慢帧导致长期低帧率等问题。WebDriver Classic 命令改为按会话串行，修复并发命令与导航等待造成的挂起；WebDriver BiDi 开始支持视口截图。</p>
+<p>这些都是 Browser Agent 和端侧推理稳定性的重要边界。WebKit 还报告 WebAssembly in-place 解释器在 Apple silicon 上约 5% 的性能改善，并支持 WebCodecs 部分构造器的 transfer 选项及 HEVC Annex B 编码。此为 Technology Preview 更新，不代表稳定版 Safari 已全部具备。</p>
+<p><a target="_blank" rel="noopener" href="https://webkit.org/blog/18420/release-notes-for-safari-technology-preview-254/">WebKit 官方发布说明</a></p>
+
+<h3>4. Transformers.js 4.3.1：本地多模态 Embedding（10 月 7 日，补推）</h3>
+<p>Transformers.js 4.3.1 增加 EmbeddingGemma 2 支持。官方示例可在 WebGPU 或 WASM 上运行量化模型，把文本、图片、音频、视频映射到统一的 768 维向量空间；模型合计约 740M 参数。对浏览器短期兴趣记忆，可以本地编码商品文本与图片，先检索少量候选，再交给云端模型分析。</p>
+<p>需要实测模型下载、缓存恢复、GPU 内存峰值、页面 FPS、手机发热与召回质量。向量相似度不是同款商品的最终证明，也不能成为 Agent 获得操作权限的依据。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/huggingface/transformers.js/releases/tag/4.3.1">官方 Release</a> · <a target="_blank" rel="noopener" href="https://github.com/huggingface/transformers.js">GitHub</a></p>
+
+<h2>浏览器技术</h2>
+<p>Safari Technology Preview 254 的 WebGPU device lost、pipeline cache、WebDriver 并发修复，以及 WebRTC/WebCodecs 色彩空间与媒体缓冲区传递，值得放入跨浏览器兼容性测试。Chrome、Firefox 在本观察窗口没有核验到足以单列的重大官方 API 公告，不以普通版本变化凑数。</p>
+<p><a target="_blank" rel="noopener" href="https://webkit.org/blog/18420/release-notes-for-safari-technology-preview-254/">WebKit 变更明细</a></p>
+
+<h2>端侧 AI</h2>
+<p>Transformers.js 的多模态 Embedding 适合 Worker 中运行的短期兴趣索引。建议比较 WebGPU/WASM 的首轮加载、量化精度、内存占用、推理延迟与页面渲染争用，尤其注意后台恢复和设备丢失。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/huggingface/transformers.js/releases/tag/4.3.1">Transformers.js 4.3.1</a></p>
+
+<h2>浏览器 × AI</h2>
+<p>WebFovea 表明模型正确决策并不等于页面正确执行。Browser Runtime 应统一 Action Receipt、Observation Delta、Session/Frame 身份及 Policy Decision；小模型只选择受 Runtime 约束的动作，独立 Verifier 根据页面真实变化判定成功。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.03036">WebFovea</a></p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>Round-Trip Contract Before Learning：先验证动作往返链路，再积累经验</h3>
+<p><strong>业界走到哪：</strong>WebFovea 已实现失败分析、Harness 修正与真实网站竞赛验证；WebKit 则完成 WebDriver/WebGPU 真实代码修复并发布 Technology Preview。两者都没有证据证明已经实现 Agent 自主提交 Chromium Patch、Canary 与持续学习的完整闭环。</p>
+<pre><code>Telemetry / Screenshot / Trace / WPT
+      ↓
+Intent → Parse → Execute → Feedback → Observe
+      ↓
+逐层一致性验证
+      ├─ 失败 → Model / Harness / Runtime / Policy 归因
+      └─ 通过 → Task Outcome Oracle
+      ↓
+Reproduce → Diagnose → Patch
+      ↓
+Build / Benchmark / GPU CTS / WebDriver Replay
+      ↓
+Independent Verifier + Security Check
+      ↓
+Canary → Learn → Held-out Replay
+</code></pre>
+<p><strong>迁移建议：</strong>为每次浏览器操作保存 browser/harness revision、session_id、frame_id、坐标系、权限决定、动作回执和页面前后差异。优先建立 iframe、缩放、原生 select、导航、GPU device lost 与 WebDriver 并发的可执行回归测试。候选 Agent 可以优化动作与诊断流程，但不得修改独立的最终验收标准。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.03036">WebFovea</a> · <a target="_blank" rel="noopener" href="https://webkit.org/blog/18420/release-notes-for-safari-technology-preview-254/">WebKit</a></p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>WebFovea 提供可复核的真实网站 Harness 故障；Transformers.js 提供可运行的多模态端侧模型示例。建议将两者结合为一个原型：本地模型检索目标，Browser Runtime 执行动作，独立测试检查真实页面变化，并保存失败轨迹供后续回归。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/jianganghan/WebFovea">WebFovea 源码</a> · <a target="_blank" rel="noopener" href="https://github.com/huggingface/transformers.js">Transformers.js 源码</a></p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 首先要证明“Agent 想做的动作”和“浏览器实际发生的动作”一致。</strong> 如果坐标、执行、反馈或权限状态本身不可靠，自动诊断与 Learn 可能把 Harness 错误写成浏览器经验。优先投资可回放的动作回执与分层验证，而不是继续增加提示词。</p>
+
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
