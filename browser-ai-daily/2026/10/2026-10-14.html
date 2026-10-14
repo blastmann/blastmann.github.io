@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-10-14 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-10-14"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-10-14"/>
+
+  <meta property="displaydate" content="2026-10-14T09:53:00.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-10-14</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<p>观察窗口：2026-10-13 09:53 至 2026-10-14 09:53（北京时间）。优先官方英文信源；Web$hell 为 10 月 9 日补推。Chrome 发布博客访问偶有频率限制，版本及修复数量已与公开发布索引交叉核对。</p>
+
+<h2>今天最值得看</h2>
+<h3>1. Firefox 158：Smart Window 从相关标签页与已保存信息建议表单填写（10 月 13 日）</h3>
+<p>Firefox Smart Window 现在可在用户点击表单字段、或主动选择 Fill from sources 时，根据相关的打开标签页和自动填充数据建议内容。此功能逐步推出，并非所有用户均已开启。<strong>工程启发：</strong>浏览器 Runtime 应明确区分信息来源、用户确认、权限决定和实际填写；模型可以推荐内容，不能因为能读取一个标签页就获得跨站操作权限。</p>
+<p><a target="_blank" rel="noopener" href="https://www.firefox.com/en-US/firefox/158.0/releasenotes/">Firefox 158 官方发布说明</a></p>
+
+<h3>2. Firefox 158：Resource Timing 支持 HTTP 缓存来源，Network Monitor 修复 WebSocket 漏报（10 月 13 日）</h3>
+<p>Firefox 新增 <code>PerformanceResourceTiming.deliveryType</code> 的 <code>cache</code> 值；开发者工具修复了 WebSocket 建连后立即到达的消息可能漏报的问题。<strong>工程启发：</strong>Browser Agent 诊断网络与页面性能时，需要区分缓存命中、真实网络事件和 DevTools 观测完整性。不要把工具漏报当成网络故障。</p>
+<p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/158">MDN Firefox 158 开发者说明</a></p>
+
+<h3>3. Chrome 155：桌面安全更新包含 37 项修复、7 项 Critical（10 月 13 日）</h3>
+<p>Windows/macOS 版本更新到 <code>155.0.8059.79/.80</code>，Linux 更新到 <code>155.0.8059.79</code>。官方公告列出 37 项修复，其中 7 项为 Critical，涉及图形、浏览器核心、PDF、网络、SVG、媒体等组件。部分问题细节尚未公开。<strong>工程启发：</strong>安全问题应尽量形成可复现输入、版本定位、回归测试和独立验证记录；修复数量不等于 AI 自动修复能力。</p>
+<p><a target="_blank" rel="noopener" href="https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop_01668083673.html">Chrome 官方公告</a> · <a target="_blank" rel="noopener" href="https://releases.sh/google/chrome">公开发布索引</a></p>
+
+<h3>4. Firefox 158：JIT、WASM、Canvas 与隔离边界修复值得纳入回归集（10 月 13 日）</h3>
+<p>Mozilla MFSA 2026-106 公告涵盖 JavaScript JIT、WebAssembly、Canvas2D、网络隔离等模块的安全修复；其中若干问题由 OpenAI 研究人员 Amy Burnett 报告。公告没有逐项披露 AI 参与发现的程度，不能直接称为 AI 自主漏洞发现。<strong>工程启发：</strong>把公开问题对应的最小复现、修复版本和安全回归测试长期保留，避免未来优化引入同类缺陷。</p>
+<p><a target="_blank" rel="noopener" href="https://www.mozilla.org/en-US/security/advisories/mfsa2026-106/">Mozilla MFSA 2026-106</a></p>
+
+<h3>5. Web$hell：把网页编译为可寻址信息与操作对象（10 月 9 日，补推）</h3>
+<p>论文提出 <code>WebContract</code> 统一网页信息与操作描述，<code>WebCompiler</code> 转换实时页面，<code>WebCache</code> 维护可复用对象，以支持搜索、导航和深度研究。作者报告任务表现和成本优势，但尚需真实浏览器独立验证。<strong>工程启发：</strong>缓存的动作必须绑定 origin、frame、session、页面版本和权限，命中后仍检查实时页面状态。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.13416">Web$hell 原论文</a></p>
+
+<h2>浏览器技术</h2>
+<p>Firefox 158 还加入 JPEG XL、改善高分辨率及缩放下的滚动位置精度，并支持 CSS typed arithmetic、Notification 的 <code>navigate</code> 选项。结合 Chrome 安全更新，建议跨浏览器回归覆盖图片解码、缓存计时、WebSocket 首包与渲染正确性。</p>
+<p><a target="_blank" rel="noopener" href="https://www.firefox.com/en-US/firefox/158.0/releasenotes/">Firefox 发布说明</a></p>
+
+<h2>端侧 AI</h2>
+<p>本窗口没有核验到足以单列的 WebGPU/WASM 新模型重大官方发布。端侧推理工程更应重视浏览器 JIT/WASM 正确性、内存与设备兼容性、模型加载和回退路径，而不仅是推理速度。</p>
+<p><a target="_blank" rel="noopener" href="https://www.mozilla.org/en-US/security/advisories/mfsa2026-106/">Firefox 安全公告</a></p>
+
+<h2>浏览器 × AI</h2>
+<p>Firefox Smart Window 展示了浏览器已有会话信息参与具体任务的产品路径；Web$hell 展示了可复用信息/操作接口。二者结合时，Browser Runtime 负责会话、身份和权限，Agent 提供建议，缓存降低重复理解成本，最终操作必须经过实时状态与用户授权检查。</p>
+<p><a target="_blank" rel="noopener" href="https://www.firefox.com/en-US/firefox/158.0/releasenotes/">Smart Window</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.13416">Web$hell</a></p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>Security Reproducer as a Durable Asset：把真实问题转化为长期可执行回归测试</h3>
+<p><strong>业界做到哪：</strong>Chrome 与 Firefox 已完成多组件安全修复并发布 Stable，覆盖 Finding → Patch → Release；Firefox 的 Resource Timing 与 WebSocket DevTools 修复改善 Observe。公开材料没有证明这些问题全部由 Agent 自动复现、修补、Canary 和学习，不能视为完整自动闭环。</p>
+<pre><code>Crash / Fuzz / Telemetry / Finding
+       ↓
+Reproducer + Environment
+       ↓
+Reproduce / Bisect / Diagnose
+       ↓
+Candidate Patch
+       ↓
+Build / Benchmark / Security Replay
+       ↓
+Independent Verifier
+       ↓
+Canary / Release
+       ↓
+Retain Reproducer / Test / Skill
+       ↓
+Held-out Regression / Learn
+</code></pre>
+<p><strong>迁移建议：</strong>为每条可公开问题保留 browser_sha、harness_sha、最小输入、复现环境、预期输出、culprit CL 和验证结果。先从 JIT/WASM、Canvas/图形、Network/隔离选取公开案例做小规模回归集。Agent 可以优化复现和实验选择，但不得修改独立的验收标准；无法稳定复现的问题先补证据，不直接投入昂贵构建。</p>
+<p><a target="_blank" rel="noopener" href="https://www.mozilla.org/en-US/security/advisories/mfsa2026-106/">Mozilla 公告</a> · <a target="_blank" rel="noopener" href="https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop_01668083673.html">Chrome 公告</a></p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>Web$hell 值得作为 Browser Harness 实验接口：比较原始 DOM 与结构化缓存两种路径的任务成功率、token 成本、P95 延迟、页面变化后的误操作率与权限拒绝正确性；不能把论文指标直接当成产品实测。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.13416">Web$hell 论文</a> · <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/158">Firefox 开发者更新</a></p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 的长期价值，不在于发现更多问题，而在于把一个真实问题永久转化为能够自动发现同类回归的测试资产。</strong> 只有保存可复现输入、环境、版本和独立验证结果，后续 Agent 生成的 Patch 与 Learn 才有可靠依据。</p>
+
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
