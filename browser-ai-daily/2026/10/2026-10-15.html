@@ -1,0 +1,191 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-10-15 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-10-15"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-10-15"/>
+
+  <meta property="displaydate" content="2026-10-15T09:06:00.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-10-15</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<p>观察窗口：2026-10-14 09:06 至 2026-10-15 09:06（北京时间）。优先官方英文来源。llama.cpp b11609 比窗口开始早约 15 分钟，作为边界补推；GPU Goldmines、EvoWeb 和 Igalia 为一周内补推。性能数字仅代表作者测试环境。</p>
+
+<h2>今天最值得看</h2>
+<h3>1. Browser Operator Core v0.4.0：浏览器 Agent 的持久工作区与评测环境（10 月 15 日凌晨）</h3>
+<p><strong>发生了什么：</strong>10 月 14 日 19:46 UTC 发布 v0.4.0，新增 IndexedDB 虚拟文件系统、按 DevTools 会话隔离的工作空间、沙箱 iframe 渲染 HTML/JS、读取用户交互和 Docker 本地评测环境。尚缺独立的大规模稳定性验证。<strong>为什么关注：</strong>Agent 可以把中间产物保存在 Runtime，不必都放进模型上下文。<strong>工程启发：</strong>会话隔离、存储清理、来源权限和可重复评测应由 Browser Harness 管理。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/BrowserOperator/browser-operator-core/releases/tag/v0.4.0">官方发布</a> · <a target="_blank" rel="noopener" href="https://github.com/BrowserOperator/browser-operator-core/pull/55">功能 PR</a></p>
+
+<h3>2. llama.cpp WebGPU：MoE 重复 Expert ID 的真实回归修复（10 月 14 日版本，边界补推）</h3>
+<p><strong>发生了什么：</strong>新测试暴露 WebGPU <code>mul_mat_id</code> 对重复 expert ID 的错误假设。PR #30451 修改 WGSL gather/tile 逻辑，已合并，显示 23 项检查通过；作者披露使用 Coding Agent 辅助编写。M5 Max 上作者测得 Qwen3-Next-80B-A3B pp512 约快 12%，Qwen3.5-35B-A3B 约快 5%，不能直接推广到其他设备。<strong>为什么关注：</strong>这是真实的 Test Failure → Diagnose → Patch → CI → Review → Merge。<strong>工程启发：</strong>Kernel 的独立正确性测试要覆盖重复路由、数值误差与设备差异，不能只追求速度。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30451">原始 PR 与 AI 披露</a> · <a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/releases/tag/b11609">版本记录</a></p>
+
+<h3>3. GPU Goldmines：WebGPU Kernel 的跨设备调参数据库（10 月 12 日，补推）</h3>
+<p><strong>发生了什么：</strong>研究覆盖 MatMul、MatVec 和 Flash Attention，通过浏览器采集不同 GPU、浏览器和输入形状的 Kernel 表现，并复用历史调参结果。作者报告矩阵乘相对 ONNX Runtime Web 和 llama.cpp WebGPU Kernel 分别快 7.0 倍与 1.41 倍（几何平均），在论文负载的 llama.cpp Prefill 中提升 1.48 倍。<strong>为什么关注：</strong>相同 WGSL 在不同设备上的最优参数不同。<strong>工程启发：</strong>保存 GPU、Driver、Browser Revision、Shape、Config、数值正确性与性能，形成可回退的调优资产。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.17321">原始论文</a></p>
+
+<h3>4. EvoWeb：持续修改 Web 应用时，浏览器必须回测旧功能（10 月 12 日，补推）</h3>
+<p><strong>发生了什么：</strong>论文使用 32 个 Web 应用和 320 个连续需求，每次修改后由浏览器 Agent 检查三项新功能、一项跨需求集成、一项旧功能回归。作者发现跨需求集成更难，随着需求积累运行时错误增多。<strong>为什么关注：</strong>本次 Patch 通过不代表旧功能仍然可用。<strong>工程启发：</strong>用依赖图选择回归测试，保存并重放历史成功路径。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.16402">原始论文</a></p>
+
+<h2>浏览器技术</h2>
+<p>Igalia 10 月 12 日 WebKit 周报修复了元素移动时 CSS selector invalidation、Layer-Based SVG Engine 的绘制位置、变换 hit testing 和动态 textPath。对视觉 Browser Agent，这些问题会影响截图与点击命中，适合 WPT + Visual Diff + Hit-Test 联合回归。过去 24 小时未发现足以单列的 Chromium/Firefox 新架构官方公告。</p>
+<p><a target="_blank" rel="noopener" href="https://planet.igalia.com/webkit/">Igalia WebKit 周报 #81</a></p>
+
+<h2>端侧 AI</h2>
+<p>llama.cpp WebGPU 的重复 Expert ID 修复与 GPU Goldmines 的设备调参说明：浏览器推理要同时保证正确性和性能。建议分别记录 TTFT、Prefill/Decode TPS、显存、功耗、页面 FPS 与数值误差，不要把 M5 Max 的测试结果直接外推到手机。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30451">WebGPU 修复</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.17321">调参研究</a></p>
+
+<h2>浏览器 × AI</h2>
+<p>Browser Operator Core 提供 Agent 工作区、沙箱预览和 Docker 评测；EvoWeb 提供连续需求的浏览器验收。可组合为 Agent 修改 → 沙箱预览 → 浏览器验证 → 保留结果。Browser Runtime 仍需独立负责来源、会话、存储和权限。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/BrowserOperator/browser-operator-core/releases/tag/v0.4.0">Browser Operator</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.16402">EvoWeb</a></p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>Counterexample-to-Kernel Promotion：失败样本进入长期验证资产</h3>
+<p><strong>业界走到哪：</strong>llama.cpp 已完成 Regression → Diagnose → Patch → CI/Review → Merge，且披露 AI 辅助；GPU Goldmines 展示 Benchmark → Config Search → Performance DB。尚无证据证明这些工作实现了 Agent 自主 Canary 与持续学习。</p>
+<pre><code>Regression / Counterexample
+          ↓
+Minimize Input + Environment
+          ↓
+Agent-assisted Candidate Patch
+          ↓
+Independent Correctness Oracle
+          ↓
+Cross-Device Benchmark
+          ↓
+Review / Promotion Gate
+          ↓
+Canary / Telemetry
+          ↓
+Retain Test + Config + Outcome
+          ↓
+Future Regression / Learn
+</code></pre>
+<p><strong>迁移到 Chromium：</strong>选少量 Dawn MoE/Attention Kernel，固定重复 Expert ID、极端 Shape、Device Lost 和精度测试。Agent 提出 Patch，但不能修改独立验收标准；性能验证同时记录 P95、TTFT、显存和功耗。按 EvoWeb 的依赖关系抽样重放历史 Harness 任务。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30451">真实补丁</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.17321">性能数据库研究</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.16402">连续回归研究</a></p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>建议先复现三项小实验：WebGPU MoE 重复 Expert ID 正确性；不同 GPU/浏览器版本的 MatMul 参数迁移；Harness 修改后新功能、旧功能与跨需求集成的通过率。每次保留原始 Trace、浏览器版本、测试输入和失败结果。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30451">llama.cpp</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.17321">GPU Goldmines</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.16402">EvoWeb</a></p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 的关键不是生成更多 Patch，而是把曾经出错的输入保留为不可跳过的回归测试，并在相同正确性标准下验证每次性能改进。</strong></p>
+
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
