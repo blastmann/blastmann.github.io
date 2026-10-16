@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-10-16 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-10-16"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-10-16"/>
+
+  <meta property="displaydate" content="2026-10-16T09:39:00.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-10-16</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<p>观察窗口：2026-10-15 09:39 至 2026-10-16 09:39（北京时间）。优先官方 Chrome 公告与 GitHub 合并提交。没有足够高价值的新 WebKit、Firefox、WebGPU 公告时不重复旧闻。</p>
+<h2>今天最值得看</h2>
+<h3>1. Browser Use：真实 Chromium 修复导航中间态与高 DPI 截图偏移</h3>
+<p><strong>发生了什么：</strong>10 月 16 日 07:50（北京时间）合入 PR #6089。云浏览器导航时短暂空 URL 触发 Agent 工具状态校验失败；高 DPI 下截图尺寸与 CSS 视口不一致，导致坐标点击偏移。修复用 about:blank 表达尚未提交的导航状态，并用 Page.getLayoutMetrics 将截图对齐到 CSS 视口。新增真实 Chromium 回归测试，作者报告 11 项驱动测试通过。<strong>为什么关注：</strong>模型意图正确，也可能被 Harness 的坐标转换与状态回执破坏。<strong>工程启发：</strong>记录设备缩放、视口、Frame ID、导航中间态、实际点击位置，跨 1/2/3 倍显示比例验证。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/browser-use/browser-use/pull/6089">原始 PR</a> · <a target="_blank" rel="noopener" href="https://github.com/browser-use/browser-use/commit/129853546ff9cc169977d38b6038f9c4a4e734db">合并提交</a></p>
+<h3>2. Chrome 155：10 项安全修复，明确记录 Claude 辅助发现 DOM 漏洞</h3>
+<p><strong>发生了什么：</strong>10 月 15 日 Chrome Stable 更新至 Windows/macOS 155.0.8059.84/.85、Linux 155.0.8059.84，修复 10 项安全问题。Critical CVE-2026-110922 涉及 Prerender 释放后使用；High CVE-2026-110913 是 DOM 内存损坏，官方注明由 Anthropic 研究人员 Xinyang Ge 在 Claude 辅助下报告；其他问题涉及 V8、SVG、Compositing 与 Workers。<strong>为什么关注：</strong>AI 辅助安全发现进入真实浏览器发布记录。<strong>工程启发：</strong>保存最小复现、Sanitizer 输出、Browser Revision、修复版本和长期回归测试。不能据此声称 AI 自主完成 Patch、Canary 与学习。</p>
+<p><a target="_blank" rel="noopener" href="https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop_01886704284.html">Chrome 官方安全公告</a></p>
+<h3>3. agent-browser：域名限制拦截跳转后，导航不能误报成功</h3>
+<p><strong>发生了什么：</strong>10 月 15 日合入 PR #2114。跳转到不允许的域名会收到 403 页面，但 open 命令此前仍报告成功。修复按 Frame ID 记录被拦截文档，主 Frame 最终落到阻止页时返回失败。<strong>为什么关注：</strong>网络拦截、导航完成与任务成功是不同状态。<strong>工程启发：</strong>操作回执必须携带最终主 Frame URL、策略结果和页面状态，不能用单一 success 掩盖拒绝。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/vercel-labs/agent-browser/pull/2114">原始 PR</a> · <a target="_blank" rel="noopener" href="https://github.com/vercel-labs/agent-browser/commit/dac13bb87468fe9d74a040d862720f6cc17a9565">合并提交</a></p>
+<h3>4. Chrome DevTools MCP：独立 Profile 并行 E2E，38 秒降至 8 秒</h3>
+<p><strong>发生了什么：</strong>10 月 15 日合入 PR #3175。每个 E2E 测试启动独立 MCP Server 与浏览器 Profile，因此可以并行执行。作者报告 index.test.js 在 96 核主机由 38 秒缩短至 8 秒；PR #3177 还并行执行互不共享状态的输入用例。<strong>为什么关注：</strong>验证预算与 CI 延迟限制了 Agent 提出的改动数量。<strong>工程启发：</strong>明确隔离可并行测试和共享状态测试，减少等待成本；单机结果不能外推到全量 Chromium CI。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3175">PR #3175</a> · <a target="_blank" rel="noopener" href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3177">PR #3177</a></p>
+<h3>5. llama.cpp：新增 Voxtral Realtime 音频流支持</h3>
+<p><strong>发生了什么：</strong>10 月 16 日 07:46（北京时间）合入 PR #30629，新增 mtmd_audio_stream 与 Voxtral Realtime 模型支持，涉及模型转换、GGUF 元数据与音频流推理路径。这是原生推理引擎改动，并非浏览器 WebGPU 功能。<strong>为什么关注：</strong>语音 Agent 需要持续消费音频而不是只处理整段录音。<strong>工程启发：</strong>Browser Runtime 应测试首结果延迟、缓冲积压、断流恢复和页面渲染资源竞争。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30629">原始 PR</a></p>
+<h2>浏览器技术</h2>
+<p>Chrome 安全更新跨越 Prerender、DOM、V8、SVG、Compositing 与 Workers，适合把可公开的漏洞复现转化为长期测试资产。本观察窗口没有发现足以单列的 WebKit/Firefox 新架构官方公告。</p>
+<h2>端侧 AI</h2>
+<p>llama.cpp 的 mtmd_audio_stream 为持续音频输入提供工程接口；迁移到浏览器或手机时必须重新验证 Worker、缓冲、GPU/CPU 占用和实时性，不把原生支持误报为浏览器已支持。</p>
+<h2>浏览器 × AI</h2>
+<p>Browser Use 的截图坐标修复与 agent-browser 的域名拦截修复说明：Agent 依赖的操作回执必须与真实浏览器状态一致。建议拆分 accepted、executed、policyAllowed、observed、verified，不再用一个 success 覆盖所有阶段。</p>
+<h2>Browser Self-Improvement</h2>
+<h3>Truthful Action Receipt：先验证操作回执，再让 Agent 学习</h3>
+<p><strong>业界走到哪：</strong>Browser Use 已实现真实问题 → 复现 → Patch → Chromium 回归；agent-browser 完成错误回执 → Frame 级诊断 → Patch；DevTools MCP 完成隔离测试 → 并行验证；Chrome 安全公告显示 AI 辅助发现进入正式发布。公开资料尚不能证明完整的 Agent 自主 Canary 和持续学习。</p>
+<pre><code>Telemetry / Regression
+    ↓
+Check Browser + Harness State
+    ↓
+Reproduce (Frame / URL / DPI / Policy)
+    ↓
+Diagnose → Patch
+    ↓
+Build + Isolated Parallel E2E
+    ↓
+Independent Action Receipt Oracle
+    ↓
+Review → Canary → Telemetry
+    ↓
+Retain Test + Outcome → Learn
+</code></pre>
+<p><strong>迁移 Chromium：</strong>先做三组回归：（1）导航中间态与跨域重定向；（2）deviceScaleFactor 1/2/3 下截图与点击一致性；（3）独立 Profile 并行 E2E 与共享 Profile 隔离验证。每次保存 Browser Revision、Frame ID、Policy Decision、截图尺寸、CSS 视口、实际坐标与 Trace。Patch Agent 不得修改独立 Oracle 来掩盖失败。</p>
+<h2>开源与论文 / 工程实践</h2>
+<p>最值得复现的是 <a target="_blank" rel="noopener" href="https://github.com/browser-use/browser-use/pull/6089">Browser Use 真实 Chromium 回归</a>、<a target="_blank" rel="noopener" href="https://github.com/vercel-labs/agent-browser/pull/2114">agent-browser 策略回执</a>、<a target="_blank" rel="noopener" href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3175">DevTools MCP 并行 E2E</a>。三者均有源码和可验证的工程步骤。</p>
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 的下一块基础设施是可信的操作回执：区分 Agent 想做什么、浏览器实际做了什么，以及安全策略是否允许。只有三者一致，自动修复和学习才有可靠依据。</strong></p>
+
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
