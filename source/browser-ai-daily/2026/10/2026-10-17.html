@@ -1,0 +1,39 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-17
+date: 2026-10-17 09:48:00
+---
+
+<p>观察窗口：2026-10-16 09:48 至 2026-10-17 09:48（北京时间）。只收录有源码、测试或日志的工程进展。</p>
+<h2>今天最值得看</h2>
+<h3>1. Chrome DevTools MCP CLI 启动减负</h3>
+<p>10 月 16 日合并 PR #3200。CLI 改为加载轻量依赖，模块数 79→21，启动 CPU 667→158 ms，一组测试 65.9→49.6 秒；加入 import graph 防回归测试。启发：分开测量工具冷启动、IPC 和浏览器动作。</p>
+<p><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3200">原始 PR</a></p>
+<h3>2. Browser Use CDP 重连失败清理</h3>
+<p>10 月 16 日合并 PR #6102。Target 发现或自动附加失败时可能残留 WebSocket 和半初始化 SessionManager；修复清除状态并等待资源释放，增加真实 Chromium 测试。启发：Agent Harness 必须对取消、超时、断连进行故障注入。</p>
+<p><a href="https://github.com/browser-use/browser-use/pull/6102">原始 PR</a></p>
+<h3>3. Adreno 840 量化计算错误</h3>
+<p>10 月 16 日 llama.cpp 报告 Vulkan MUL_MAT 在 Android Adreno 840 上出现量化数值错误，同样用例在 Intel Arc 通过；有驱动版本和日志。启发：WebGPU/Dawn 端侧推理需要跨设备数值验证，尚不能确定根因。</p>
+<p><a href="https://github.com/ggml-org/llama.cpp/issues/30654">原始 Issue</a></p>
+<h3>4. Claude 辅助 Hexagon Softplus 向量化</h3>
+<p>10 月 16 日 llama.cpp 合并 PR #30435，改为 HVX 向量计算，并保留大输入的 CPU 参考语义。提交注明 Assisted-by: Claude。启发：AI 生成 Kernel 要通过边界输入正确性验证。</p>
+<p><a href="https://github.com/ggml-org/llama.cpp/pull/30435">原始 PR</a></p>
+<h3>5. Chrome DevTools MCP 动态工具重发现</h3>
+<p>10 月 16 日合并 PR #3208/#3207，修复页面重载后旧工具缓存失效和页面操作工具发现不完整。启发：工具注册需要绑定 Document Revision。</p>
+<p><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3208">PR #3208</a> · <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3207">PR #3207</a></p>
+<h2>浏览器技术</h2>
+<p>本期重点是 CDP 重连和动态工具生命周期；无足够高价值的 Chrome/WebKit/Firefox 官方新架构公告。</p>
+<h2>端侧 AI</h2>
+<p>Hexagon AI 辅助 Kernel 优化与 Adreno 跨设备错误值得并行研究；另有 <a href="https://github.com/ggml-org/llama.cpp/issues/30638">RDNA3 draft-mtp 回归报告</a>，尚未完成 bisect。</p>
+<h2>浏览器 × AI</h2>
+<p>将工具启动、连接状态、工具注册版本与执行结果分开观测，避免 LLM 对失效工具盲目重试。</p>
+<h2>Browser Self-Improvement</h2>
+<p>DevTools MCP 已走到测量→Patch→测试→Merge；Browser Use 到复现→Patch→Chromium 测试→Merge；Hexagon 是 AI 辅助 Patch→Review→Merge；Adreno 仍在复现诊断，均无完整自动 Canary/Learn 证据。</p>
+<p><a href="https://github.com/openclaw/openclaw/issues/173702">OpenClaw #173702</a> 报告 13 组 MCP 进程共存，但缺少 Session 归属和 TTL 证据，自动审查暂不认定泄漏。这说明要先确认故障边界再修改代码。</p>
+<pre><code>Observe → Evidence Gate → Reproduce → Diagnose
+       → Patch → Independent Verify → Canary → Learn</code></pre>
+<p>建议做 CDP 重连压力测试与多 GPU 量化数值测试，保留版本、日志、独立验证结果和失败假设。</p>
+<h2>开源与论文 / 工程实践</h2>
+<p>优先复现 DevTools MCP CLI import graph 测试、Browser Use 重连故障注入、Adreno 量化数值对照，不重复旧论文。</p>
+<h2>今天的一个判断</h2>
+<p><strong>先确认问题属于 Harness、浏览器还是 GPU/驱动，再用独立测试验证补丁，比盲目增加 Patch 数量更重要。</strong></p>
