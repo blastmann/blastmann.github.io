@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-10-19 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-10-19"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-10-19"/>
+
+  <meta property="displaydate" content="2026-10-19T09:47:00.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-10-19</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<p>观察窗口：2026-10-18 09:47 至 2026-10-19 09:47（北京时间）。主要信源为 10 月 18 日 GitHub PR/合并记录；部分页面只提供日期而非精确时间，不把它们伪称为精确 24 小时内发布。待合并 PR 的测试数字为作者报告，不等于正式发布结论。</p>
+<h2>今天最值得看</h2>
+<h3>1. llama.cpp：SUM 非连续张量修复覆盖 CPU/CUDA/Vulkan/WebGPU（已合并）</h3>
+<p><strong>发生了什么：</strong>10 月 18 日合并 PR #28851。CPU SUM 增加 stride 读取路径；CUDA 调整过于保守的支持检查；Vulkan/WebGPU 修正对带空洞内存视图的错误支持声明。维护者要求增加真实 slice 反例测试。作者披露 Claude 辅助分析与 CPU 代码草拟；WebGPU 由 CI 验证，作者未在本地实测。</p>
+<p><strong>为什么值得关注：</strong>同一反例暴露多个后端对张量布局的不同错误假设。<strong>工程启发：</strong>Dawn/WebGPU 算子能力声明必须匹配实际 Kernel 约束；测试覆盖 slice、permute、stride、fallback。<a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/28851">原始 PR</a></p>
+<h3>2. Agent 辅助修复 argsort/top-k 的 stride 错误（待合并）</h3>
+<p><strong>发生了什么：</strong>10 月 18 日 PR #30743 指出 CPU argsort/top-k 忽略部分 stride，转置/切片张量可能读取错误数据。候选补丁修正 CPU 读取，并收紧其他后端的支持检查。作者披露 Agent 编写候选代码、人工复核；提供修改前失败、修改后通过的回归测试。</p>
+<p><strong>为什么值得关注：</strong>先有反例，再有补丁，最后独立验证。<strong>工程启发：</strong>Browser Runtime 的自动修复必须采用反例优先门禁。<a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30743">原始 PR</a></p>
+<h3>3. Metal NORM/L2_NORM：Claude 辅助补齐 20 个跳过的测试（待合并）</h3>
+<p><strong>发生了什么：</strong>10 月 18 日 PR #30778 为非连续行增加 stride 读取和标量 Kernel 路径。作者在 Apple M1 上报告原本跳过的 20 项测试通过，完整 Metal 测试 17,790/17,790；Claude Opus 5.5 辅助实现和测试，作者逐行审查。</p>
+<p><strong>为什么值得关注：</strong>算子覆盖率、数值正确性与性能需要分别验证。<strong>工程启发：</strong>WebGPU/WASM 不能靠跳过困难输入提高通过率。<a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30778">原始 PR</a></p>
+<h3>4. Browser Use：历史记录重复加载丢失 Action（待合并）</h3>
+<p><strong>发生了什么：</strong>10 月 18 日 PR #6131 发现历史记录加载函数原地修改输入字典，导致第二次加载 Action 丢失，原始数据无法再 JSON 序列化。补丁在归一化前复制输入，并增加重复加载、验证失败隔离测试；作者报告相关 50 项测试通过。</p>
+<p><strong>为什么值得关注：</strong>Agent 历史记录是回放和学习证据，不能被读取操作修改。<strong>工程启发：</strong>Raw Evidence 与 Derived State 必须分离，持久化历史读取应幂等。<a target="_blank" rel="noopener" href="https://github.com/browser-use/browser-use/pull/6131">原始 PR</a></p>
+<h3>5. Vulkan Fusion：Codex 辅助建立独立数值验证（待合并）</h3>
+<p><strong>发生了什么：</strong>10 月 18 日 PR #30769 为 Vulkan 接入 test-fusion 并支持 Windows，比较融合与未融合 Kernel 的数值误差并输出 CSV。作者展示 GPT-OSS 20B 上 9 项测试通过，披露 Codex 辅助开发。</p>
+<p><strong>为什么值得关注：</strong>Kernel Fusion 优化可能更快却算错。<strong>工程启发：</strong>Agent 自动生成 WebGPU Fusion 之前必须有独立数值 Oracle。<a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30769">原始 PR</a></p>
+<h2>浏览器技术</h2>
+<p>今天未核实到足够重要的 Chrome、Firefox 或 WebKit 官方架构公告。WebGPU 最直接的工程进展是 SUM 对非连续内存视图的能力检查修复。建议将 slice、buffer gap、不同 GPU 和 CPU fallback 加入 Dawn 兼容性回归。<a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/28851">原始来源</a></p>
+<h2>端侧 AI</h2>
+<p><a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30772">llama.cpp PR #30772</a>（10 月 18 日，未合并）提出按需读取 PLE 权重行，避免完整 mmap 导致常驻内存增长。作者在特定 Gemma 4 E4B 配置下报告峰值 RSS 从约 4.17 GiB 降至 1.38 GiB；Windows/macOS 硬件路径尚未验证。浏览器和手机端应联合衡量内存、磁盘 IO、首 Token 延迟和吞吐。</p>
+<h2>浏览器 × AI</h2>
+<p>Browser Use 历史记录问题说明 Browser Agent 应分开保存 Raw Observation、Intended Action、Execution Receipt、Derived Summary；原始记录不能被解析或摘要过程原地修改。<a target="_blank" rel="noopener" href="https://github.com/browser-use/browser-use/pull/6131">原始来源</a></p>
+<h2>Browser Self-Improvement</h2>
+<h3>Capability Contract + Independent Oracle</h3>
+<p><strong>业界做到哪：</strong>已合并的 SUM 修复走过 Regression → Diagnose → Patch → Cross-Backend Test → Review/Merge；Agent 辅助的 argsort/top-k、Metal NORM 和 Vulkan Fusion 仍是待审查候选。尚无自动 Canary、Telemetry 回流与持续学习的证据。</p>
+<pre>Telemetry / WPT / Kernel Failure
+  ↓ Minimize Counterexample (slice / stride / shape)
+  ↓ Validate Capability Contract
+  ↓ Agent Patch + Regression Test
+  ↓ Build / Numerical Oracle / Cross-GPU Benchmark
+  ↓ Review → Canary → Archive → Learn</pre>
+<p><strong>迁移方案：</strong>在 Chromium/Dawn 选择 SUM、NORM、MatMul，自动生成连续、转置、切片、带 stride 输入；以 CPU 参考输出验证数值。保存 Browser Revision、GPU Adapter/Driver、WGSL、最小反例和验证结果。Agent 可改进候选生成和测试覆盖，但不得自行降低批准自身补丁的数值阈值。</p>
+<h2>开源与论文 / 工程实践</h2>
+<p>本期以可核验的开源 PR 为主，未发现同等价值的新论文。补充 <a target="_blank" rel="noopener" href="https://github.com/browser-use/browser-use/pull/6129">Browser Use PR #6129</a>：测试反复 reload Python 模块会改变类身份，使后续测试依赖执行顺序；作者改为测试纯解析函数，避免 Harness CI 自身污染。</p>
+<h2>今天的一个判断</h2>
+<blockquote><p>Browser Self-Improvement 的价值不是让 Agent 生成更多 Kernel，而是让每个 Kernel 的能力声明都能被反例挑战，再由独立验证决定是否进入主线。</p></blockquote>
+
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
