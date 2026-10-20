@@ -1,0 +1,44 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-20
+date: 2026-10-20 09:07:00
+---
+
+<p>观察窗口：2026-10-19 09:07 至 2026-10-20 09:07（北京时间）。优先收录 10 月 19 日官方公告与开源记录；部分信源仅显示日期，无法确认精确小时。区分已合并修复、Draft PR 和待确认的 Issue。</p>
+<h2>今天最值得看</h2>
+<h3>1. WebKit：Safari 27 阻断身份解析追踪基础设施</h3>
+<p><strong>发生了什么（10 月 19 日）：</strong>WebKit 介绍 post-cookie 的 Identity Resolution：第三方在登录或邮件订阅时获取邮箱，生成跨站可关联的长期追踪 ID。Safari/WebKit 在 iOS、iPadOS、macOS、visionOS 27 中从域名层阻断此类第三方服务网络访问。</p>
+<p><strong>为什么重要：</strong>反追踪控制点从 Cookie/存储扩展到网络服务。<strong>工程启发：</strong>AI Native Browser 即使在本地处理多标签页上下文，也必须遵守站点隔离与用户授权。<a href="https://webkit.org/blog/18438/blocking-identity-resolution-infrastructure/">WebKit 官方原文</a></p>
+<h3>2. Playwright MCP：每个隔离客户端独立释放闲置 Context（已合并）</h3>
+<p><strong>发生了什么（10 月 19 日）：</strong>PR #43527 修复 --isolated 模式中多个 MCP 客户端共享一个空闲计时器的问题：只要仍有活跃客户端，其他闲置客户端的 Context 就可能无法释放。新实现为每个客户端独立计时、关闭 Context，全部 Context 关闭后再退出浏览器。项目报告 MCP 测试 5,161 通过、614 跳过，12 项检查通过。</p>
+<p><strong>为什么重要：</strong>真实多 Agent 会话资源生命周期修复。<strong>工程启发：</strong>将 Browser Process、Context、Agent Session 和 Tool Connection 的租约与回收分开管理。<a href="https://github.com/microsoft/playwright/pull/43527">原始 PR</a></p>
+<h3>3. llama.cpp：Adreno Vulkan 8 位向量误编译（Draft）</h3>
+<p><strong>发生了什么（10 月 19 日）：</strong>PR #30821 指出 Qualcomm Adreno 驱动可能错误编译 u8vec4/i8vec4 pack/unpack，影响 q8_0 解量化、整数点积及 Flash Attention。候选补丁在 Qualcomm 上改用移位与 bitfieldExtract，其他设备维持原路径。作者报告 MUL_MAT 失败数：X2-90 11→0、X1-85 895→0、Adreno 840 896→0、Adreno 850 1185→0。</p>
+<p><strong>为什么重要：</strong>量化模型错误结果可能来自 GPU 编译器，而不是模型。<strong>工程启发：</strong>Dawn/WebGPU 数值测试要保存 Adapter、Driver、Shader 变体、输入和参考输出。上述数字为作者测试，尚非正式修复保证。<a href="https://github.com/ggml-org/llama.cpp/pull/30821">原始 PR</a></p>
+<h3>4. Playwright：密码管理器 iframe 导致 Agent 丢失浏览器控制（Issue）</h3>
+<p><strong>发生了什么（10 月 19 日）：</strong>Issue #43517 报告：Playwright Extension 操作真实 Chrome Profile 时，Bitwarden 内联菜单注入 chrome-extension:// iframe，可能触发 debugger detach。页面仍打开，但 Agent 的 Page 对象失效。报告者对不同 Profile 对照复现，关闭内联菜单后问题消失。根因与修复方案尚待维护者确认。</p>
+<p><strong>为什么重要：</strong>干净 Profile 的测试不能代表真实用户环境。<strong>工程启发：</strong>为密码管理器、翻译等扩展增加 Frame attach/detach 和 CDP Session 恢复测试。<a href="https://github.com/microsoft/playwright/issues/43517">原始 Issue</a></p>
+<h3>5. Browser Use：Schema 清理误删用户字段（待合并）</h3>
+<p><strong>发生了什么（10 月 19 日）：</strong>PR #6137 指出 SchemaOptimizer 清理 default、minItems、min_items 元数据时，误删 properties 中同名的真实字段，造成 required 与 properties 不一致。候选修复保留属性名称，并加入嵌套对象与数组的回归测试。</p>
+<p><strong>为什么重要：</strong>Agent 可能没有推理错误，而是工具 Schema 已经损坏。<strong>工程启发：</strong>工具 Schema 裁剪与转换应通过语义等价和边界名称测试。<a href="https://github.com/browser-use/browser-use/pull/6137">原始 PR</a></p>
+<h2>浏览器技术</h2>
+<p>WebKit 的域名级身份解析阻断改变第三方网络访问边界，应验证页面功能降级行为；Playwright 扩展冲突提示 Page 存活与 CDP Session 存活是两个状态。<a href="https://webkit.org/blog/18438/blocking-identity-resolution-infrastructure/">WebKit</a> · <a href="https://github.com/microsoft/playwright/issues/43517">Playwright Issue</a></p>
+<h2>端侧 AI</h2>
+<p>Adreno Vulkan 还出现 Flash Attention Workgroup 调度问题。10 月 19 日 Draft PR #30829 报告，X1-85 大 Head 情况下 16 行 Workgroup 引发寄存器溢出，Dispatch 711ms；调整为 8 行后为 17ms。尚需合并与跨设备复核，不能直接外推至 WebGPU。<a href="https://github.com/ggml-org/llama.cpp/pull/30829">原始 PR</a></p>
+<h2>浏览器 × AI</h2>
+<p>共享浏览器的 Context 生命周期应独立于全局浏览器活跃程度；工具参数的 Schema 也必须在优化前后保持一致。Browser Use PR #6132 还报告 $ref 展开会覆盖 Field(description)，使模型失去更具体的字段说明。<a href="https://github.com/microsoft/playwright/pull/43527">Playwright</a> · <a href="https://github.com/browser-use/browser-use/pull/6132">Browser Use</a></p>
+<h2>Browser Self-Improvement</h2>
+<h3>Device-and-Session Reproducer Gate</h3>
+<p><strong>闭环进度：</strong>Playwright MCP 已完成资源泄漏诊断、补丁、CI、Review/Merge；Adreno PR 已完成跨 GPU 复现、候选修复及作者测试，仍是 Draft；密码管理器扩展冲突仍在 Issue/复现阶段。三者都没有展示 Canary、Telemetry 回流与持续学习的完整自主闭环。</p>
+<pre>Observe: Context/IPC 计数、GPU 数值失败、Frame detach
+  ↓ Environment Fingerprint (Browser/Driver/GPU/Extensions)
+  ↓ Reproduce / Minimize / Bisect
+  ↓ Diagnose → Agent Candidate Patch
+  ↓ Build + Independent Oracle + Cross-Device Benchmark
+  ↓ Review → Canary → Telemetry
+  ↓ Archive Reproducer / Outcome → Learn</pre>
+<p><strong>迁移方案：</strong>为 Chromium/Dawn 和 Browser Harness 保存统一的可重放故障包：Browser Revision、GPU/Driver、扩展列表、Session 生命周期事件、最小操作脚本、输入/输出校验与 Trace。Agent 负责提出假设与候选补丁，独立验证决定能否进入主线。</p>
+<h2>开源与论文 / 工程实践</h2>
+<p>本期以有明确复现、补丁或验证数据的开源记录为主，未发现同等价值的当天新论文。建议保留 <a href="https://github.com/microsoft/playwright/pull/43527">MCP 生命周期修复</a>、<a href="https://github.com/ggml-org/llama.cpp/pull/30821">Adreno 数值反例</a> 和 <a href="https://github.com/browser-use/browser-use/pull/6137">Schema 反例</a> 为后续评测资产。</p>
+<h2>今天的一个判断</h2>
+<blockquote><p>Browser Self-Improvement 必须同时验证运行环境、会话生命周期和工具契约，否则自动修复可能只是在修正错误的观测。</p></blockquote>
