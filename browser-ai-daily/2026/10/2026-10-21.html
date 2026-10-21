@@ -1,0 +1,169 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>浏览器 × 端侧 AI 日报｜2026-10-21 | Ink &amp; Silicon</title>
+  <meta name="author" content="chaoming.edc|blastmann">
+  
+  <meta name="description" content="墨与硅 · 浏览器与端侧 AI 的工程观察">
+  
+  
+  
+  <meta property="og:title" content="浏览器 × 端侧 AI 日报｜2026-10-21"/>
+  <meta name="title" content="浏览器 × 端侧 AI 日报｜2026-10-21"/>
+
+  <meta property="displaydate" content="2026-10-21T09:47:00.000Z"/>
+
+  <meta property="og:site_name" content="Ink &amp; Silicon"/>
+  <meta name="copyright" content="Ink &amp; Silicon"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta property="og:image" content=""/>
+  
+   <meta name="google-site-verification" content="nTpmJEYYJgba5eVrpd_dfj1W_Ayr-NjZ1vFvhi5aqzI" />
+   <meta name="baidu-site-verification" content="QO84kHVH0w" />
+   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+  <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Fraunces:opsz,wght@9..144,400..700&family=JetBrains+Mono:wght@400..700&family=Noto+Serif+SC:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  <div id="content" class="inner">
+    <aside id="sidebar" class="alignleft">
+      <div class="navigationBar">
+        <a href="/">Ink &amp; Silicon</a>
+      </div>
+    	
+  <nav class="widget" id="menu">
+	<ul>
+    
+      <li class="cell"><a class="next" href="/">Home</a><li>
+    
+      <li class="cell"><a class="next" href="/browser-ai-daily/">Daily</a><li>
+    
+    </ul>
+</nav>
+
+    	<footer id="footer" class="inner"><div class="copyright">
+  
+  &copy; 2026 chaoming.edc|blastmann
+  
+</div>
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51731334-1', 'edi-c.com');
+  ga('send', 'pageview');
+
+</script></footer>
+    </aside>
+
+
+    <div id="hidden-navigationBar" class="navigationBar">
+      <a href="/">Ink &amp; Silicon</a>
+    </div>
+    <div id="main-col" class="alignright">
+    <div id="wrapper">
+      
+  <h2 class="archive-title">浏览器 × 端侧 AI 日报｜2026-10-21</h2>
+
+<article class="page">
+  
+  <div class="post-content">
+  <header>
+      
+  </header>
+    <div class="entry">
+      
+        
+<p>观察窗口：2026-10-20 09:47 至 2026-10-21 09:47（北京时间）。优先采用官方公告、开源 PR 和 CI 记录；部分 PR 仅显示日期，不能精确证明小时。区分正式发布、已合并修复与待合并候选。</p>
+<h2>今天最值得看</h2>
+<h3>1. Chrome 156 Stable：353 项安全修复，AI 辅助漏洞报告进入真实发布</h3>
+<p><strong>发生了什么（10 月 20 日）：</strong>Chrome 156 正式进入 Windows、macOS、Linux 稳定通道，版本为 Linux 156.0.8078.47、Windows/macOS 156.0.8078.47/.48。官方公告列出 353 项安全修复，涉及 Skia、Accessibility、CSS、Paint、WebRTC、Dawn、ANGLE、V8 等。Critical 级 WebRTC 内存损坏漏洞 CVE-2026-113303 由 OpenAI Codex Security（kylebot）报告；Accessibility 的 CVE-2026-113271 由 Anthropic 研究人员在 Claude 辅助下报告。</p>
+<p><strong>为什么重要：</strong>AI 参与的漏洞发现已进入有 CVE、组件和稳定版对应关系的工程流程。<strong>启发：</strong>将最小复现、修复 CL、独立安全回归和发布覆盖率建立关联。不能把 AI 辅助报告等同于 Agent 自主修复。<a target="_blank" rel="noopener" href="https://chromereleases.googleblog.com/2026/10/stable-channel-update-for-desktop_02018666648.html">Chrome 官方公告</a></p>
+<h3>2. Chrome 156：IndexedDB SQLite 后端与 WebRTC 诊断日志</h3>
+<p><strong>发生了什么：</strong>新建 IndexedDB 数据库开始使用 SQLite 后端，已有 LevelDB 数据暂不迁移，Web API 不变；这是多阶段替换的第二步。WebRTC Diagnostic Logging API 允许授权应用收集本地故障诊断日志，在用户同意后分享给浏览器厂商。WebTransport 新增握手请求头及响应头支持。</p>
+<p><strong>为什么重要：</strong>影响浏览器本地 AI Memory、离线索引、实时音视频诊断。<strong>启发：</strong>分别评估新旧 IndexedDB 数据库的崩溃恢复、写入延迟与兼容性；诊断日志必须有授权和脱敏。SQLite 的可靠性提升是设计目标，不是已经独立测得的结果。<a target="_blank" rel="noopener" href="https://chromestatus.com/release-notes/156">Chrome 156 平台说明</a></p>
+<h3>3. Firefox：证书安全事件后 OneCRL 不到三小时完成标准配置用户防护分发</h3>
+<p><strong>发生了什么（10 月 20 日官方复盘）：</strong>Mozilla 10 月 17 日 20:06 UTC 收到八张 eMudhra 中间证书私钥泄露报告，通过 OneCRL 下发撤销列表，22:59 UTC 完成标准配置 Firefox 用户的防护分发，无需重启或升级。10 月 20 日发布 Firefox 158.0.1 与 ESR 补充版本，覆盖部分特殊配置未收到撤销列表的用户，并更新 NSS 信任列表。</p>
+<p><strong>为什么重要：</strong>这是 Observe → 紧急缓解 → 远程分发 → 正式版本补充的真实工程闭环。<strong>启发：</strong>自我改进的 Verify 阶段必须区分“已推送”和“终端实际生效”，为无法接收远程策略的设备准备备用发布路径。<a target="_blank" rel="noopener" href="https://blog.mozilla.org/security/2026/10/20/protecting-firefox-users-following-the-compromise-of-emudhra-intermediate-certificates/">Mozilla 官方复盘</a></p>
+<h3>4. llama.cpp WebGPU：Prefill 队列过长可能阻塞桌面合成（待合并）</h3>
+<p><strong>发生了什么（10 月 20 日 PR #30898）：</strong>候选补丁将 Prefill 图的在途 Batch 提交数限制为 1，Decode 保持不受限，以避免 GPU 队列长时间阻塞前台渲染。Prefill 检测参考 CLIP patch embedding 和多 Token 的 LLM embedding。作者披露 DeepSeek 4.1 Flash 辅助编写，在 Chromium 155 手工测试，尚未合并。</p>
+<p><strong>为什么重要：</strong>端侧推理不能只看 tokens/s，还要考虑网页帧率和用户输入延迟。<strong>启发：</strong>同时采集 Prefill/Decode 吞吐、GPU Queue、dropped frames、交互 P95、设备丢失率，再决定是否推广调度策略。<a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30898">原始 PR</a></p>
+<h3>5. Playwright MCP：元素目标错误反馈更准确，支持多语言 Locator（已合并）</h3>
+<p><strong>发生了什么（10 月 20 日 PR #43539）：</strong>当 Agent 传入无效 target 时，MCP 不再只返回晦涩的 CSS 解析错误，而是说明可接受的 ref、CSS selector、Locator 格式；若错误地把 [ref=...] 当成选择器，会提示直接传 ref。Locator 支持 JavaScript、Python、Java、C# 表达式。</p>
+<p><strong>为什么重要：</strong>工具接口与错误反馈直接影响 Agent 自我恢复。<strong>启发：</strong>将参数格式错误、引用失效、页面变化和权限拒绝分成不同错误类型，并为工具契约建立回归测试。<a target="_blank" rel="noopener" href="https://github.com/microsoft/playwright/pull/43539">原始 PR</a></p>
+<h2>浏览器技术</h2>
+<p>Chrome 156 还允许失败的动态 <code>import()</code> 重试加载，改善弱网恢复；WGSL <code>@builtin(frag_depth)</code> 增加 <code>less</code>/<code>greater</code> 修饰符，以保留部分 Early-Z 图形优化，这并非 LLM Compute Kernel 加速。Android Chrome 156（156.0.8078.47）也于 10 月 20 日宣布发布。<a target="_blank" rel="noopener" href="https://chromestatus.com/release-notes/156">ChromeStatus</a> · <a target="_blank" rel="noopener" href="https://chromereleases.googleblog.com/2026/10/chrome-for-android-update_095004068.html">Android 公告</a></p>
+<h2>端侧 AI</h2>
+<p>WebGPU Prefill 调度案例表明，Browser Runtime 应将 GPU 计算与页面合成的资源竞争纳入 SLO。建议按 GPU/驱动采集首 Token 延迟、Decode tokens/s、页面帧间隔、输入响应和设备丢失；待合并补丁不能视为正式性能改进。<a target="_blank" rel="noopener" href="https://github.com/ggml-org/llama.cpp/pull/30898">原始 PR</a></p>
+<h2>浏览器 × AI</h2>
+<p>Chrome DevTools MCP 10 月 20 日 PR #3276 提出可选 <code>configure_webauthn</code> 工具，让 Agent 通过 DevTools 虚拟认证器测试 Passkey 注册、登录、失败验证和已导入测试凭据。工具按 Page 隔离，响应不回显私钥；作者提供真实浏览器 <code>navigator.credentials.create/get</code> 测试。该 PR 尚未合并。<strong>启发：</strong>身份验证自动化应优先使用隔离、可回放的虚拟认证器，不要直接操作真实用户凭据。<a target="_blank" rel="noopener" href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3276">原始 PR</a> · <a target="_blank" rel="noopener" href="https://developer.chrome.com/docs/devtools/webauthn">官方文档</a></p>
+<h2>Browser Self-Improvement</h2>
+<h3>Distribution-Aware Verification：验证修复在终端真正生效</h3>
+<p><strong>业界做到哪：</strong>Chrome 156 安全问题已走到正式发布，但不能证明全部由 Agent 自主完成；Firefox 证书事件已完成紧急远程策略分发与备用版本发布；Playwright MCP 完成修复合并；WebGPU Prefill 和 DevTools WebAuthn 仍是候选。没有证据证明这些项目已组成一个自主持续学习闭环。</p>
+<pre>Observe: Crash / CVE / WebRTC Trace / GPU Jank
+  ↓ Reproduce + Environment Fingerprint
+  ↓ Diagnose / Bisect / Agent Candidate
+  ↓ Patch + Independent Regression
+  ↓ Build / Benchmark / Review
+  ↓ Canary / Remote Policy / Stable
+  ↓ Verify Device Coverage / Rollback
+  ↓ Archive Evidence / Learn</pre>
+<p><strong>迁移建议：</strong>每个 Chromium 改进实验保存 Browser Revision、最小复现、Culprit CL、补丁、独立验证、发布通道、终端生效证据和回退条件；WebGPU 优化须同时通过推理性能与前台帧率门禁。</p>
+<p><strong>Harness 自我改进反例：</strong>Browser Use PR #6145（10 月 20 日，待合并）发现 CI Fixture 用固定 <code>sleep(0.5)</code> 等待导航，CI 负载下仍可能停在 <code>about:blank</code>，造成偶发误报；候选修复改为等待实际导航事件，并给出失败 CI 记录。<a target="_blank" rel="noopener" href="https://github.com/browser-use/browser-use/pull/6145">原始 PR</a></p>
+<h2>开源与论文 / 工程实践</h2>
+<p>Browser Use 的 AI 辅助候选修复 <a target="_blank" rel="noopener" href="https://github.com/browser-use/browser-use/pull/6147">#6147</a> 修复 Session teardown 期间页面 URL/标题访问器可能崩溃；<a target="_blank" rel="noopener" href="https://github.com/browser-use/browser-use/pull/6148">#6148</a> 修复 DOM 优化误删带 aria 属性的叶节点。均提供修改前后行为测试设计，仍待审查合并。本期未找到需要替代这些可验证工程案例的当天高质量新论文。</p>
+<h2>今天的一个判断</h2>
+<blockquote><p>Browser Self-Improvement 不只要让 Agent 生成修复，还要证明修复已安全分发并在终端生效，同时不能以推理吞吐为代价损害浏览器交互体验。</p></blockquote>
+	 
+      
+    </div>
+    <footer>
+      
+	 
+     		  
+       		
+     		  
+       	 
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+
+
+
+
+</section>
+
+</div>
+    </div>
+    <div class="tabbar" onload="divideTabBar()">
+	
+      <div class="tabbaritem"><a class="next" href="/">Home</a></div>
+    
+      <div class="tabbaritem"><a class="next" href="/browser-ai-daily/">Daily</a></div>
+    
+</div>
+
+
+  </div>
+</body>
+</html>
