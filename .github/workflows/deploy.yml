@@ -69,6 +69,7 @@ jobs:
 
   deploy:
     needs: build
+    if: always() && !cancelled() && needs.build.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -84,6 +85,7 @@ jobs:
 
   verify:
     needs: [build, deploy]
+    if: always() && !cancelled() && needs.build.result == 'success' && needs.deploy.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
