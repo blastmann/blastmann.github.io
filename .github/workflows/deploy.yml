@@ -2,45 +2,102 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches:
-      - source
+    branches: [source]
   workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: 'Optional full SHA of a data-only daily candidate'
+        type: string
+        required: false
+      report_date:
+        description: 'Candidate date (YYYY-MM-DD); required with candidate_sha'
+        type: string
+        required: false
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: github-pages-deploy
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  import-daily:
+    if: github.ref == 'refs/heads/source' && github.event_name == 'workflow_dispatch' && inputs.candidate_sha != ''
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: source
           fetch-depth: 0
+      - name: Import only the selected daily and rebuild archive
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          REPORT_DATE: ${{ inputs.report_date }}
+        run: python3 tools/daily/daily.py import
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+  build:
+    needs: import-daily
+    if: always() && github.ref == 'refs/heads/source' && (needs.import-daily.result == 'success' || needs.import-daily.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      source_sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          node-version: 20
+          ref: source
+          persist-credentials: false
+      - id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
           cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build site
-        run: npm run build
-
-      - name: Publish to master
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Test daily import boundaries and retry behavior
+        run: python3 tools/daily/test_daily.py
+      - run: npm ci
+      - run: npm run build
+      - name: Verify generated pages and record publication fingerprint
+        run: python3 tools/daily/daily.py receipt
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: master
-          publish_dir: ./public
-          force_orphan: false
-          user_name: github-actions[bot]
-          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the verified artifact directly to Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+
+  verify:
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.build.outputs.source_sha }}
+          persist-credentials: false
+      - name: Verify public receipt, daily page and archive against this build
+        env:
+          EXPECTED_SHA: ${{ needs.build.outputs.source_sha }}
+        run: python3 tools/daily/daily.py verify --sha "$EXPECTED_SHA"
+      - name: Publication receipt
+        env:
+          EXPECTED_SHA: ${{ needs.build.outputs.source_sha }}
+        run: |
+          echo "Published source: $EXPECTED_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo 'Public receipt: https://blastmann.github.io/browser-ai-daily/publication.json' >> "$GITHUB_STEP_SUMMARY"
