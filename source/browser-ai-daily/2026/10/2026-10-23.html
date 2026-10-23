@@ -1,0 +1,51 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-23
+date: 2026-10-23 09:47:00
+---
+
+<p>观察窗口：2026-10-22 09:47 至 2026-10-23 09:47（北京时间）。本期主要根据 GitHub 原始 PR 的创建时间、作者说明及合并状态筛选；区分已合并与待合并。过去 24 小时未发现同等价值的 Chrome/Firefox/WebKit 官方架构公告，因此不凑数。</p>
+<h2>今天最值得看</h2>
+<h3>1. Chromium WebMCP 工具接口变动：Playwright 需要兼容新旧 Schema（待合并）</h3>
+<p><strong>发生了什么（10 月 23 日凌晨，北京时间）：</strong>Playwright PR #43578 报告 Chromium 的 WebMCP 工具 API 行为变化：部分工具 Schema 从原有形态变为 null，执行失败时的错误消息也有新旧两种格式。候选修复将 null Schema 规范化为原有 WebMCP 工具结构，同时接受两种错误格式。该 PR 截至本次调研仍为 Open。</p>
+<p><strong>为什么重要：</strong>WebMCP 使网页主动向 Agent 暴露工具，但浏览器版本升级可能悄悄改变 Agent 看到的工具描述与失败语义。<strong>工程启发：</strong>Browser Runtime 应按 Browser Revision 保存工具 Schema 指纹、工具执行结果和错误类型；每次 Chromium Roll 自动执行 WebMCP 契约测试，防止静默兼容性回归。<a href="https://github.com/microsoft/playwright/pull/43578">Playwright 原始 PR</a></p>
+<h3>2. Chrome DevTools MCP：JavaScript 弹窗不再让导航工具一直等待（Hermes Agent 辅助，待合并）</h3>
+<p><strong>发生了什么（10 月 22 日）：</strong>PR #3322 修复 alert/confirm 等未处理弹窗阻塞 new_page、navigate_page、前进/后退/刷新时，Agent 可能一直等待导航，或者错误地报告成功的问题。候选方案在弹窗出现时中断导航等待，保留弹窗状态，并提示使用 handle_dialog；同时避免第三方工具发现继续等待被弹窗阻塞的 Renderer。</p>
+<p><strong>验证证据：</strong>作者披露 Hermes Agent 辅助实现、测试和说明。Windows 11 + Chrome for Testing 上，定向回归测试 174 项通过；完整测试 1742 项通过、1 项失败、9 项跳过。唯一失败的 symlink 测试在未修改基线也可复现，不能表述为全套测试全部通过。PR 仍待人工审查。</p>
+<p><strong>工程启发：</strong>Agent 的工具调用应返回“导航中断原因、待处理 Dialog、可恢复操作”，而不是把弹窗等同于导航失败或成功。此案例已覆盖 Reproduce → Agent-assisted Patch → Targeted Verify，尚未完成 Review/Merge/Canary。<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3322">原始 PR</a></p>
+<h3>3. llama.cpp：AI 辅助 CUDA Graph 缓存改进，Decode 提升 3.7%–5.2%（待合并）</h3>
+<p><strong>发生了什么（10 月 23 日凌晨）：</strong>PR #31004 针对不同首节点形状反复触发 CUDA Graph 重建的问题，增加按 Graph Shape 区分的多图缓存，并采用有界容量和基于使用频率的淘汰策略。作者明确披露使用 AI 追踪问题、设计算法并辅助编码。</p>
+<p><strong>验证证据：</strong>Qwen3.8-27B Q4_K_M、DFlash2-7 Decode 场景下，GB300 由 122.244 提升至 126.801 tok/s（+3.728%，95% CI [+3.470%, +3.988%]）；RTX PRO 6000 Blackwell 由 146.681 提升至 154.355 tok/s（+5.230%，95% CI [+4.781%, +5.681%]）。普通 Decode 仅约 +0.15%。作者使用每设备每模式 8 对交替基线/候选的新进程测试，其他批处理基准未见变化。上述均为作者结果，PR 尚未合并。</p>
+<p><strong>工程启发：</strong>对 WebGPU/Dawn 的 Pipeline Cache、Shader Variant 和模型图缓存，Agent 应先根据真实 Trace 找到缓存抖动，再使用有界缓存、配对 Benchmark 和置信区间验证，避免为个别形状优化而造成长期内存膨胀。<a href="https://github.com/ggml-org/llama.cpp/pull/31004">原始 PR</a></p>
+<h3>4. Browser Use：结构化 Done 可能把失败任务静默标记为成功（待合并）</h3>
+<p><strong>发生了什么（10 月 22 日）：</strong>PR #6178 发现启用 output_model_schema 时，结构化完成动作从模型可见的 Schema 中隐藏 success 字段，却在解析时默认为 True。即使任务被阻断、返回空数据或 data.success=false，history.is_successful() 仍可能为 True。候选修复增加模型必须显式填写的 task_success，同时兼容旧 success 输入。</p>
+<p><strong>验证边界：</strong>作者没有在当前环境执行仓库测试，引用此前相关方案的本地测试；因此目前只能视为有明确根因和补丁的待验证修复。<strong>工程启发：</strong>Browser Agent 的完成回执应拆分模型声明、工具实际执行、页面后置状态和独立业务验证，任何一层缺失都不能默认成功。<a href="https://github.com/browser-use/browser-use/pull/6178">原始 PR</a></p>
+<h3>5. Chrome DevTools MCP：修复本地浏览器地址误判，恢复文件路径安全检查（已合并）</h3>
+<p><strong>发生了什么（10 月 22 日）：</strong>PR #3321 修复以 0.0.0.0、[::] 等未指定地址连接本机 Chrome 时，被错误分类为远程浏览器的问题。这使 upload_file、install_pwa、install_extension 的本地路径校验被跳过。新实现专门识别本机浏览器 Endpoint，不改变页面 URL 的 localhost Telemetry 语义；增加了旧版本会失败的回归测试，并已合并。</p>
+<p><strong>为什么重要：</strong>Browser Runtime 的连接地址、页面来源和文件权限是三个不同概念。<strong>工程启发：</strong>对 Agent 的文件系统能力必须按实际浏览器执行位置和授权范围判断，不能复用面向网页 URL 的字符串判定。<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3321">原始 PR</a></p>
+<h2>浏览器技术</h2>
+<p><strong>Playwright Trace Viewer 的截图时间对齐（待合并）：</strong>PR #43579 修复 Screencast 帧的 Wall Time 乱序时，Trace Viewer 选不到真正时间最近帧的问题，候选方案选择全局最近帧并保留录制顺序和同距离时的稳定选择。对 Agent 调试来说，错误时间点的截图会误导故障归因。<a href="https://github.com/microsoft/playwright/pull/43579">原始 PR</a></p>
+<p><strong>Chromium OOPIF 截图测试（待合并）：</strong>PR #43585 发现跨进程 iframe 尚未绘制就截图，CI 可能生成全白图；候选修复在截图前等待子 Frame 真正 Paint，而不修改基准图片。<strong>启发：</strong>视觉验证应等待可观测的绘制完成事件，而不是固定 sleep 或静态截图时间。<a href="https://github.com/microsoft/playwright/pull/43585">原始 PR</a></p>
+<h2>端侧 AI</h2>
+<p><strong>交互优先的 Prefill 调度（待合并）：</strong>llama.cpp PR #30992 提出 --prefill-budget-busy N：当已有用户正在接收 Decode 输出时，将新请求的长 Prefill 切为最多 N Token 的小段；等待队列优先处理较短请求，连续 8 次未获调度的请求提高优先级。默认关闭，并新增 /metrics 触发计数与自动化测试。作者在 Ryzen AI MAX+ 395 的共享内存平台上提出方案，披露 Claude/Qwen 辅助开发；尚无可外推的端侧性能数字。<strong>启发：</strong>端侧推理调度应同时衡量前台输入响应、Decode 流畅度、Prefill 吞吐和等待公平性。<a href="https://github.com/ggml-org/llama.cpp/pull/30992">原始 PR</a></p>
+<p><strong>WebGPU 测试覆盖（待合并）：</strong>llama.cpp PR #30977 拟重新启用 WebGPU 的 Flash Attention 开启路径下的 test-llama-context；关闭 FA 的路径执行非常慢。<strong>启发：</strong>CI 不能仅因某后端测试慢就永久失去正确性覆盖，应记录特性开关、慢测试原因和替代覆盖。<a href="https://github.com/ggml-org/llama.cpp/pull/30977">原始 PR</a></p>
+<h2>浏览器 × AI</h2>
+<p><strong>确定性任务回放（已合并文档）：</strong>Browser Use PR #6183 补充 save_history() 与 load_and_rerun(variables=...) 的用法，说明稳定页面上的已记录动作可避免每一步调用 LLM，但提取与总结仍可能调用模型；页面变化时可能在已执行部分动作后抛错。作者报告本地表单验证：回放提交前 0 次模型调用，后续提取与总结 2 次。<strong>启发：</strong>高频浏览器任务可采用“Agent 探索 → 独立验证 → 参数化确定性回放”，但必须有页面漂移检测、幂等和失败回滚。<a href="https://github.com/browser-use/browser-use/pull/6183">原始 PR</a></p>
+<p><strong>DOM 遮挡判断（待合并）：</strong>Browser Use PR #6182 发现 dataclass 的 __post_init__ 返回 False 不会阻止对象构造，倒置坐标矩形因此进入 Paint Order 遮挡计算；宽高非正的元素也应跳过。作者提供修改前失败、修改后通过的 4 项测试。<strong>启发：</strong>端侧小模型基于 DOM 选元素时，输入几何数据必须先通过确定性校验。<a href="https://github.com/browser-use/browser-use/pull/6182">原始 PR</a></p>
+<h2>Browser Self-Improvement</h2>
+<h3>Contract-and-Oracle Gate：先验证工具契约，再判断 Agent 改进</h3>
+<p><strong>业界做到哪：</strong>Chrome DevTools MCP 本机 Endpoint 修复已完成 Reproduce → Patch → Test → Merge；弹窗导航 PR 完成 Agent-assisted Diagnose/Patch 与真实浏览器定向测试，尚未合并；Playwright WebMCP PR 正在适配浏览器工具 API 变化；llama.cpp CUDA Graph PR 已有 AI 辅助优化与交替 Benchmark、95% 置信区间，仍待审查；Browser Use 结构化成功状态仍缺少本次补丁的独立测试。以上均没有证明完整的 Canary → Telemetry → Learn 自主闭环。</p>
+<pre>Observe: Browser Revision / Tool Schema / Dialog / Trace / GPU Graph Cache
+  ↓ Contract Fingerprint + Reproducible Failure
+  ↓ Diagnose: API Drift / State Race / Cache Thrash
+  ↓ Agent Candidate Patch + Human Review
+  ↓ Independent Oracle: Action Result / DOM State / Numeric Correctness
+  ↓ Build / Cross-Device Paired Benchmark / CI
+  ↓ Canary / Telemetry / Rollback
+  ↓ Archive Minimal Reproducer + Tested Skill → Learn</pre>
+<p><strong>可迁移方案：</strong>为 Chromium Browser Agent Harness 建立按 Revision 运行的 WebMCP/CDP 工具契约测试集；对导航中断和结构化 Done 增加“工具回执必须符合实际状态”的独立 Oracle；对 Dawn/WebGPU 缓存与调度优化保存设备指纹、Trace、配对基准和置信区间；只有通过独立验证的修复模式才写入可复用 Skill，并保留撤回条件。</p>
+<h2>开源与论文 / 工程实践</h2>
+<p><strong>llama.cpp OpenCL Q2_K（待合并）：</strong>PR #30999 增加初始 Q2_K Kernel，作者披露 Codex 完成初版后进行大量重写、重构和人工验证，仍缺少可公开核实的跨设备吞吐数字。<strong>启发：</strong>Agent 生成低比特 Kernel 后，应要求正确性、回退覆盖与设备矩阵测试，而不是仅以编译成功验收。<a href="https://github.com/ggml-org/llama.cpp/pull/30999">原始 PR</a></p>
+<p>本期未找到在观察窗口内发布、且证据强于上述真实 PR 的浏览器自我改进新论文；不重复此前已推送的 GPU Goldmines、WebKit LBSE 性能复盘。</p>
+<h2>今天的一个判断</h2>
+<blockquote><p>Browser Self-Improvement 的首要门槛是可信的执行结果：浏览器工具契约不能静默变化，Agent 不能默认任务成功，性能优化必须经过配对基准与独立验证。让这些证据跨版本留存，才有机会形成可持续的工程改进。</p></blockquote>

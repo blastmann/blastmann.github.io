@@ -1,0 +1,39 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-22
+date: 2026-10-22 09:08:00
+---
+
+<p>观察窗口：2026-10-21 09:08 至 2026-10-22 09:08（北京时间）。本期依据 WebKit 工程师博客与 GitHub 原始 PR，区分已合并、待合并和作者测试；部分来源仅标日期，不能确认精确小时。</p>
+<h2>今天最值得看</h2>
+<h3>1. WebKit：新 SVG 引擎半年缩小性能差距</h3>
+<p><strong>发生了什么（10 月 21 日）：</strong>Igalia 工程师发布 WebKit Layer-Based SVG Engine（LBSE）的完整性能复盘。MotionMark 1.3.1 Suits 测试中，LBSE 从 4 月的 5,775 分提升到 10 月的 8,682 分（+50.3%），同期 Legacy 从 7,888 提升到 8,736 分；最新差距 −0.6%，但单点 95% 噪声范围 ±2.7%，因此只能判断基本达到性能相当。优化包括去除不必要的 RenderLayer、缓存 transform 和渐变、跳过无效绘制、合并重绘及减少 GPU Process IPC。</p>
+<p><strong>为什么重要：</strong>这是可复用的浏览器性能工程闭环：同一 WebKit 构建交替运行两套引擎，热身后各三次取中位数，排除未收敛的测试，量化噪声后判断改动是否有效。<strong>工程启发：</strong>Agent 修复性能回归前必须建立统计可信的基线，避免将噪声或对照组进步误判为回归。<a href="https://blogs.igalia.com/nzimmermann/posts/2026-10-21-lbse-performance/">原始工程复盘</a></p>
+<h3>2. llama.cpp：WebGPU Q2_0 消除三值模型矩阵乘法 CPU 回退（待合并）</h3>
+<p><strong>发生了什么（10 月 21 日 PR #30914）：</strong>候选补丁为 Q2_0 的 F32 激活新增 GET_ROWS/MUL_MAT。作者在 RTX 3060 + 原生 Dawn WebGPU 上测得 Bonsai 1.7B pp512 35.03→1915.91 tokens/s、tg128 14.02→94.75；Bonsai 2 2B pp512 36.40→2039.89、tg128 12.57→71.72。巨大倍数主要来自此前矩阵乘法回退 CPU，而不是 GPU Kernel 自身提升数十倍。输入 Embedding 仍在 CPU；MUL_MAT_ID 和 F16 激活尚未支持。</p>
+<p><strong>为什么重要：</strong>低比特模型能否端侧运行取决于算子覆盖和后端能力，而不仅是文件大小。作者报告与 CPU 参考的正确性测试及本地 WebGPU CI 通过，但 PR 尚未合并。<strong>工程启发：</strong>Browser Runtime 应记录逐算子回退、GPU/驱动、数值误差和端到端 Prefill/Decode。<a href="https://github.com/ggml-org/llama.cpp/pull/30914">原始 PR</a></p>
+<h3>3. Browser Use × MuscleMemory：独立验证后学习，批准后召回（待合并）</h3>
+<p><strong>发生了什么（10 月 21 日 PR #6157）：</strong>可选 REST 集成捕获真实导航、输入和点击的参数、状态及耗时，供后续任务召回流程指导。学习必须由宿主应用提供独立业务验证，不把模型声称完成当证据；还需要跨次验证和操作员批准。作者报告 17 项集成测试通过，并以本地 Chrome 表单验证五次真实提交、两次独立验证、批准后召回及失败后撤回。演示未调用 LLM，不代表模型效果提升。</p>
+<p><strong>为什么重要：</strong>提供从真实动作 Observe 到独立 Verify、再到有条件 Learn 的局部闭环。<strong>工程启发：</strong>将执行证据、业务验收、版本化 Skill、权限审批和失败撤回分别设计。<a href="https://github.com/browser-use/browser-use/pull/6157">Browser Use PR</a> · <a href="https://github.com/TheWariend/MuscleMemory">MuscleMemory</a></p>
+<h3>4. Browser Use：历史动作回放的重复属性导致静默误操作（待合并）</h3>
+<p><strong>发生了什么（10 月 21 日 PR #6169）：</strong>历史回放的 ATTRIBUTE 兜底匹配会选中第一个拥有相同 name/id/aria-label 的元素，即使有多个候选仍返回成功。候选修复只接受唯一匹配，结合历史 frame_id 限定范围，仍有歧义则明确失败；作者提供修改前失败、修改后通过的回归测试。</p>
+<p><strong>为什么重要：</strong>重复 name=qty 等在真实页面常见，静默点错目标比明确失败更危险。<strong>工程启发：</strong>Agent Action Receipt 必须保存原目标、候选集、实际操作对象和后置状态。<a href="https://github.com/browser-use/browser-use/pull/6169">原始 PR</a></p>
+<h3>5. Browser Use：历史记录在脱敏前快照，可能将密码写入磁盘（待合并）</h3>
+<p><strong>发生了什么（10 月 21 日 PR #6158）：</strong>发给模型的 State Message 已过滤敏感信息，但 AgentHistory.state_message 在过滤前快照，后续 JSON 保存不再二次过滤，导致密码等敏感值可能落盘。候选修复将快照移动到过滤之后，新增修改前失败、修改后通过的安全测试，作者报告 18 项通过。</p>
+<p><strong>为什么重要：</strong>Agent 证据和长期记忆可能成为新的泄漏路径。<strong>工程启发：</strong>区分原始证据、脱敏日志与模型上下文，所有持久化路径都要接受敏感数据回归测试。<a href="https://github.com/browser-use/browser-use/pull/6158">原始 PR</a></p>
+<h2>浏览器技术</h2>
+<p><strong>WebKit 的具体性能经验：</strong>LBSE clip-path 去层化 +8.9%，跳过空 outline 绘制 +5.6%，缓存 transform 矩阵 +4.8%，缓存渐变 +4.6%。但单次 Revision 差异落在 ±3.36% 噪声范围内不宜断言显著提升。一次 Legacy +6.5% 的优化曾让 LBSE 看似退步，实际是对照组进步。<a href="https://blogs.igalia.com/nzimmermann/posts/2026-10-21-lbse-performance/">原始复盘</a></p>
+<p><strong>Playwright Windows ARM64（待合并）：</strong>PR #43560 指出安装 Chrome 的脚本硬编码 x64 MSI，Windows ARM64 CI 因此在模拟环境运行 Chrome；候选修复按 OSArchitecture 选择原生 ARM64 安装包。<strong>启发：</strong>测试环境应记录机器架构与进程架构，避免模拟层开销污染浏览器性能回归。<a href="https://github.com/microsoft/playwright/pull/43560">原始 PR</a></p>
+<h2>端侧 AI</h2>
+<p><strong>Hexagon 模型加载优化（10 月 21 日已合并）：</strong>llama.cpp PR #30901 用 ARM NEON 向量化和多线程加速量化张量 repack/tiling，特别针对 K-quants 与 Q1/Q2_0。作者声明输出与旧实现 bit-exact，支持测试保持通过，并披露 AI 辅助 SIMD 核心循环；尚无可外推的手机端加速数字。<strong>启发：</strong>分开测量模型加载、权重重排、上传与首 Token 延迟，自动生成的 SIMD 优化必须通过位级一致性测试。<a href="https://github.com/ggml-org/llama.cpp/pull/30901">原始 PR</a></p>
+<h2>浏览器 × AI</h2>
+<p><strong>Browser Session 生命周期：</strong>Browser Use PR #6165 指出仅四个 browser_* 工具更新活跃时间，其他工具持续使用时仍可能被十分钟空闲回收器关闭；候选修复在统一 dispatch 层记录活动。PR #6159 指出 MCPClient 重连时没有清除 disconnect event，connect 返回成功后会话却立即关闭；候选修复在重连前重置事件。两者均提供修改前失败的回归测试，尚未合并。<strong>启发：</strong>Session 租约覆盖所有工具活动，重连成功必须验证持续存活。<a href="https://github.com/browser-use/browser-use/pull/6165">Session PR</a> · <a href="https://github.com/browser-use/browser-use/pull/6159">Reconnect PR</a></p>
+<h2>Browser Self-Improvement</h2>
+<h3>Noise-Aware Performance Gate + Verified Skill Promotion</h3>
+<p><strong>业界做到哪：</strong>WebKit LBSE 已覆盖性能观测、统计判定、逐版本归因、Patch、Build/Benchmark 和人工验收；没有证据表明 Agent 自动生成补丁或完成自动 Canary/Learn。MuscleMemory 候选集成覆盖真实动作、独立验收、跨次验证、人工批准和召回，但仅是待合并的局部 Learn 演示，并非浏览器引擎自我改进。</p>
+<p><strong>迁移路径：</strong>Observe 保存 Browser SHA、GPU/驱动、Trace、样本和噪声；Diagnose 仅对显著差异触发 bisect/Pinpoint；Improve 生成可审查的候选 CL；Verify 在同一环境交错执行基线和候选、同时检查正确性/帧率/内存；Canary 分设备验证真实生效；Learn 只将独立验证、脱敏、版本化且获批准的经验编入 Skill，回归后可撤销。优先从 Chromium/Skia 重复 Paint Pass 或 WebGPU CPU 回退实验入手。</p>
+<h2>开源与论文/工程实践</h2>
+<p><strong>Browser Use PR #6170（待合并）：</strong>AgentHistoryList 保存 JSON 时遗漏 usage，导致 Token/成本统计无法回放。候选修复增加 usage 字段和保存/加载往返测试，作者报告 3 项通过。<strong>启发：</strong>没有成本和时延证据，就无法判断 Harness 优化是否有效。<a href="https://github.com/browser-use/browser-use/pull/6170">原始 PR</a></p>
+<p><strong>Playwright PR #43558（待合并）：</strong>HTML Reporter 把名为 stdout/stderr 的用户附件误当控制台字符串，处理 Buffer 时抛异常，使通过的测试最终失败；候选修复增加类型检查与回归测试。<strong>启发：</strong>验证系统本身也要验证，避免把 Reporter 故障误归因于浏览器。<a href="https://github.com/microsoft/playwright/pull/43558">原始 PR</a></p>
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 的下一道门槛是可信的改进判定：</strong>性能收益要超过可量化噪声，浏览器动作要经过独立结果验证，学习资产要脱敏、标记版本并接受回归检查。WebKit 的统计方法与 Browser Agent 的验证式记忆可以组合成真实工程流程。</p>
