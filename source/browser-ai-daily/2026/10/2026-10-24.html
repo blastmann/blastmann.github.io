@@ -1,0 +1,40 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-24
+date: 2026-10-24 09:49:00
+---
+
+<p>观察窗口：2026-10-23 09:49 至 2026-10-24 09:49（北京时间）。优先依据 GitHub 项目的原始 Issue 与复现材料筛选，区分“已复现的问题报告”和“已合并修复”。今天未核实到同等价值的 Chrome、Firefox、WebKit 官方新功能公告，故不凑数。</p>
+<h2>今天最值得看</h2>
+<h3>1. Browser Harness：48 个 Domain Skill 文件暴露 58 项代码与安全问题（待修复）</h3>
+<p><strong>发生了什么（10 月 23 日）：</strong>browser-use/browser-harness 的 Issue #934 对准备发布的站点专用 Skills 进行代码审查，列出分布于 48 个文件的 58 项问题。除了未定义变量、漏做 URL 编码、错误字段和分页遗漏，还发现示例中冒用 Googlebot/ClaudeBot User-Agent，以及将贡献者的公网 IP、邮编写入示例输出。作者要求先修复三份相关文件再公开发布；另外指出自动点击 Cookie 同意按钮会替用户作出授权决定。</p>
+<p><strong>为什么值得关注：</strong>Agent 的 Skill 是可执行的操作知识；错误示例一旦被大量复用，会把一次性的 Bug 传播到每个 Agent。<strong>工程启发：</strong>建立 Skill 发布门禁：静态检查、真实站点可重放测试、敏感信息扫描、权限与用户同意审查、失败案例回灌。当前只完成了 Observe/Review，尚无证据证明 58 项问题已修复。<a href="https://github.com/browser-use/browser-harness/issues/934">原始 Issue #934</a></p>
+<h3>2. Browser Use：连接 Electron 浏览器可能误关整个应用（待修复）</h3>
+<p><strong>发生了什么（10 月 24 日凌晨）：</strong>Issue #6191 报告在 Linux/Wayland 上连接 Electron 38（Chromium 140）应用的 CDP 端口时，Browser Use 将应用自身的 <code>file://</code> UI 页面当作不允许访问的普通网页并关闭。关闭该 Target 可能让整个 Electron 应用退出。即使关闭安全检查，SessionManager 仍可能对该 UI Target 反复执行焦点恢复和重连。报告者用 Playwright 的 <code>connectOverCDP</code> 对同一端点成功执行导航、点击和截图，说明 CDP 端点本身并非显然故障源。</p>
+<p><strong>为什么值得关注：</strong>“可见的 Page Target”不等于“Agent 可管理的 Web Tab”；尤其不能擅自关闭宿主应用创建的 Target。<strong>工程启发：</strong>Browser Runtime 应记录 Target 来源、所有权、Scheme、可关闭性与可聚焦性，安全策略优先跳过非授权 Target，而不是执行破坏性关闭。该问题已有具体复现描述，尚未见修复。<a href="https://github.com/browser-use/browser-use/issues/6191">原始 Issue #6191</a></p>
+<h3>3. Playwright：Windows 并行测试共享编译缓存，300 轮中 21 轮失败（待修复）</h3>
+<p><strong>发生了什么（10 月 23 日）：</strong>Issue #43601 提供可运行的并发复现脚本：四个 Playwright Test Shard 共享一个全新 Transform Cache 时，可能在加载测试文件阶段出现 <code>EPERM</code>。报告者在 Playwright 1.64.1 上执行 300 轮，<strong>共享缓存 21 轮至少一片失败，按 Shard 隔离缓存 0 轮失败</strong>。其实际项目在 1.63.0 上也出现过类似现象。</p>
+<p><strong>为什么值得关注：</strong>这是 Harness/CI 自身的非确定性错误，而不是浏览器产品回归。若 Agent 把这类失败归因于 Chromium 补丁，就会产生错误修复。<strong>工程启发：</strong>自动诊断应先执行 Harness Health Check：缓存竞争、并发隔离、基线重复运行与错误分类。数据来自报告者环境，不代表所有 Windows CI 都有相同故障率。<a href="https://github.com/microsoft/playwright/issues/43601">原始 Issue #43601</a></p>
+<h3>4. llama.cpp：MiniMax M3.1 的 NVFP4 缩放参数丢失，模型能加载却输出乱码（待修复）</h3>
+<p><strong>发生了什么（10 月 24 日凌晨）：</strong>Issue #31063 报告 MiniMax M3.1 Flash 的 GGUF 模型可以加载，张量维度检查也通过，但生成文本无意义。报告者逐层与参考实现比较：前三个 Dense 层的 Logits 与 Python 参考吻合，加入第一个 MoE 层后开始偏离。其分析指向 <code>build_moe_ffn()</code> 调用没有传递三类 Expert NVFP4 Scale，导致量化权重还原错误；报告还提供了转换张量对照与裁剪模型的排查过程。</p>
+<p><strong>为什么值得关注：</strong>模型成功加载、Kernel 成功执行都不能证明数值正确；最小化模型与逐层参考输出更能定位错误。<strong>工程启发：</strong>浏览器端侧 AI 应在 WebGPU/CPU/Metal/Vulkan 后端建立分层数值对照，保存首个偏离的算子和最小输入。根因仍是报告者提出的分析，需等待维护者确认及补丁验证。<a href="https://github.com/ggml-org/llama.cpp/issues/31063">原始 Issue #31063</a></p>
+<h3>5. Intel Meteor Lake：SYCL AOT 编译回归已定位到具体提交（待修复）</h3>
+<p><strong>发生了什么（10 月 23 日）：</strong>llama.cpp Issue #31033 报告在 Intel Meteor Lake Xe-LPG 核显上执行 SYCL Ahead-of-Time（AOT）构建失败，错误为 <code>llvm.genx.dpas.nosrc0</code> 不受该 GPU 支持。报告者提供了失败版本、相同工具链下的已知正常版本，以及 First Bad Commit <code>d81d0d8fb</code>（PR #29864）。新 XMX Kernel 使用了 Xe2+ 才支持的指令形式，而 Xe-LPG 不具备该能力。</p>
+<p><strong>为什么值得关注：</strong>一次面向新 GPU 的优化，可能让旧设备直接无法编译。<strong>工程启发：</strong>Dawn/WebGPU 的 Shader/Feature Gate 与端侧 Kernel CI 应采用按 GPU 代际分层的能力矩阵，至少覆盖旧设备 AOT 编译和运行时正确性；仅在最新设备通过测试并不足够。尚未看到正式修复证据。<a href="https://github.com/ggml-org/llama.cpp/issues/31033">原始 Issue #31033</a></p>
+<h2>浏览器技术</h2>
+<p><strong>Playwright 浏览器安装在只读目录上静默等待近八分钟（10 月 24 日凌晨，待修复）：</strong>Issue #43606 报告 <code>PLAYWRIGHT_BROWSERS_PATH</code> 指向不可写目录时，<code>playwright install</code> 对权限错误 <code>EACCES</code> 反复重试，实测约 470 秒才报错。作者在本地候选修改中先检查写权限，错误可在一秒内返回。<strong>启发：</strong>Browser Harness 的安装/启动错误应区分永久性权限错误与可重试的临时锁竞争，避免 Agent 浪费数分钟等待。<a href="https://github.com/microsoft/playwright/issues/43606">原始 Issue</a></p>
+<p><strong>WebKit 的 Linux 发行版兼容性（10 月 23 日，问题已关闭但未据此认定已修复）：</strong>Playwright Issue #43604 报告相同 WebKit 构建在 Ubuntu 26.04 加载特定分享页面时发生崩溃，而 Ubuntu 24.04 的三次对照运行未崩溃；作者提供 Docker 最小复现。该实验在跨架构模拟容器中完成，需原生设备进一步确认。<strong>启发：</strong>Browser Self-Improvement 的故障归因必须记录系统镜像、运行库和容器架构，不能只比较 Browser Revision。<a href="https://github.com/microsoft/playwright/issues/43604">原始 Issue</a></p>
+<h2>端侧 AI</h2>
+<p><strong>Intel oneAPI 2026.2.0 运行时崩溃（10 月 24 日凌晨，待定位）：</strong>llama.cpp Issue #31064 报告在 Intel Arc B580 的 SYCL 构建中，<code>llama-cli</code>、<code>llama-bench</code> 和 <code>llama-server</code> 均出现 Segmentation Fault。报告附有容器构建命令与运行日志，但尚未提供 First Bad Commit，不能推断与上面的 Xe-LPG AOT 回归属于同一根因。<strong>启发：</strong>端侧推理设备矩阵需将“能编译、能初始化、能输出正确结果、性能达标”分开检测。<a href="https://github.com/ggml-org/llama.cpp/issues/31064">原始 Issue</a></p>
+<p><strong>共享内存 GPU 的容量判断（10 月 24 日凌晨，待定位）：</strong>llama.cpp Issue #31052 报告 Intel Iris Xe 使用 Vulkan 加载大型 Flint 低比特模型时出现 <code>ErrorOutOfDeviceMemory</code>，而较小的 Gemma 模型可以正常运行；CPU 路径也能运行 Flint。尚无法确定是模型架构、显存预算还是分配器问题。<strong>启发：</strong>WebGPU 模型加载前应同时估算权重、KV Cache、计算缓冲区、内存碎片及 UMA 的实际预算，而不只读取 GPU 报告的空闲容量。<a href="https://github.com/ggml-org/llama.cpp/issues/31052">原始 Issue</a></p>
+<h2>浏览器 × AI</h2>
+<p><strong>Browser Target 所有权与 Skill 安全是同一个运行时问题：</strong>Electron CDP 报告说明“看见”某个 Target 并不意味着“可以关闭”；Domain Skill 审查说明“学会”某段脚本并不意味着“可以自动执行”。建议将 Browser Runtime 的 Target Ownership、URL Scheme、用户授权与 Skill 来源绑定，只有在允许范围内才开放关闭页面、自动登录、提交表单和记录数据等能力。<a href="https://github.com/browser-use/browser-use/issues/6191">Target 复现</a> · <a href="https://github.com/browser-use/browser-harness/issues/934">Skill 审查</a></p>
+<h2>Browser Self-Improvement</h2>
+<h3>Harness Health + Skill Promotion Gate：先确认测试环境可信，再让 Agent 学习</h3>
+<p><strong>今天业界实际做到哪：</strong>Playwright 并发缓存问题已完成 Observe → Reproduce → A/B 对照，但尚未正式 Patch；Intel SYCL AOT 已走到 Reproduce → Culprit Commit → Diagnosis，尚未完成跨代 GPU 验证；MiniMax NVFP4 报告完成逐层对照与疑似根因定位，尚未修复；Browser Harness Skill 审查完成 58 项问题发现，尚未进入全部修复和发布验证。</p>
+<p><strong>可迁移的闭环：</strong>Telemetry/Regression → 环境自检（CI 缓存、设备、Driver、Target 类型）→ 可复现失败 → 代码/Skill 候选修改 → 独立 Build、Benchmark、业务后置状态验证 → Review/Canary → 保存失败反例和可重放 Skill。关键是把 Harness 故障与产品代码故障分开，并禁止未经验证的 Skill 自动进入长期记忆。</p>
+<p><strong>建议的第一项实验：</strong>为 Chromium Browser Agent 建立两个回归集：① Electron/Chrome/扩展混合 CDP Target 的所有权与可关闭性；② 多 Shard Windows CI 冷缓存并发压力测试。将两类故障注入到 Agent 诊断任务，考察 Agent 能否在修改浏览器代码之前准确识别环境问题。</p>
+<h2>开源与论文/工程实践</h2>
+<p>今天优先保留了有完整复现材料的开源 Issue，而非未验证的模型发布或宣传。重点参考 <a href="https://github.com/browser-use/browser-harness/issues/934">browser-harness Skill 审查</a>、<a href="https://github.com/microsoft/playwright/issues/43601">Playwright 并发复现脚本</a>、<a href="https://github.com/ggml-org/llama.cpp/issues/31063">llama.cpp 逐层数值定位</a>。过去 24 小时未核实到值得替代这些案例的新 Browser Self-Improvement 论文。</p>
+<h2>今天的一个判断</h2>
+<p><strong>浏览器工程自我改进的首要门槛，是让 Agent 能识别“不该修改代码”的故障。</strong>一个错误的 CI 缓存、一个不可关闭的宿主 Target、一个缺失的量化 Scale，都可能表现为“浏览器/模型不工作”。只有把环境证据、可复现输入与独立验证保存下来，后续的自动修复和学习才有可信基础。</p>
