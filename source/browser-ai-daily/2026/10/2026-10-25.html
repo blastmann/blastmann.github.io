@@ -1,0 +1,51 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-25
+date: 2026-10-25 09:19:00
+---
+
+<p>观察窗口：2026-10-24 09:19 至 2026-10-25 09:19（北京时间）。优先选择原始 Issue 中有最小复现、对照实验、设备信息或明确时间戳的工程问题；下述问题均为公开报告，未将尚未合并的建议写成正式修复。今天未核实到同等价值的 Chrome、Firefox、WebKit 官方功能公告。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Playwright MCP：只修改请求 Header 就能绕过 Origin 过滤（待修复）</h3>
+<p><strong>发生了什么（10 月 25 日凌晨）：</strong>Playwright Issue #43630 给出了可运行的本地 MCP 复现：使用 <code>--blocked-origins</code> 禁止访问某站点时，<code>browser_navigate</code> 最初正确失败；随后通过 <code>browser_route</code> 添加仅修改 Header 的拦截规则，原本禁止的站点竟能正常加载。<code>--allowed-origins</code> 也存在类似表现。报告者定位到新规则使用 <code>route.continue({ headers })</code>，提前结束路由链，使原本安装的 Origin 检查没有执行。作者建议考虑 <code>route.fallback()</code>，但尚未见正式补丁验证。</p>
+<p><strong>为什么值得关注：</strong>工具能力扩展不应该悄悄改变原有访问限制。<strong>工程启发：</strong>Browser Runtime 的网络访问策略应由独立、不可被普通路由覆盖的权限层执行；新增任何 Route/Plugin/Skill 后，都要自动重放允许和拒绝两条路径。注意这些命令行过滤器本身并不被官方承诺为强安全边界。<a href="https://github.com/microsoft/playwright/issues/43630">原始 Issue #43630</a></p>
+
+<h3>2. Playwright AI Snapshot：iframe 的回退文字让 Agent 看不见真实表单（待修复）</h3>
+<p><strong>发生了什么（10 月 25 日凌晨）：</strong>Issue #43628 发现 <code>page.ariaSnapshot({ mode: 'ai' })</code> 遇到带有 HTML 回退文字的 <code>&lt;iframe&gt;</code> 时，尽管同源子 Frame 已成功捕获，最终输出却只保留“浏览器不支持 iframe”一类回退文字，丢失内部标题、输入框和按钮。报告包含三个小型 HTML 文件和对照输出。初步分析指向 Snapshot 合并时未清除旧的 <code>node.text</code>，渲染器因而跳过 <code>children</code>。</p>
+<p><strong>为什么值得关注：</strong>Agent 可能以为页面没有可操作控件，实际上只是 Observation 生成器漏掉了内容。<strong>工程启发：</strong>为 DOM/AXTree/截图三种观测建立交叉校验，重点覆盖 OOPIF、同源 iframe、Shadow DOM 和回退内容；发现“页面可见但 Snapshot 不可见”时应先修观测，不应修改 Agent Prompt。<a href="https://github.com/microsoft/playwright/issues/43628">原始 Issue #43628</a></p>
+
+<h3>3. Snapdragon Hexagon：视觉编码结果随图片形状改变，CPU 正确而 HTP 输出乱码（待修复）</h3>
+<p><strong>发生了什么（10 月 24 日晚）：</strong>llama.cpp Issue #31104 在 Snapdragon 8 Elite / Hexagon v75 设备上发现 Qwen3.5-VL 的视觉投影（mmproj/CLIP）数值问题。相同 GGUF、图片和参数在 CPU 路径上能正确识别文字，HTP 路径却在某些视觉 Token 数量或长宽比下输出乱码甚至重复字符。报告者对同一图片执行不同分辨率扫描：约 390、590、1000 个视觉 Token 时明显异常，约 1530 或 4015 个 Token 时结构上接近正常；细长截图约 800 Token 时仍异常，说明不是简单的“分辨率越高越好”。目前尚未确认具体错误 Kernel。</p>
+<p><strong>为什么值得关注：</strong>多模态模型能启动并生成文本，不代表视觉 Embedding 正确。<strong>工程启发：</strong>端侧多模态 Runtime 应按图片尺寸、长宽比、视觉 Token 数建立 CPU/HTP/WebGPU 数值对照；保留首个发生偏差的中间张量，而不只看最终 OCR 文本。<a href="https://github.com/ggml-org/llama.cpp/issues/31104">原始 Issue #31104</a></p>
+
+<h3>4. Intel SYCL：同一进程第二次推理悄悄失去 oneDNN Flash Attention 加速（待修复）</h3>
+<p><strong>发生了什么（10 月 25 日上午）：</strong>llama.cpp Issue #31123 在 Meteor Lake Arc 核显上测得 Gemma 4 E2B 的 <code>pp512</code> 首个 Context 约 579 tok/s，第二个 Context 约 326 tok/s。显式关闭 oneDNN Flash Attention 后，两次稳定在约 329–331 tok/s；Vulkan 后端两次约 302–303 tok/s。报告者认为 oneDNN 的优化路径只在首次 Context 生效，但尚未定位根因。</p>
+<p><strong>为什么值得关注：</strong>端侧 AI 在长时间运行的浏览器进程中需要反复创建 Session；只测“首次启动”会高估长期性能。<strong>工程启发：</strong>WebGPU/Metal/SYCL 推理基准应增加多 Context、模型切换、页面前后台切换与缓存重建的连续测试，并记录实际执行的 Kernel 路径。<a href="https://github.com/ggml-org/llama.cpp/issues/31123">原始 Issue #31123</a></p>
+
+<h3>5. llama.cpp：CI 全绿，Windows CUDA 发布包却连续多个版本没有更新（待修复）</h3>
+<p><strong>发生了什么（10 月 24 日上午）：</strong>Issue #31085 报告 b11846、b11849、b11852 三个 Windows CUDA 预编译发布包内的 <code>llama-server.exe --version</code> 均仍为 b11828；关键二进制的哈希也完全一致。相关 <code>windows-cuda</code> 工作流显示成功，但下载到的发布产物并不对应新提交。报告者怀疑缓存或上传路径错误，尚未确认根因。</p>
+<p><strong>为什么值得关注：</strong>“CI 成功”与“用户拿到了正确版本”是两件事。<strong>工程启发：</strong>浏览器及端侧模型 Runtime 的发布流程应在打包后、上传后和公开下载后分别校验构建 Commit、版本号与文件哈希，避免 Agent 根据绿色 CI 误判修复已经交付。<a href="https://github.com/ggml-org/llama.cpp/issues/31085">原始 Issue #31085</a></p>
+
+<h2>浏览器技术</h2>
+<p><strong>网络拦截切换可能挂起无关请求：</strong>Playwright Issue #43619 发现，在 Chromium 上不断删除最后一条 <code>page.route</code> 并重新注册，即使路由规则从不匹配真实请求，也可能让部分 Fetch 永远等待。报告者用保留另一条不匹配路由的对照组证明，问题与拦截从“开启→关闭→开启”的状态转换有关。候选根因涉及 CDP <code>Fetch.disable/enable</code> 与网络事件的先后顺序；尚未被维护者确认。对 Browser Harness，动态路由重配置需要请求生命周期不丢失的压力测试。<a href="https://github.com/microsoft/playwright/issues/43619">原始 Issue #43619</a></p>
+<p><strong>导航等待存在竞态：</strong>Playwright .NET Issue #43626 报告 <code>WaitForURLAsync</code> 在 URL 已匹配时，可能于“检查 load 状态”和“订阅 load 事件”之间错过事件，最终超时 30 秒。报告者提供了协议 Trace 和代码位置；采用 URL 断言加 <code>document.readyState</code> 检查后，其测试套件连续 20 次通过。建议把“先订阅再检查状态”作为事件驱动 Browser Runtime 的基础审查规则。<a href="https://github.com/microsoft/playwright/issues/43626">原始 Issue #43626</a></p>
+
+<h2>端侧 AI</h2>
+<p><strong>AMD gfx1200 的矩阵乘法精度问题：</strong>llama.cpp Issue #31111 在 RX 9060 XT / ROCm 7.1.1 上复现 F16×F32 <code>MUL_MAT</code> 的确定性误差，<code>0.004255 &gt; 0.0005</code>，约为允许阈值的 8.5 倍。报告者明确表示尚未定位根因。此类“稳定但错误”的数值偏差，比随机崩溃更容易漏过普通功能测试。<a href="https://github.com/ggml-org/llama.cpp/issues/31111">原始 Issue #31111</a></p>
+
+<h2>浏览器 × AI</h2>
+<p>今天的两个 Playwright 案例分别揭示了 Browser Agent 的<strong>权限观测不一致</strong>与<strong>页面观测不完整</strong>：一个允许普通网络路由意外跳过访问限制，另一个让已经存在的 iframe 控件从 AI Snapshot 中消失。建议在 Browser Runtime 为每次动作记录 <code>policy_decision</code>、<code>effective_request</code>、<code>frame_tree</code>、<code>snapshot_revision</code> 和执行后的真实页面状态；所有学习和回放必须以这些原始证据为准。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>今天新增：Observation-and-Release Integrity Gate（观测与发布一致性门禁）</h3>
+<p>今天有两类特别适合迁移到 Chromium 工程的“反例”：<strong>AI Snapshot 丢失真实 iframe</strong>意味着 Observe 阶段证据不可信；<strong>CI 通过但二进制仍是旧版本</strong>意味着 Verify 到 Release 的结果不可信。两者都会让 Agent 在错误证据上继续学习。</p>
+<p><strong>建议闭环：</strong>（1）Observe：采集 DOM/AXTree/FrameTree/Network/Trace 与二进制指纹；（2）Diagnose：自动识别观测缺口、竞态、CPU/GPU 数值分歧和发布产物不一致；（3）Improve：生成最小补丁或 Harness 调整；（4）Verify：独立回归、跨设备对照、多 Context 基准；（5）Canary/Release：检查真实下载文件的 Commit 和哈希；（6）Learn：只把经过复现和独立验证的失败样例、修复模式和测试用例纳入 Skill/知识库。</p>
+<p><strong>业界实际进度：</strong>上述案例已有明确的用户复现、日志或对照数据，但大部分仍处于 Observe/Diagnose，尚未完成正式 Patch、Canary 和 Learn。不能将其包装成已经实现的全自动自我改进。</p>
+
+<h2>开源与论文/工程实践</h2>
+<p>本期优先选择有可运行复现的 Playwright 与 llama.cpp 原始工程报告。没有找到足以替代上述问题分析、且可核实发布日期和实验细节的高价值新论文，因此不重复此前已经推送的研究。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 的下一项基础能力，是证明“Agent 看见的、测试通过的、用户实际得到的”是同一件事。</strong>若 Snapshot 遗漏了 Frame、运行时暗中切换了 Kernel，或发布包仍来自旧 Commit，再强的代码生成能力也只会放大错误判断。应优先建设可追溯的观测与发布证据，再扩大自动补丁范围。</p>
