@@ -1,0 +1,53 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-26
+date: 2026-10-26 09:34:00
+---
+
+<p>观察窗口：2026-10-25 09:34 至 2026-10-26 09:34（北京时间）。优先检索项目官方 GitHub、真实复现和对照实验。部分 GitHub 页面只显示 10 月 25 日而不显示具体时分，故不把这些记录强行认定为严格落在 24 小时窗口内；视作近一日重要工程进展。候选 PR 与问题报告均注明状态，不等同于已发布修复。未发现足以单列的 Chrome、Firefox、WebKit 官方正式发布公告。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. llama.cpp：DSH Agent 参与修复 SCALE 非连续张量，覆盖 CPU/CUDA/Metal（Draft）</h3>
+<p><strong>发生了什么：</strong>10 月 25 日，llama.cpp 维护者提交 <a href="https://github.com/ggml-org/llama.cpp/pull/31146">PR #31146</a>。此前 SCALE 算子要求过严的内存连续性，导致合法的按行连续、跨行有间隔的张量视图不能使用。候选修改让 CPU 和 CUDA 按真实行步长访问，Metal 增加 BF16 支持，同时明确保留 SYCL 的严格能力检查。新增非连续视图测试；作者报告 CPU 11/11、CUDA 11/11、Metal 11/11，Metal 全套 18,341/18,341 通过。作者披露使用 <code>dsh:llama.cpp</code> Harness 与模型辅助开发，但仍是待审查 Draft。</p>
+<p><strong>为什么值得关注：</strong>这是 AI 辅助真实底层算子修改、跨后端能力约束、回归测试和维护者审查的具体案例，而不是抽象的自我改进演示。<strong>浏览器工程启发：</strong>可以迁移到 Chromium/Dawn 的 WebGPU Kernel：Agent 先生成带 stride 的反例，再提交 WGSL/后端补丁；只有数值正确性、设备能力声明和独立测试均通过才允许晋级。</p>
+
+<h3>2. WebGPU：并行 CI 发现共享 memset 参数缓冲区竞态（待合并）</h3>
+<p><strong>发生了什么：</strong>10 月 25 日，llama.cpp <a href="https://github.com/ggml-org/llama.cpp/pull/31162">PR #31162</a> 记录：测试框架启用并行 Worker 后，WebGPU 后端在 Grok 分片 KV Cache 测试中稳定暴露竞态。并发调用 <code>ggml_backend_webgpu_buffer_memset</code> 时，多个线程会同时写入和使用共享的 <code>memset_params_buf</code>。候选修复复用现有互斥锁保护该路径，作者的初步性能检查未发现明显回退。</p>
+<p><strong>为什么值得关注：</strong>增加测试并行度意外揭示了长期隐藏的线程安全问题，说明 Harness 本身的测试调度也能帮助发现产品缺陷。<strong>浏览器工程启发：</strong>WebGPU Runtime 的共享 Buffer、Command Encoder、Queue 与缓存更新应加入并发压力测试，并在发现问题后保留固定的复现用例。注意候选补丁尚未合并，不能视为生产修复。</p>
+
+<h3>3. Playwright：AI Snapshot 遗漏 iframe 内容已有针对性补丁和回归用例（待合并）</h3>
+<p><strong>发生了什么：</strong>继 10 月 25 日日报报道 <a href="https://github.com/microsoft/playwright/issues/43628">Issue #43628</a> 后，当日出现 <a href="https://github.com/microsoft/playwright/pull/43633">PR #43633</a>。当 <code>&lt;iframe&gt;</code> 含有回退文字时，AI Snapshot 合并子 Frame 后仍保留旧 <code>text</code>，渲染器因此跳过真实的 <code>children</code>。候选补丁在子 Frame Snapshot 附着后清理回退文字，并新增 AR-171 回归用例。</p>
+<p><strong>为什么值得关注：</strong>这是从真实 Agent 观测错误，到精确定位数据合并缺陷，再到可执行回归用例的短闭环。<strong>浏览器工程启发：</strong>为 DOM/Accessibility/Frame Tree 建立一致性断言；观测层的缺失不能交给模型通过重试或猜测解决。PR 仍未合并。</p>
+
+<h3>4. Chrome DevTools MCP：循环 Error.cause 让 Agent 所有页面工具一起卡住（待合并）</h3>
+<p><strong>发生了什么：</strong>10 月 25 日的 <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3338">PR #3338</a> 发现，<code>SymbolizedError</code> 无界递归解析 <code>Error.cause</code>；当网页构造 <code>e.cause = e</code> 时，CDP 每次返回新的对象 ID，导致通过 ID 去重失效。<code>get_console_message</code> 挂起后，<code>list_pages</code> 等工具也因队列被占用而卡住。候选修复将因果链深度限制为 10；作者提供了先失败后通过的测试，并在 Chrome 156 上验证工具恢复。</p>
+<p><strong>为什么值得关注：</strong>一个恶意或异常网页 Console 对象就可能阻塞整个 Agent 会话。<strong>浏览器工程启发：</strong>Observation 的递归深度、输出大小和执行时间必须有预算；页面提供的数据不得无限占用宿主工具队列。当前仍为待合并补丁。</p>
+
+<h3>5. WebKit Windows：历史 5 帧稳定性等待可能拖慢自动化约四分之一（待确认）</h3>
+<p><strong>发生了什么：</strong>10 月 25 日的 <a href="https://github.com/microsoft/playwright/issues/43632">Playwright Issue #43632</a> 指出 Windows WebKit 每次操作前要求 5 个稳定动画帧，这是 2020 年留下的兼容性措施。报告者在 203 项测试中将其改为 1 帧后，总耗时由 14.2–14.6 秒降至 10.6–11.9 秒。Playwright 自动测试确认等待时间确实减少（静态元素中位数约 96ms → 11ms），但也观察到 WebKit 27.2 仍会出现 1–3ms 的短帧，因此旧问题不能简单认定已经消失。</p>
+<p><strong>为什么值得关注：</strong>长期存在的兼容性保护可能成为持续性能开销，但优化不能只看一次通过。<strong>浏览器工程启发：</strong>针对历史 Workaround 维护设备/版本适用范围、失败反例与多轮统计测试，再决定是否删除。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>Firefox 跨页面 Pointer Capture 异常：</strong>10 月 25 日的 <a href="https://github.com/microsoft/playwright/issues/43631">Playwright Issue #43631</a> 提供 Chromium、Firefox、WebKit 的同一复现脚本：第一个页面调用 <code>setPointerCapture</code> 后，Firefox 可能将第二个页面的首次点击送到第一个页面，Chromium/WebKit 对照正常。仍是问题报告；对多标签 Agent，应增加跨 Context 输入隔离测试，不能只校验点击 API 返回成功。</p>
+<p><strong>URL 观测不能切坏编码：</strong><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3341">DevTools MCP PR #3341</a> 为截断超长 URL 时的 <code>%XX</code> 编码边界补充了先失败后通过的回归测试。对 Agent Trace、Network 和导航日志，输出缩短必须保证结构仍可理解，不能生成半截转义序列。此项仍是待合并 PR。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>多模态历史状态残留：</strong>10 月 25 日 <a href="https://github.com/ggml-org/llama.cpp/issues/31155">llama.cpp Issue #31155</a> 报告，交互式多模态 CLI 在 <code>/clear</code> 后连续处理图片时，可能复用上张图片的 Embedding，或触发断言退出。报告者怀疑旧 <code>mtmd_batch</code> 保留了已释放 Chunk 的指针，并提供具体模型、版本、设备与复现步骤。尚未完成正式修复。对浏览器本地多模态推理，Session 清理需要同时验证 KV Cache、视觉 Batch 和引用生命周期。</p>
+<p><strong>小 Batch Graph Cache 的内存代价：</strong><a href="https://github.com/ggml-org/llama.cpp/pull/31156">llama.cpp Draft PR #31156</a> 为 1–8 Token 的不同 Batch 尺寸分别缓存 Graph 和 Scheduler，减少推测解码在尺寸变化时的重复重建。作者同时报告一个配置额外消耗约 400MB VRAM；尚未提供足够独立、跨设备的收益验证。对浏览器 Runtime，需要将 Decode 吞吐、显存占用和前台页面资源竞争一起评估。</p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>Browser Agent 观测隔离：</strong>Playwright iframe Snapshot 修复候选与 DevTools MCP <code>Error.cause</code> 修复候选共同说明：网页内容不仅可能导致模型理解错误，也可能导致观测工具阻塞。建议 Browser Runtime 在模型外维护不可变 Frame Tree、有限时的 Observation 执行队列、独立页面状态检查，并将失败原因反馈为明确的工具错误。</p>
+<p><strong>Agent 历史记录质量：</strong><a href="https://github.com/browser-use/browser-use/pull/6210">Browser Use PR #6210</a> 为 Gemini Thinking 模式请求并保留 Thought Summary，同时避免把摘要混入普通 Completion 文本。作者给出回归测试。该改动尚未合并；Thought Summary 是模型提供的解释，不应替代真实页面执行证据。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>本期主线：Harness-Induced Regression Discovery → Verified Patch</h3>
+<p><strong>业界已走到哪里：</strong>llama.cpp WebGPU 的测试并行化发现了共享 Buffer 竞态，走到 <em>Observe → Reproduce → Diagnosis → Candidate Patch → 初步测试</em>；Playwright iframe 缺失已从 Issue 进入 Patch 与回归用例；DSH 辅助的 SCALE 修复已跨 CPU/CUDA/Metal 做正确性测试，但仍在 Draft；WebKit 5 帧等待已完成对照测量，自动测试同时发现不能忽略的反例。上述案例尚无完整 Canary、Telemetry 回流与持续学习证据。</p>
+<p><strong>可以迁移的做法：</strong>在 Chromium/Dawn/Browser Harness 中，针对每次测试并行度、缓存策略、观测 API 或 Kernel 能力声明的变化，自动生成一组反例：多 Context 并发、非连续张量、跨 Frame DOM/AX 一致性、循环对象、历史 Workaround 的开关对照。每个 Agent Patch 都应附最小复现、基线失败证据、候选通过证据、跨设备结果与回退阈值。</p>
+<p><strong>Learn 的边界：</strong>只有独立验证通过的修复才写入 Skill/测试库；失败补丁和性能不显著的尝试也要保留为反例，避免下一轮 Agent 重复提出相同修改。递归优化优先从测试用例生成与 Harness 可靠性开始，而不是让 Agent 直接修改自身验收标准。</p>
+
+<h2>开源与论文/工程实践</h2>
+<p>本期最值得保存的工程资产是 <a href="https://github.com/ggml-org/llama.cpp/pull/31146">SCALE 非连续张量跨后端测试</a>、<a href="https://github.com/ggml-org/llama.cpp/pull/31162">WebGPU 并行 memset 竞态复现</a>、<a href="https://github.com/microsoft/playwright/pull/43633">AI Snapshot iframe 回归用例</a> 和 <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3338">循环 Error.cause 失败→通过测试</a>。本观察窗口未核实到比这些案例更有工程价值且实验细节充分的新论文，不以旧论文填充版面。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><p>Browser Self-Improvement 的关键，不只是 Agent 能提出补丁，而是 Harness 能主动暴露旧缺陷，并让补丁在真实浏览器状态、并发条件和跨硬件环境下接受独立验证。</p></blockquote>
