@@ -1,0 +1,54 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-27
+date: 2026-10-27 09:43:00
+---
+
+<p><strong>观察窗口：</strong>2026-10-26 09:43 至 2026-10-27 09:43（北京时间）。本期优先筛选有明确复现、代码定位或独立测试的英文原始资料；区分已合并补丁、待审 PR 与未经维护者确认的问题报告。部分进展的原始 Issue 早于窗口，但其合并或验证发生在窗口内。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Browser Use：配置损坏可能把网络访问限制重置为允许全部（安全问题报告）</h3>
+<p><strong>发生了什么：</strong>10 月 27 日凌晨（北京时间），<a href="https://github.com/browser-use/browser-use/issues/6218">Issue #6218</a> 报告：MCP Server 读取 <code>config.json</code> 失败时，会用默认配置覆盖旧文件。默认 BrowserProfile 没有原有的域名允许/禁止列表，IP 阻断也不启用。报告者用真实 Chromium 和本地 HTTP 服务做了对照：正常配置会拒绝访问，损坏配置却允许导航并读取页面内容。此问题仍待维护者确认和修复。</p>
+<p><strong>为什么值得关注：</strong>安全配置出错不应变成放开权限，更不应覆盖原有策略。<strong>浏览器工程启发：</strong>将网络访问策略视为独立的 Runtime 权限边界；配置无法解析时应拒绝高风险操作并保留原文件，加入损坏配置、热重载、恢复和内部地址访问的回归测试。不要把问题报告等同于已经确认的安全公告。</p>
+
+<h3>2. llama.cpp：WebGPU 共享 memset Buffer 的并发竞态已修复合并</h3>
+<p><strong>发生了什么：</strong>10 月 26 日，<a href="https://github.com/ggml-org/llama.cpp/pull/31162">PR #31162</a> 正式合并。测试框架启用并行 Worker 后，WebGPU 的 <code>ggml_backend_webgpu_buffer_memset</code> 被发现会在多个线程之间竞争同一个 <code>memset_params_buf</code>。修复使用已有互斥锁保护共享参数的写入与使用，作者的初步性能检查未发现明显回退。</p>
+<p><strong>为什么值得关注：</strong>这是昨天报道的待合并候选今天真正进入主线的进展，完成了 <em>并行 CI 暴露回归 → 诊断共享状态 → Patch → CI → Merge</em>。<strong>浏览器工程启发：</strong>Chromium/Dawn/WebGPU Harness 可以主动改变 Worker 数量和调度顺序，捕获原本隐藏的线程安全问题；合并并不意味着已经完成 Canary 与真实设备长期验证。</p>
+
+<h3>3. llama.cpp：Hexagon REPEAT 读到旧缓存，Codex 辅助修复并附对照测试（待合并）</h3>
+<p><strong>发生了什么：</strong>10 月 26 日，<a href="https://github.com/ggml-org/llama.cpp/pull/31203">PR #31203</a> 报告，Hexagon v79 上的小 Batch DeltaNet 在重复使用内存时出现不稳定结果。<code>REPEAT</code> 仍使用 <code>memcpy</code> 读取 DDR，而 DMA 写入后的缓存可能未同步，导致读取旧数据。候选补丁改用 DMA 拷贝并等待队列完成。作者报告 REPEAT_REUSE 由 0/2 通过提升为 2/2，相关有界测试由 24/26 提升为 26/26；其余精度问题仍存在。作者披露 Codex 参与调查、实现、测试和审查。</p>
+<p><strong>为什么值得关注：</strong>这是 AI 辅助定位真实端侧硬件缓存一致性问题的具体案例，且明确给出了修复边界。<strong>浏览器工程启发：</strong>GPU/NPU Runtime 需要跨 Batch 尺寸、Buffer 复用和异步队列测试；只有基线失败、候选通过、剩余失败分离清楚，Agent 的改动才值得进入下一阶段。</p>
+
+<h3>4. Browser Use：SchemaOptimizer 把 JSON 默认值当 Schema 修改（待合并）</h3>
+<p><strong>发生了什么：</strong>10 月 26 日，<a href="https://github.com/browser-use/browser-use/issues/6215">Issue #6215</a> 给出可直接运行的复现：结构化输出的 <code>default</code>、<code>const</code>、<code>enum</code> 和 <code>examples</code> 若是对象或数组，SchemaOptimizer 会错误地递归清理其中的 <code>title</code> 等字段，甚至插入 <code>additionalProperties</code>。<a href="https://github.com/browser-use/browser-use/pull/6216">PR #6216</a> 提出只遍历真正的 Schema 节点、保留实例值。作者报告两项新增测试在主线失败、在候选补丁通过，相关 378 项测试通过；PR 尚未合并。</p>
+<p><strong>为什么值得关注：</strong>Agent 看到的工具定义可能在送达模型前已被修改，模型无法凭推理恢复丢失的数据。<strong>浏览器工程启发：</strong>WebMCP、Tool Schema、A2UI 等协议层应做转换前后语义一致性检查，并将关键字同名字段、嵌套对象与数组纳入回归集。</p>
+
+<h3>5. Chrome DevTools MCP：网络请求堆栈导致空闲进程持续占用大量内存（问题报告）</h3>
+<p><strong>发生了什么：</strong>10 月 26 日，<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/3344">Issue #3344</a> 发现：网络请求收集器虽然只保留最多 1,000 条请求，但 CDP 异步调用堆栈深度为 32，较长的脚本 URL 会在每层重复保存。报告者构造持续轮询页面，GC 后 JS Heap 从约 46 MB 升到 272 MB；在真实 Electron 页面中观察到 2–2.5 GB 的空闲进程占用。该问题尚未修复。</p>
+<p><strong>为什么值得关注：</strong>固定请求数量上限不等于固定内存上限。<strong>浏览器工程启发：</strong>Browser Agent 的 Trace/Network/Console 观测必须同时限制对象深度、字节数、保留时间与总预算，且定期测量长时间空闲的内存曲线。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>WebKit 网络拦截编码回归：</strong>10 月 26 日 <a href="https://github.com/microsoft/playwright/issues/43649">Playwright Issue #43649</a> 提供跨引擎对照：使用 <code>route.fulfill()</code> 返回声明为 UTF-8 的 HTML，WebKit 27.2 可能按 windows-1252 解码，导致非 ASCII 文本错误；相同响应经真实 HTTP Server 发送则正常，Chromium/Firefox 的拦截路径也正常。报告者还发现 CSP Hash 会因此失效。属于待修复的问题报告。对 Browser Harness，应把拦截响应与真实网络响应放在同一兼容性矩阵里验证。</p>
+<p><strong>未完成 Frame 的观测可能永久挂起：</strong><a href="https://github.com/microsoft/playwright/issues/43647">Playwright Issue #43647</a> 报告：iframe 请求一直没有返回时，Java 的 <code>frame.content()</code> 在页面关闭后仍可能等待超过 60 秒。对 Browser Agent，应给 DOM/Frame 观测明确的超时、取消与页面关闭后的失败语义，而不是依赖模型反复重试。</p>
+<p>本观察窗口没有核实到值得单列的 Chrome、Firefox、WebKit 官方正式架构公告，不以低信息量更新填充。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>Hexagon DMA 一致性：</strong>PR #31203 的重要价值不是单次加速，而是明确指出 Buffer 重用与异步 DMA 对数值正确性的影响。其 1/16/32/128/512 Token 形状序列对照以及重复输出 Hash，适合转化为移动端 Runtime 的长期回归集。</p>
+<p><strong>ARM NEON Q4_K 候选优化：</strong>10 月 26 日 <a href="https://github.com/ggml-org/llama.cpp/pull/31207">PR #31207</a> 提议使用 NEON 加速 Q4_K 量化和反量化，但作者只报告了编译成功，没有提供可信的 ARM 真机性能与数值对照，因此暂不把它列为已验证的性能突破。对端侧推理，编译成功不能代替正确性与收益验证。</p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>错误回执不能伪装成成功：</strong>10 月 26 日 <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/3348">DevTools MCP Issue #3348</a> 报告 <code>navigate_page</code> 导航失败时仍返回 <code>isError: false</code>，<code>handle_dialog</code> 失败时甚至可能继续输出成功文案。报告者提供了本地修复对照，但官方修复尚未确认。Browser Runtime 应让工具的机器可读状态与真实执行结果一致，尤其要防止 Agent 将失败轨迹写入成功记忆。</p>
+<p><strong>DOM 观测的省略提示：</strong>10 月 26 日 <a href="https://github.com/browser-use/browser-use/pull/6212">Browser Use PR #6212</a> 发现 Select 选项的预览已经追加“还有 N 项”，但序列化阶段再次截断导致提示丢失。候选补丁保留提示，作者报告 34 项定向测试通过，并披露 AI 辅助；尚未合并。对 Agent，有限 Observation 不必展示全部内容，但必须说明哪些内容被省略。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>本期主线：Bounded Observation + Fail-Closed Verification</h3>
+<p><strong>业界做了什么：</strong>WebGPU 竞态已走到 <em>Observe（并行 CI）→ Diagnose → Patch → Test → Merge</em>；Hexagon DMA 候选已走到 <em>Reproduce → Diagnose → Agent-assisted Patch → 定向数值验证</em>，尚缺跨设备与合并；SchemaOptimizer 候选完成基线失败和补丁通过测试；DevTools MCP 的内存与错误回执问题仍停留在可复现问题阶段。没有证据表明这些案例已自动完成 Canary、Telemetry 回流与持续学习。</p>
+<p><strong>可迁移到 Chromium 的闭环：</strong>先由 Harness 持续检查 Network/Trace/DOM/Frame 观测的字节预算、超时和错误状态；检测到回归后保存 Browser Revision、CDP Event、页面复现、内存曲线与环境指纹；Agent 再生成最小补丁；独立 CI 验证正确性、并发与性能；合并后通过 Canary/Telemetry 观察；仅把真实成功且可复现的修复晋级为 Skill 或测试资产。</p>
+<p><strong>Recursive/Continual Improvement 的边界：</strong>允许 Agent 优化观测压缩、测试用例生成和回归定位策略，但验收标准、权限配置及原始证据应独立保存，不能让候选 Agent 自行放宽限制或重写成功定义。</p>
+
+<h2>开源与论文/工程实践</h2>
+<p>今天最值得保存为工程样例的四份原始材料：<a href="https://github.com/ggml-org/llama.cpp/pull/31162">WebGPU 并行竞态已合并修复</a>、<a href="https://github.com/ggml-org/llama.cpp/pull/31203">Hexagon DMA 缓存一致性反例</a>、<a href="https://github.com/browser-use/browser-use/pull/6216">SchemaOptimizer 语义保真测试</a>、<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/3344">DevTools MCP 网络堆栈内存复现</a>。本窗口未发现比这些案例更有实际浏览器工程迁移价值、且实验可核实的新论文，不重复旧论文。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><p>Browser Self-Improvement 要先保证观测有界、权限失败时保持限制、工具回执真实可信；只有在这些基础上，Agent 生成的补丁和自动学习才有意义。</p></blockquote>
