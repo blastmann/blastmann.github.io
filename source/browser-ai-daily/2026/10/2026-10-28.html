@@ -1,0 +1,62 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-28
+date: 2026-10-28 09:53:00
+---
+
+<p><strong>观察窗口：</strong>2026-10-27 09:53 至 2026-10-28 09:53（北京时间）。优先采用项目官方 GitHub Issue/PR、Mozilla 与 WebKit 官方材料；区分已经合并、待审查和仅由报告者验证的结果。Safari 27.2 的官方说明属于过去一周补充，不计为过去 24 小时的新发布。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Playwright：自动诊断发现 Windows CI 的 Firefox 超时并非浏览器回归</h3>
+<p><strong>发生了什么：</strong>10 月 28 日上午（北京时间），<a href="https://github.com/microsoft/playwright/issues/43704">Issue #43704</a> 汇总了自动化诊断的完整证据。Windows Server 2025 Runner 启动的测试进程继承了过低的 I/O 优先级，导致 Firefox SQLite 的刷盘操作在 <code>FlushFileBuffers</code> 处等待。最初 43 项失败中有 37 项是超时；将启动器 I/O 优先级由 Low 改为 Normal 后，OPFS 压测从 16/16 失败变成 16/16 通过，切回 Low 后又 16/16 失败。代表性 Headless 测试在正常优先级下 160/160 通过。另发现一项测试本身没有等待异步 fetch 完成，修复等待条件后 128/128 通过。报告尚处于待修复状态，不能将其当成已合并的 CI 修复。</p>
+<p><strong>为什么值得关注：</strong>这是少见的带有反向 A/B 复验的 Agent/Harness 诊断案例，清楚地区分了运行器配置、测试竞态和真正的浏览器问题。<strong>浏览器工程启发：</strong>在 Chromium/Firefox 回归自动修复之前，先对 CI 环境指纹、进程 I/O 优先级、并发量和测试时序做排查；能用环境修复解决的故障，不应让 Agent 修改浏览器代码。</p>
+
+<h3>2. Playwright：Triage Agent 开始把浏览器故障报告接入上游工程流程</h3>
+<p><strong>发生了什么：</strong>10 月 28 日凌晨（北京时间），Playwright 合并 <a href="https://github.com/microsoft/playwright/pull/43682">PR #43682</a>：Triage Agent 可以输出 <code>browser/report.json</code> 和 <code>browser/report.md</code>；Chromium 的报告内容交给维护者提交至 crbug.com，Firefox/WebKit 的报告可由后续受控 Job 创建到 <code>microsoft/playwright-browsers</code>。<a href="https://github.com/microsoft/playwright/pull/43684">PR #43684</a> 同日合并，要求 Agent 在 Runner 上亲自执行下一步诊断，而不是仅留下“建议再加日志”的文字。特别重要的是，Copilot 诊断 Job 本身没有写入凭据，后续 Job 验证产物再提交。</p>
+<p><strong>为什么值得关注：</strong>这是将 AI 故障分析转化为结构化、可追踪、权限隔离的真实工程动作。<strong>浏览器工程启发：</strong>让 Agent 产出可机器检查的 Reproducer/Trace/报告，独立工作流负责写入和分发；它已经覆盖 Observe → Diagnose → Report，但还不能称为自动 Patch → Canary → Learn 的完整闭环。</p>
+
+<h3>3. Chrome DevTools MCP：BFCache 恢复后把上一页网络请求误算到当前页（候选修复）</h3>
+<p><strong>发生了什么：</strong>10 月 27 日，<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/3356">Issue #3356</a> 和 <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3357">PR #3357</a> 指出，后退命中 Back/Forward Cache 或导航至 <code>about:blank</code> 时，导航不会产生新的网络请求；收集器却沿用上一次导航请求作为新列表起点，导致 <code>list_network_requests</code> 显示上一页请求。候选修复在无新请求的导航后创建空列表，并保留显式查询历史请求的能力。作者提供主线失败、补丁通过的测试，以及 Chrome 156 真机复现；PR 尚未合并。</p>
+<p><strong>为什么值得关注：</strong>Agent 可能基于错误的网络观测判断当前页面调用了什么 API。<strong>浏览器工程启发：</strong>网络事件需要绑定 Navigation ID / Document 生命周期，BFCache、History、about:blank、跨进程导航应有独立回归用例。</p>
+
+<h3>4. llama.cpp：Vulkan CI 失败追到“后端能力声明与实际 Kernel 不一致”，补丁已合并</h3>
+<p><strong>发生了什么：</strong>10 月 27 日，<a href="https://github.com/ggml-org/llama.cpp/pull/31239">PR #31239</a> 合并。Vulkan <code>supports_op</code> 错误拒绝了实际 Kernel 支持的第 3 维广播 <code>MUL_MAT</code>，使两条 Stream 的矩阵乘法回退 CPU、单 Stream 留在 GPU；计算图在 530 与 524 个节点之间变化，触发调度器重复重新预留资源。补丁仅放宽确实支持广播的路径，保留 <code>MUL_MAT_ID</code> 和特定非连续 Kernel 的严格限制。作者报告 136 个生成模型的上下文测试通过，并在软件 Vulkan 与 NVIDIA 驱动上做了验证；AI 使用已披露。</p>
+<p><strong>为什么值得关注：</strong>这不是简单提升某个 Kernel 的速度，而是消除能力声明错误造成的 CPU/GPU 隐式切换和图形状不稳定。<strong>浏览器工程启发：</strong>Dawn/WebGPU 应对“声称支持的算子布局”与真实 Shader 能力建立自动一致性测试，同时追踪 GPU 回退、Graph 重建和调度开销。</p>
+
+<h3>5. Hexagon：TOP_K 从全量排序改为阈值筛选，端侧投机解码明显受益（待合并）</h3>
+<p><strong>发生了什么：</strong>10 月 28 日凌晨（北京时间），<a href="https://github.com/ggml-org/llama.cpp/pull/31279">PR #31279</a> 报告 Snapdragon X2 Elite 上投机解码的 TOP_K 占 DFlash Draft Batch 的 42%。原实现对每块 1,024 个数完整排序，实际上只需要约 25 万个值中的前 10 个。候选算法先计算小块最大值，低于当前第 10 名阈值的块直接跳过；作者报告单次 TOP_K 从 1,023µs 降到 620µs，DSpark 的 LFM2.5-2.6B 在两种测试文本下从 58.2→67.6 和 49.8→64.4 tok/s。AI 参与真机测试与说明撰写，Kernel 修改由作者负责。PR 尚未合并，数据仅代表该硬件与测试场景。</p>
+<p><strong>为什么值得关注：</strong>它展示了先用 Profile 找出真实热点，再调整算法而非盲目微调指令。<strong>浏览器工程启发：</strong>浏览器本地推理应记录 Prefill、Decode、Sampler 各阶段耗时，按真实模型、设备和输入分布评估优化，避免用单一 tokens/s 代替定位。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>Firefox 官方路线图（10 月 27 日）：</strong><a href="https://blog.mozilla.org/en/firefox/firefox-roadmap/">Mozilla 公告</a> 表示，内置 PDF Viewer 的启动时间最高缩短 45%；Smart Window Beta 在美国和加拿大的英文环境支持跨标签页辅助填表和网页变化监测。未来计划将本地语音识别提供给网站：模型下载后可离线转写，网站收到文本而不是音频。注意语音识别属于计划中的能力，不是已全面发布的 API。对 AI Native Browser 的启发是把本地模型、用户授权和页面数据访问边界放在同一设计中。</p>
+<p><strong>Safari 27.2（补充过去一周，10 月 26 日）：</strong><a href="https://webkit.org/blog/18515/webkit-features-for-safari-27-2/">WebKit 官方发布说明</a> 包含 Customizable Select 的 <code>::field-content</code>、Grid Lanes 属性更名为 <code>fit-tolerance</code>，以及 20 项修复。其中 Safari MCP 截图/新建标签页不再无故抢占其他 App 的键盘焦点，WebGPU 修复了包含 <code>drawIndirect()</code> 的 Render Bundle 经 <code>executeBundles()</code> 调用后严重掉帧的问题。对 Browser Agent 和 GPU Runtime，应同时测试功能正确性与用户前台交互干扰。</p>
+<p><strong>WebKit 历史等待策略出现可测试的替代方案：</strong><a href="https://github.com/microsoft/playwright/pull/43673">Playwright PR #43673</a> 将 Windows WebKit 的 5 帧稳定性等待默认改为 1 帧，并保留回退开关；作者报告 323 项跨浏览器测试通过、1 项跳过，以及 80 次特定 WebKit 重复测试通过。该 PR 由 Triage Workflow 准备，仍是 Draft，不能直接认定性能收益已正式发布。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>Vulkan 多 GPU 性能回归：</strong><a href="https://github.com/ggml-org/llama.cpp/issues/31261">Issue #31261</a> 在双 Intel Arc Pro B65 上报告，单卡 Decode 约 71.71 tok/s，双卡分层约 47.12 tok/s 且波动很大；更大模型在连续运行时进一步退化，SYCL 同机对照较稳定。尚未 bisect，也没有确定根因。Browser Runtime 应将跨设备传输、CPU 中转和重复 Session 作为独立性能维度。</p>
+<p><strong>量化与采样优化：</strong>本期 Hexagon TOP_K 的价值在于先从 Profile 中确认采样热点，再针对 Top-10 目标重写算法。与前述 Vulkan 案例一起，说明端侧推理的性能异常可能分别来自算子算法、能力判定和调度回退，不能只依靠模型级吞吐量判断。</p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>MCP 工具权限提示已修正：</strong>10 月 28 日凌晨（北京时间），<a href="https://github.com/microsoft/playwright/pull/43692">Playwright PR #43692</a> 已合并，移除了会运行代码或写文件的 Test MCP 工具错误的 <code>readOnlyHint: true</code> 声明。工具元数据如果谎称只读，Agent 和权限系统可能作出错误判断。建议为所有 Browser Tool 建立 Side Effect Contract Test。</p>
+<p><strong>多浏览器实例身份：</strong><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3361">DevTools MCP PR #3361</a> 提议让每个服务明确标识它控制的是独立 Chrome、用户已登录 Chrome，还是远程 CDP 端点，并在页面列表和结构化输出中提供身份。尚未合并。对 AI Native Browser，必须让 Agent 明确操作对象属于哪个 Profile/Session，不能仅凭 URL 判断。</p>
+<p><strong>故障回执改进：</strong><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3355">DevTools MCP PR #3355</a> 为导航、前进后退和 Dialog 失败返回真实 Tool Error，修复此前成功标记不准确的问题；目前仍待合并。独立业务结果验证依然必需。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>本期主线：Environment Bisect → Evidence-Carrying Triage → Upstream Report</h3>
+<p><strong>业界做了什么：</strong>Playwright 的自动化调查已经能用 I/O 优先级反向 A/B 排除假 Firefox 回归，并将故障报告结构化地交给受控工作流；Vulkan 算子能力错误已完成 CI 发现、诊断、补丁、验证和合并；DevTools MCP 的 BFCache 观测污染已完成复现与候选补丁。它们分别走到不同的闭环位置，均没有证据证明已自动完成 Canary 反馈与跨任务自我学习。</p>
+<table><thead><tr><th>案例</th><th>闭环已到哪一步</th><th>缺失的验证</th></tr></thead><tbody>
+<tr><td>Playwright Windows CI</td><td>Observe → 环境 Diagnosis → A/B 复验</td><td>正式修复合并、CI 持续监测</td></tr>
+<tr><td>Playwright Triage 工作流</td><td>Diagnose → 结构化报告 → 上游分发</td><td>自动 Patch、Benchmark、Canary</td></tr>
+<tr><td>Vulkan MUL_MAT</td><td>CI → Diagnosis → Patch → Test → Merge</td><td>跨设备长期性能反馈</td></tr>
+<tr><td>DevTools MCP BFCache</td><td>Reproduce → Patch → 定向测试</td><td>合并、正式版本回归</td></tr>
+<tr><td>Hexagon TOP_K</td><td>Profile → 优化候选 → 真机 Benchmark</td><td>合并、独立正确性/设备矩阵</td></tr>
+</tbody></table>
+<p><strong>可迁移的浏览器工程流程：</strong>对每次 Performance/Crash/CI Regression 先保存 Browser Revision、OS、GPU、驱动、Runner 优先级、Trace 和复现脚本；Agent 对照环境变量与候选提交进行 bisect；输出不可变的证据包及根因分类；只有独立测试和统计 Benchmark 通过后才允许修改 Runtime 或测试；最后由有权限的工作流提交报告、补丁和 Canary 验证结果。</p>
+<p><strong>Recursive/Continual Improvement：</strong>可以让 Agent 逐步改进诊断 Skill、复现用例生成和成本预算，但必须独立保存基线测试与用户意图，防止自动修复为了让 CI 变绿而修改正确的断言。<a href="https://github.com/microsoft/playwright/issues/43675">Issue #43675</a> 提议在 Healer 前先区分真实产品回归、过时测试、过时规格与环境抖动；它目前只是提案，尚不是已交付能力。</p>
+
+<h2>开源与论文/工程实践</h2>
+<p>最值得保存的可复现工程资料是 <a href="https://github.com/microsoft/playwright/issues/43704">Windows I/O 优先级反向 A/B</a>、<a href="https://github.com/microsoft/playwright/pull/43682">Playwright 结构化上游故障报告</a>、<a href="https://github.com/ggml-org/llama.cpp/pull/31239">Vulkan 能力声明修复</a>、<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3357">BFCache 网络观测修复候选</a> 和 <a href="https://github.com/ggml-org/llama.cpp/pull/31279">Hexagon TOP_K Profile 优化</a>。本窗口未找到足够有独立实验和浏览器工程落地价值的新论文，故不补充泛化 RSI 文章。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><p>浏览器工程自我改进最先应该自动化的是“排除假回归、保留可复验证据、把真实问题送到正确的维护流程”，而不是直接让 Agent 修改更多代码。Playwright 的 CI 反向 A/B 与受控 Triage 报告，已经提供了可以借鉴的工程样板。</p></blockquote>
