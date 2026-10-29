@@ -1,0 +1,63 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 日报｜2026-10-29
+date: 2026-10-29 09:47:00
+---
+
+<p><strong>观察窗口：</strong>2026-10-28 09:47 至 2026-10-29 09:47（北京时间）。重点检查 Playwright、Chrome DevTools MCP、Browser Use、llama.cpp 的官方 GitHub 记录及正式发行说明；只把窗口内新建、合并或发布的动作当作今日进展。区分已合并、待合并、仅报告者验证和已发布版本，不把测试通过等同于真实用户端验证。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Playwright：把 Agent 的故障诊断、候选补丁和维护者审查接成受控工作流（已合并）</h3>
+<p><strong>发生了什么：</strong>10 月 29 日 08:16（北京时间），<a href="https://github.com/microsoft/playwright/pull/43739">Playwright PR #43739</a> 合并，将原本散落在 Triage 和 Revision Workflow 中的工作拆成四个可复用的 GitHub Actions：<code>run-agent</code> 运行 Copilot CLI 并保存结果；<code>publish-patch</code> 应用 Agent 的补丁、拒绝修改 <code>.github/</code> 下的文件并可创建 Draft PR；<code>collect-review</code> 把维护者评论收集成 <code>review.json</code>；<code>triage-comment</code> 发布结果与回退原因。这是已经落地的工作流重构，不是已经证明 AI 可以独立修复并合并任意浏览器 Bug。</p>
+<p><strong>为什么值得关注：</strong>Agent 诊断输出、代码写入权限、代码审查和修订过程被明确分离。<strong>浏览器工程启发：</strong>可直接迁移到 Chromium/Skia/网络栈的候选补丁实验：Agent 只产出可审查的证据与 Patch，由独立执行器负责提交和权限检查，维护者反馈转为下一次修订的结构化输入。当前闭环走到 Diagnose → Patch → Review，缺少自动 Benchmark、Canary 与持续学习结果。</p>
+
+<h3>2. Playwright：真实失败测试可能被 afterEach 中的 test.fail() 变成绿色退出（问题已复现）</h3>
+<p><strong>发生了什么：</strong>10 月 29 日 06:49（北京时间）创建的 <a href="https://github.com/microsoft/playwright/issues/43738">Issue #43738</a> 提供最小复现：测试体中 <code>expect(1).toBe(2)</code> 明确失败，但在 <code>afterEach</code> 中执行 <code>test.fail()</code> 后，汇总显示“1 passed”，进程退出码为 <code>0</code>。报告者在 Playwright 1.61.1、1.64.1 和 1.65.0-alpha-2026-10-28 验证。原因是测试执行完后仍能修改 <code>expectedStatus</code>。此前 <a href="https://github.com/microsoft/playwright/pull/43713">PR #43713</a> 尝试防止 after-hook 的 <code>skip/fixme</code> 事后改写结果，但没有覆盖 <code>test.fail</code>；该问题仍未修复。</p>
+<p><strong>为什么值得关注：</strong>Browser Self-Improvement 若以“CI 绿色”为学习依据，可能把真实回归收录成成功补丁。<strong>浏览器工程启发：</strong>保存原始 assertion、实际 status、期望 status、hook 时间线和最终退出码，并由独立验证器检查它们是否一致；不能只相信测试框架的最终摘要。</p>
+
+<h3>3. llama.cpp v0.8.0 正式发布：本地多模态与实时音频成为可直接接入的 Runtime 能力</h3>
+<p><strong>发生了什么：</strong>10 月 28 日 20:47（北京时间），<a href="https://github.com/ggml-org/llama.cpp/releases/tag/v0.8.0">llama.cpp v0.8.0 正式发行</a>。新增 LiquidAI LFM3 系列的文字、视觉、音频和 Omni 模型支持；实验性的 <code>mtmd_audio_stream</code> 可以逐段接收 PCM 并生成推理所需 Embedding；服务端加入 <code>/v1/realtime</code> 对话/转写和 <code>POST /tts</code>。同时带来 MoE 主机缓存、稀疏注意力与多后端优化，并更新到 ggml v0.28.0。</p>
+<p><strong>为什么值得关注：</strong>本地语音输入、页面视觉理解与实时对话开始具备更完整的统一后端接口。<strong>浏览器产品启发：</strong>可以设计端内 Web Speech/音视频 → 本地模型 → Browser Agent 的低延迟原型，测量 PCM 输入至首个输出的延迟、内存、打断恢复及模型切换，而不是只看离线吞吐。发行版支持这些能力不意味着浏览器 WebGPU、iOS NPU 等所有设备已经具备相同性能或兼容性。</p>
+
+<h3>4. llama.cpp：CI 的取消请求测试曾“没测到取消也能通过”，现在已合并修复</h3>
+<p><strong>发生了什么：</strong>10 月 29 日 08:35（北京时间），<a href="https://github.com/ggml-org/llama.cpp/pull/31330">PR #31330</a> 合并。Windows CI 自 9 月底以来至少七次偶发取消请求测试失败；旧测试在取消后固定休眠 2 秒，Runner 的一个 Decode Step 可能卡住 1–3 秒，造成误报。更严重的是，生成任务有时会自然达到 Context 上限，即使完全禁用“取消”功能，测试也可能误通过。修复启用 Context Shift，让取消成为唯一正常退出路径，并用最长 10 秒的状态轮询替代固定 sleep。作者进行反向故障注入：禁用取消后新测试会失败；模拟 3 秒冻结时，旧测试五次中四次失败，新测试通过。</p>
+<p><strong>为什么值得关注：</strong>这同时修复了测试不稳定和“假绿灯”。<strong>浏览器工程启发：</strong>Agent 自动改进 Harness 时，应为核心测试做 Mutation/Fault Injection：故意关闭被测功能，确保测试真的变红，再把它提升为长期回归门禁。</p>
+
+<h3>5. Snapdragon Hexagon：AI 辅助增加视觉 UPSCALE 算子，跨 HTP 代际跑通测试（候选）</h3>
+<p><strong>发生了什么：</strong>10 月 29 日 02:08（北京时间），<a href="https://github.com/ggml-org/llama.cpp/pull/31331">PR #31331</a> 为 Hexagon HTP 实现多模态视觉链路常用的 <code>UPSCALE</code> 算子。作者从 CPU 版本出发，在 AI 辅助下进行向量化、DMA 等改造，增加 Qwen3-VL 图片用例，并报告在 Hexagon v73 至 v85 上完成测试，20/20 定向算子测试通过。PR 尚未合并，没有足够跨设备端到端性能数据。</p>
+<p><strong>为什么值得关注：</strong>真正落地的端侧多模态需要补齐视觉前后处理算子，否则可能发生 CPU 回退。<strong>浏览器产品启发：</strong>将 Operator Coverage、CPU/GPU/NPU 回退次数、视觉预处理耗时与数值误差一起纳入端侧模型 Benchmark，避免只测试文字 Decode。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>Chromium 截图与导航竞态：</strong><a href="https://github.com/microsoft/playwright/pull/43721">Playwright PR #43721</a> 发现页面正在 <code>Page.captureScreenshot</code> 时，如果主 Frame 提交新 Document，旧 Frame 的绘制回调可能消失，导致截图一直超时，或返回“Not attached to an active page”。候选补丁竞争监听新 Document 提交事件，并在导航完成后重新截图，保留单次调用的总超时限制。补丁尚未合并。对浏览器故障录制和视觉 Agent，截图必须与 Document 生命周期关联，否则可视证据可能缺失或不属于目标页面。</p>
+<p><strong>WebKit WebAuthn 兼容问题：</strong><a href="https://github.com/microsoft/playwright/issues/43711">Issue #43711</a> 报告 Playwright 的 WebKit 注入脚本将 <code>PublicKeyCredential</code> 定义成普通对象，导致依赖构造函数类型检查的 Passkey 库认为 WebAuthn 不可用。报告者在 WebKit 27.2 Windows 和 iPhone 17 模拟设备配置中复现，Chromium/Safari 对照正常。需要注意，这主要是测试环境的兼容性问题，尚不能断言普通 Safari 用户也受影响。</p>
+<p><strong>浏览器近期官方发布：</strong>本窗口未发现足以替代上述可复现工程问题的 Chromium、Firefox 或 WebKit 官方架构公告；不把过往发布材料重新包装成今天的新消息。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>AMD Vulkan Flash Attention 优化：</strong>10 月 28 日提交的 <a href="https://github.com/ggml-org/llama.cpp/pull/31323">PR #31323</a> 针对 RDNA3/RDNA4 的 Prompt Processing，探索更大的 Tile、寄存器缓存 Q、RDNA4 占用率限制，以及适配不同 Head Size 的新 Shader 路径。作者在 Strix Halo 与 R9700 上提供 Benchmark 图，并明确表示，维护更多硬件特化路径的成本在 Agent 协助下有所下降。仍是待合并候选，未提供足以概括所有 GPU/模型的统一加速比例。对 WebGPU/Dawn 的迁移价值是维护 Shader Variant 性能矩阵，并让 Agent 负责变体生成与回归监测，而不是默认一种 Workgroup 参数适用于所有设备。</p>
+<p><strong>OpenVINO CI 数值与内存修复：</strong><a href="https://github.com/ggml-org/llama.cpp/pull/31334">PR #31334</a> 发现非连续 <code>VIEW</code> 的 SCALE 在动态图路径上可能错误缩放整个源张量，回写时越过目标缓冲区。候选修复切出正确的 View，禁止不安全的原位修改，作者披露使用 AI 参与 CI 问题定位与测试。当前尚未合并，说明跨后端 Operator Test 能发现模型级测试不容易观察到的布局错误。</p>
+<p><strong>多模态之后的持续性能：</strong><a href="https://github.com/ggml-org/llama.cpp/issues/31302">Issue #31302</a> 报告 MTP 投机解码在一次图像请求之后，每一轮 Draft 仍持续重新分配计算图，甚至影响后续纯文本请求。它只完成日志层面复现，尚未确认根因；提示本地 Runtime 应测试“图片 → 文字 → 图片”等连续 Session，而不仅是冷启动推理。</p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>视觉 Agent 坐标缺失：</strong><a href="https://github.com/browser-use/browser-use/pull/6228">Browser Use PR #6228</a> 针对 <code>DOM.getContentQuads</code> 第一个 Quad 面积为零、但后续 Quad 有效的情况提出修复，原实现会把可见元素判为无坐标而回退到 JavaScript Click。作者增加了基于 Chromium 实际 Quad 的两项回归测试，并披露 AI 辅助实现。该 PR 已关闭但<strong>未合并</strong>，不能把候选修复当成正式能力。建议将坐标来源、目标可见性与 Click 之后的真实状态一并记录。</p>
+<p><strong>DevTools MCP 连接恢复：</strong>10 月 29 日 09:29（北京时间）创建的 <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3368">PR #3368</a> 提议在 <code>BrowserManager.ensureBrowser()</code> 中对瞬时 WebSocket 连接失败重试，并增加对应单元测试。尚未合并；重试只应覆盖瞬时网络错误，不应用于权限拒绝、错误 Profile 或无效 CDP 端点。</p>
+<p><strong>Agent 工具身份与权限：</strong>本期 Playwright 工作流采取“Agent 生成 Patch，受控步骤发布并审查”的隔离方式，比直接给 Browser Agent 写入仓库和环境管理权限更适合作为 AI Native Browser 的安全基础。用户数据的读取/写入、工具执行成功与最终业务成功，仍应由不同回执证明。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>本期重点：让故障验证和补丁发布都可被独立否证</h3>
+<p><strong>业界做了什么：</strong>Playwright 将 Agent 诊断、Patch、维护者 Review 与受控提交组成可复用的工作流；同时 CI 环境故障的修复已在 <a href="https://github.com/microsoft/playwright/pull/43707">PR #43707</a> 合并，并由 <a href="https://github.com/microsoft/playwright/pull/43735">PR #43735</a> 将正常 I/O 优先级启动脚本抽取为跨语言仓库共用的 <code>ci-env</code> Action。llama.cpp 则用关闭取消功能、模拟 Runner 暂停等实验，证明新测试能同时发现真实失败并减少环境误报。</p>
+<table><thead><tr><th>项目</th><th>已完成的闭环</th><th>仍缺少什么</th></tr></thead><tbody>
+<tr><td>Playwright Agent Triage</td><td>Diagnose → Patch Artifact → 权限隔离 → Review Workflow；工作流代码已合并</td><td>实际自动 Patch 的持续成功率、性能回归与 Canary 反馈</td></tr>
+<tr><td>Playwright Windows CI</td><td>环境 Diagnosis → 反向 A/B → Patch → Merge → 共用 CI Action</td><td>长期失败率与多仓库效果验证</td></tr>
+<tr><td>Playwright test.fail 假通过</td><td>Observe → 多版本 Reproduce → 原因定位</td><td>Patch、Merge、回归验证</td></tr>
+<tr><td>llama.cpp Cancel 测试</td><td>Observe → Root Cause → 测试重构 → 故障注入验证 → Merge</td><td>长期 CI Flake 监控</td></tr>
+<tr><td>Hexagon UPSCALE / OpenVINO SCALE</td><td>AI 辅助 Patch → 定向算子验证 / CI 诊断</td><td>正式合并、跨设备正确性和性能验证</td></tr>
+</tbody></table>
+<p><strong>迁移到浏览器工程：</strong>给每个自动修复任务保存不可变的证据包：Browser Revision、平台与 GPU、Trace/Crash、复现脚本、基线断言、测试环境指纹。Agent 先做环境排查或 Culprit CL 定位，再生成 Patch。独立 Verify Job 必须运行三组测试：旧版本确实失败、新补丁确实修复、故意破坏修复时测试必须重新失败。只有这些条件通过，才允许晋级到人工 Code Review、Canary 和 Telemetry 观察。</p>
+<p><strong>Recursive/Continual Improvement：</strong>Playwright 已具备将维护者 <code>review.json</code> 作为下一轮修订输入的基础设施；可以继续从误诊、失败补丁、成功回归中优化 Agent 的 Skill 与测试生成策略。但学习过程不得更改原始 Oracle，不能只优化“让 CI 变绿”的指标。现阶段尚无证据表明这些项目已经形成完整的自动 Canary → Learn → 再训练闭环。</p>
+
+<h2>开源与论文/工程实践</h2>
+<p>本窗口最值得保留的可复现工程材料是 <a href="https://github.com/microsoft/playwright/pull/43739">Playwright Triage/Revision Actions</a>、<a href="https://github.com/microsoft/playwright/issues/43738">test.fail 假成功最小复现</a>、<a href="https://github.com/ggml-org/llama.cpp/pull/31330">取消请求测试的故障注入复验</a>、<a href="https://github.com/ggml-org/llama.cpp/releases/tag/v0.8.0">llama.cpp v0.8.0 发行说明</a>、<a href="https://github.com/ggml-org/llama.cpp/pull/31323">RDNA Flash Attention 硬件变体 Benchmark</a>。未核实到满足时间窗口、可追溯实验且能直接改善浏览器工程闭环的新论文，因此不添加概念性 RSI 论文凑数。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><p>Browser Self-Improvement 正在从“让 Agent 帮忙找 Bug 和写 Patch”，进入“让 Agent 的诊断与补丁接受独立、可反驳的验证”。特别值得迁移的不是自动生成多少补丁，而是确保真正失败时 CI 必须变红、环境故障不会被当成浏览器回归、审查反馈能进入下一轮修订而不改变验收标准。</p></blockquote>
