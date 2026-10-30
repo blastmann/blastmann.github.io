@@ -1,0 +1,70 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-10-30
+date: 2026-10-30 09:37:00
+---
+
+<p><strong>观察窗口：</strong>2026-10-29 09:37 至 2026-10-30 09:37（北京时间）。本期采用开放发现、浏览器官方发布、英文社区与论文、已知工程仓库深挖四轮独立检索，优先发现此前漏报的新项目。近 24 小时的实质性新发现是 10 月 29 日公开的 EMBRACE 安全研究；其余重点项目明确标注为<strong>过去 7 天补推</strong>，不冒充当日新发布。所有仓库能力先按 README/官方说明归档，未经独立实测的不写成验证结论。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. EMBRACE：五类 AI 开发工具的内嵌浏览器暴露了共同的权限边界问题（10 月 29 日新研究）</h3>
+<p><strong>发生了什么：</strong>Forever Security 在 10 月 29 日公开 <a href="https://forever.security/blog/embrace-hacking-5-ai-assistants-embedded-browsers/">EMBRACE 研究</a>与<a href="https://forever.security/blog/embrace-hacking-5-ai-assistants-embedded-browsers-technical">技术报告</a>。研究者分别在 Cursor、GitHub Copilot、Codex、VS Code 和 Claude Desktop 的内嵌浏览器中报告问题，涉及页面内容诱导宿主执行操作、本地文件访问边界以及地址栏来源可信性。研究方表示 Cursor 和 Copilot 的对应问题已修复，而 Codex、VS Code 的报告在发文时仍未修复；这些修复状态来自研究者及媒体整理，并非我们独立进行的安全验证。</p>
+<p><strong>为什么值得关注：</strong>浏览器原有的同源限制、进程隔离和地址栏可信性，可能在与 Agent、文件预览、宿主能力桥接结合时被破坏。<strong>工程启发：</strong>AI Native Browser 的 WebView/Extension/MCP Bridge 应以不可信网页为前提；用户确认、Workspace Trust、Agent 自身判断不能替代能力隔离；还应针对 Worker、file://、页面伪装和跨 Origin 读写设计安全回归测试。该研究更接近 Observe/Diagnose，不能被包装成自动修复闭环。<a href="https://www.helpnetsecurity.com/2026/10/29/research-ai-assistant-browser-vulnerabilities/">第三方报道</a>。</p>
+
+<h3>2. Kaze：将 Agent 放入独立标签组的 macOS 浏览器（7 日补推，仓库 10 月 23 日创建）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/jackwener/Kaze">jackwener/Kaze</a> 是一款近期公开的 macOS AI 浏览器。项目描述 Agent 在自己的后台标签组中工作，允许用户随时接管，涉及发送、付款、删除时请求确认；既可内置运行，也把当前登录态浏览器通过 MCP 交给 Codex、Claude Code 等外部 Agent。README 还描述按站点保存可编辑 Skill、并行子任务和历史语义搜索。</p>
+<p><strong>为什么值得关注：</strong>它选择“人和 Agent 共用浏览器，但任务使用单独标签组”的交互路径，而不是独立云浏览器。<strong>工程启发：</strong>应测试 Agent Tab Ownership、用户接管/恢复、Skill 来源与确认门禁。成熟度：早期产品，仓库主要提供安装包、网站与 Skills，核心 BrowserMCP 另见 <a href="https://github.com/jackwener/BrowserMCP">BrowserMCP</a>；这些是项目声称的功能，尚无独立兼容性与安全验证。</p>
+
+<h3>3. Lilo：WebKit 内核与 Chrome 扩展、MCP 共存的实验性 Mac 浏览器（7 日补推，仓库 10 月 24 日创建）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/Alexays/Lilo">Alexays/Lilo</a> 宣称采用 Swift/AppKit + 系统 WebKit，使用侧边栏、Spaces、终端标签和内置 MCP Server，让外部 Coding Agent 在隔离的 Agent Space 中操作网页；项目以 MIT 许可证公开，README 将状态标注为 <strong>public beta</strong>。最值得深挖的是在 WebKit 上兼容 Chrome Manifest V3 扩展，具体兼容范围仍需依照 <a href="https://github.com/Alexays/Lilo/blob/main/COMPATIBILITY.md">兼容清单</a>实测确认。</p>
+<p><strong>为什么值得关注：</strong>这为“不采用 Chromium，也提供 Agent 和扩展生态”的 Browser Runtime 架构提供一个不同样本。<strong>工程启发：</strong>可以从 Extension API 兼容层、WebKit 原生隔离、Agent Profile/Space 权限、终端与浏览器共存性能四个维度评估；不应把 README 的功能描述当成全部场景已经验证。</p>
+
+<h3>4. anomalyco/browse：让 MCP Agent 使用用户真实 Chromium 标签页（7 日补推，仓库 10 月 27 日创建）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/anomalyco/browse">anomalyco/browse</a> 将 Chromium 扩展、本地 Relay 与 MCP Server 组合，让 OpenCode 等 Agent 使用当前浏览器的登录态与扩展，同时在后台独立标签组中进行导航、截图、网络记录和页面操作。登录、二次认证或付款时可交回用户处理，之后继续任务。README 提供安装、配对和回滚方式，支持 Chrome、Edge、Brave、Arc 等 Chromium 浏览器。</p>
+<p><strong>为什么值得关注：</strong>“基于真实 Profile 的本地 Agent”正在形成独立的工程路线；它降低重新登录成本，也提高了凭据和扩展权限的敏感度。<strong>工程启发：</strong>比较 Extension Relay/CDP/MCP 方案的会话隔离、凭据边界、用户接管状态机及可观测性。成熟度：刚公开的早期项目；功能来自仓库说明，未独立审计。</p>
+
+<h3>5. Opera WebAI：把浏览器托管的本地模型开放给网页与扩展（7 日补推，10 月 27 日官方预览）</h3>
+<p><strong>发生了什么：</strong>Opera 在 <a href="https://press.opera.com/2026/10/27/opera-doubles-down-on-local-ai-shipping-models-directly-in-its-browsers/">10 月 27 日官方发布</a>，开始向 Opera One 推出 WebAI 的可选早期预览：网页和扩展可调用浏览器管理的本地模型，支持 Gemma 与部分 Apple Silicon Mac 的 Apple 端侧模型；下载与每个站点的使用权限由用户控制。现阶段面向 64 位 Windows 与 Apple Silicon Mac，Opera GX/Neon 后续再跟进。与此同时还预览了 HTML-in-Canvas，把可交互 HTML 页面嵌入二维或三维场景。</p>
+<p><strong>为什么值得关注：</strong>这直接改变“每个网站/扩展都自己加载模型”的运行时分工。<strong>工程启发：</strong>WebAI 类 API 值得评估统一模型缓存、网站配额、权限、调度、设备能力检测以及跨站数据边界。注意 WebAI 是<strong>提议中的</strong> API/标准，不能等同于跨浏览器已统一实现。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table><thead><tr><th>首次发现线索</th><th>项目 / 成熟度</th><th>区别与下一步跟踪</th></tr></thead><tbody>
+<tr><td>10 月 23 日仓库创建</td><td><a href="https://github.com/jackwener/Kaze">Kaze</a> · 早期安装包/Skills</td><td>原生 Agent 标签组、站点 Skill；关注可执行自动化、发布频率、宿主权限与安全评测。</td></tr>
+<tr><td>10 月 24 日仓库创建</td><td><a href="https://github.com/Alexays/Lilo">Lilo</a> · 公开 Beta</td><td>WebKit + MV3 兼容层 + MCP；关注真实扩展通过率、Profile 隔离与启动/内存数据。</td></tr>
+<tr><td>10 月 27 日仓库创建</td><td><a href="https://github.com/anomalyco/browse">browse</a> · 早期 MCP 扩展</td><td>现有 Chromium Profile + 本地 Relay；关注 OAuth/2FA 接管、会话可信性与权限模型。</td></tr>
+<tr><td>10 月 27 日仓库创建</td><td><a href="https://github.com/fusor-rs/liquidai-lmf3-wasm">liquidai-lmf3-wasm</a> · 开发者原型</td><td>Rust 编译 WASM，声称无需 GPU 在浏览器 CPU 上运行 LFM3 的文本、视觉、语音与结构化判定；作者宣称最高约 97 tokens/s，未独立测量。关注设备端存储、首次下载及模型正确性。</td></tr>
+<tr><td>10 月 27 日仓库创建</td><td><a href="https://github.com/go-wasmcontainers/gpu">go-wasmcontainers/gpu</a> · 早期底层库</td><td>尝试给浏览器中的 WASI 容器提供 wasi-nn、wasi:webgpu 计算与渲染；README 说明示例 E2E 和每进程资源配额。关注标准兼容性、真实 GPU 覆盖与 WASI Guest 隔离。</td></tr>
+</tbody></table>
+<p>上述“首次发现线索”采用 GitHub 仓库的创建日期，并非断言该日期是产品首次发布或能力已经成熟；所有体验、性能与安全能力均待实测。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>Firefox Smart Window 的主动浏览：</strong>Mozilla <a href="https://blog.mozilla.org/en/firefox/skip-the-busywork-with-smart-window/">10 月 27 日官方文章</a>介绍选定标签页辅助填表、<code>/watch</code> 周期监测网页变化。在当前 Beta 中，填表仅支持文本字段且用户审阅后提交；选定来源页面数据会发送给 Gemini 3.1 Flash Lite，并非完全端侧；网页监测借助 Qwen 模型，浏览器必须保持打开，最多 15 个任务。现阶段面向美加桌面版英文用户。<strong>启发：</strong>主动 Agent 的任务生命周期应由 Browser Runtime 管理，并明确本地/云端模型数据边界。</p>
+<p><strong>Opera HTML-in-Canvas：</strong>同一份 <a href="https://press.opera.com/2026/10/27/opera-doubles-down-on-local-ai-shipping-models-directly-in-its-browsers/">官方发布</a>还演示在 2D/3D 场景嵌入交互网页。它属于演示/早期能力，不代表 W3C 或其他引擎已实现同名通用 Web API。对 Browser UI 与沉浸式交互有探索价值。</p>
+<p>本次没有找到可以核实为过去 24 小时新发布且比上述内容更有实质进展的 Chrome/WebKit/Edge 性能架构公告，因此不重复旧的修复清单。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>纯 CPU 的浏览器多模态实验：</strong><a href="https://github.com/fusor-rs/liquidai-lmf3-wasm">fusor-rs/liquidai-lmf3-wasm</a> 提供模型存储、WASM 构建、端内对话/图像/音频演示和分阶段 Parity/Benchmark 命令。与 WebGPU 路线相比，它强调不用 GPU 仍可运行，但 README 的最高吞吐来自项目作者，不能外推到普通手机。<strong>启发：</strong>对于 iOS/Android Browser，应把首轮下载、WASM 内存限制、CPU 耗电、长会话与数值一致性纳入横向评测。</p>
+<p><strong>NVIDIA 语音模型补充（10 月 28 日）：</strong><a href="https://huggingface.co/blog/nvidia/nemotron-transcribe-granary">Nemotron 3.5 Transcribe 与 Granary v2</a> 发布开放权重的可提示语音转写模型，覆盖 40 种转写语言，支持说话人标注、翻译与长录音，并开放数据整理流程。其 MoE 模型虽每步只激活约 4B 参数，总量仍约 30B，主要面向较强 GPU，不能误称适合手机浏览器端内。<strong>启发：</strong>持续追踪更小的量化/蒸馏变体，优先评估录音理解而非把它当低成本实时 ASR。</p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>三种正在分化的产品模式：</strong>Opera 代表“浏览器共享的本地模型 API”；Kaze/Lilo 代表“用户浏览器内的 Agent 标签组/Space”；anomalyco/browse 代表“外部 Coding Agent 通过扩展与 MCP 复用浏览器”。它们的差异核心不是 UI 皮肤，而是<strong>模型在哪运行、网页能获得什么权限、谁拥有标签页、是否允许读取登录态，以及用户如何接管任务</strong>。对 Browser Runtime 可以把这五项做成统一能力契约与回归测试。</p>
+<p><strong>Unsloth Desktop 本地 Browser Use：</strong>10 月 28 日社区报道其展示 Qwen3.8-27B 在本地驱动内嵌浏览器执行任务；目前主要是发布方演示，未获得可复现的完整成功率数据，因此仅作追踪候选，不纳入前五。<a href="https://unsloth.ai/">Unsloth 官网</a>。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>本期重点：安全能力边界应先于自动修复与经验学习</h3>
+<p><strong>已有进展：</strong>EMBRACE 提供了对内嵌浏览器破坏既有安全边界的实证攻击研究；并非自动修复系统。前一天 <a href="https://github.com/microsoft/playwright/pull/43739">Playwright 已合并的 Agent Triage/Revision Actions</a> 则提供了 Diagnose → 受控 Patch → Review 的基础设施；还没有实际 Canary → Telemetry → Learn 的连续证据。</p>
+<table><thead><tr><th>案例</th><th>可确认阶段</th><th>缺口 / 可迁移做法</th></tr></thead><tbody>
+<tr><td>EMBRACE 内嵌浏览器</td><td>Observe → 漏洞 Reproduce/Diagnosis → 部分厂商修复（研究方披露）</td><td>缺少跨产品统一回归与长期 Telemetry；应补齐 file://、Worker、Agent Bridge、地址栏来源的安全测试。</td></tr>
+<tr><td>Playwright Agent Workflow（昨日后续跟踪）</td><td>Diagnose → Patch Artifact → Review 流程已合并</td><td>缺自动性能门禁、发布验证及从审查反馈持续学习的实际效果。</td></tr>
+<tr><td>新兴 Browser Agent 产品</td><td>产品架构/权限声明与早期可用性</td><td>需要独立 Browser Harness：任务成功率、用户接管、权限拒绝与跨版本兼容测试。</td></tr>
+<tr><td>WASI/WebGPU 容器原型</td><td>作者提供的构建、单测与 E2E 示例</td><td>应扩展成跨 GPU 性能/正确性矩阵，跟踪失败案例是否回流为回归测试。</td></tr>
+</tbody></table>
+<p><strong>推荐的短期实验：</strong>为 Browser Agent 建一个最小“权限 + 结果”验证集：以 CDP/WebMCP 容器中的不可信网页为输入，覆盖网页声明身份与真实导航身份不一致、页面与 Worker 文件能力差异、用户接管前后权限变化，以及关闭任务时是否完整撤销权限。每个失败样本保存 Browser Revision、操作证据、预期拒绝/允许结果，作为后续 Agent Patch 的不可变验收条件。只要这些问题还没有独立验证，不应把模型声称成功当成 Learn 信号。</p>
+<p><strong>Recursive Improvement 判断：</strong>今天没有发现经过独立验证、已在 Chromium/WebKit/Firefox 长期运行的“自主提补丁 → 性能评测 → Canary → 从结果学习”的新闭环。今后的日报应继续以真正的自动化证据为入选前提，而不是把每个工程修复都称作 RSI。</p>
+
+<h2>开源与论文/工程实践</h2>
+<p>重点原始资料：<a href="https://forever.security/blog/embrace-hacking-5-ai-assistants-embedded-browsers-technical">EMBRACE 技术研究</a>、<a href="https://github.com/jackwener/Kaze">Kaze</a>、<a href="https://github.com/Alexays/Lilo">Lilo</a>、<a href="https://github.com/anomalyco/browse">browse</a>、<a href="https://github.com/fusor-rs/liquidai-lmf3-wasm">浏览器端 WASM LFM3</a>、<a href="https://github.com/go-wasmcontainers/gpu">WASI WebGPU</a>、<a href="https://press.opera.com/2026/10/27/opera-doubles-down-on-local-ai-shipping-models-directly-in-its-browsers/">Opera WebAI 官方发布</a>、<a href="https://blog.mozilla.org/en/firefox/skip-the-busywork-with-smart-window/">Mozilla Smart Window 官方说明</a>。没有发现满足窗口且带有可核实新实验的新论文，故不引用旧论文凑数。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><p>最近一周出现的 Kaze、Lilo、browse、Opera WebAI 和 WASM 模型项目，说明浏览器 × AI 正在从“加一个聊天侧栏”分化为<strong>浏览器共享模型能力、真实 Profile 中的 Agent 执行空间、可复用的端内推理运行时</strong>三条路线。10 月 29 日的 EMBRACE 研究提醒我们：决定这些路线能否真正成为产品的，不只有推理速度和 Agent 成功率，更是浏览器与宿主之间的权限边界。</p></blockquote>
