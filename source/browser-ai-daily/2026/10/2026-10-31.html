@@ -1,0 +1,72 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-10-31
+date: 2026-10-31 09:52:00
+---
+
+<p><strong>观察窗口：</strong>2026-10-30 09:52 至 2026-10-31 09:52（北京时间）。按“开放发现 → 官方发布 → 英文社区/论文 → 已知仓库工程深挖”四轮检索，并对最近 7 天的漏报补推。本期<strong>过去 24 小时有明确发布日期的重点</strong>是 TestMu AI 10 月 30 日披露的自主浏览器探索方案；GitHub Universe 的 Agentic Workflows、Copilot 本地/云端模型路由、Akamai WASM Agent Sandbox、Harness Corp 均明确标记为<strong>过去一周补推</strong>，绝不称为今日首发。以下产品能力、测量数据区分官方宣称、作者实验与独立验证。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Kane CLI Exploration：从一个 URL 自动探索网页、形成流程图和可复用测试（10 月 30 日官方工程文章）</h3>
+<p><strong>发生了什么：</strong>TestMu AI 于 <a href="https://www.testmuai.com/blog/ai-agent-explores-web-app/">10 月 30 日发布技术文章</a>，介绍 Kane CLI Exploration：只提供目标 URL，Agent 就可以自主遍历页面和业务流程，将页面、动作链、异常与验证状态构成可视化地图。地图在多次探索之间保留，对新增/变化流程标注、复验；下一轮可继承生成的 Skill。CLI 0.10.0 的<a href="https://github.com/LambdaTest/kane-cli/releases">正式发布发生在 10 月 28 日</a>，并非今天才发布。官方称云端最多并行 20 个浏览器，支持只读/可修改策略与人工查看会话；这些属于项目提供的能力描述，并非独立实测。</p>
+<p><strong>为什么值得看：</strong>它从“Agent 按要求点击页面”发展到“Agent 主动发现页面结构，再把发现转化为回归资产”，正好填补 Browser Self-Improvement 的 Observe → Learn 前半段。<strong>工程启发：</strong>可以为浏览器项目建立 Web App Journey Graph，将 Chromium Revision、Frame Tree、UI 操作序列、真实业务成功证据与变更对比绑定，后续提交触发精准回归。注意地图探索与测试生成本身不等于自动修复 Chromium。</p>
+<p>原始来源：<a href="https://www.testmuai.com/blog/ai-agent-explores-web-app/">10 月 30 日技术文章</a> · <a href="https://github.com/LambdaTest/kane-cli">GitHub 仓库</a> · <a href="https://github.com/LambdaTest/kane-cli/releases">Release 时间线</a>。</p>
+
+<h3>2. GitHub Agentic Workflows 正式 GA：Coding Agent 进入受控 CI 流程（10 月 28 日，7 日补推）</h3>
+<p><strong>发生了什么：</strong>GitHub 宣布开源 <a href="https://github.com/github/gh-aw">gh-aw</a> <a href="https://github.blog/changelog/2026-10-28-github-agentic-workflows-generally-available/">正式可用</a>。工程师用 Markdown 描述任务，工具编译为标准 GitHub Actions YAML，可执行 Issue 分流、CI 失败分析、文档与测试生成。默认只读、隔离执行、出站访问防火墙、安全输出与变更扫描；支持自托管 Actions Runner、选择执行模型及成本预测。</p>
+<p><strong>为什么值得看：</strong>相比让 Agent 拿到仓库管理员 Token，这种设计把 AI 推理、工作流权限与代码发布分开，是浏览器工程导入 Agent 的更稳妥入口。<strong>工程启发：</strong>将 Chrome/Firefox/WebKit 的 Regression 发现、bisect 候选定位、自动生成测试放在只读/候选产物阶段；真正的 Patch → Benchmark → Canary 仍交由独立门禁。注意 GA 代表工具正式可用，不代表自动浏览器修复闭环已经落地。</p>
+<p>原始来源：<a href="https://github.blog/changelog/2026-10-28-github-agentic-workflows-generally-available/">GitHub Changelog</a> · <a href="https://github.com/github/gh-aw">开源仓库</a>。</p>
+
+<h3>3. Copilot Fusion 开始将本地模型纳入云端调度（10 月 28 日，7 日补推）</h3>
+<p><strong>发生了什么：</strong>GitHub 的 <a href="https://github.blog/changelog/2026-10-28-github-copilot-fusion-now-supports-selection-of-local-models/">Copilot Fusion 本地模型路由进入可选实验预览</a>。在受支持的 Windows 设备上，可通过 Windows ML 管理 MAI Code 1.1 Flash；在 Windows/macOS/Linux 的 CLI 中，也可以连接自建 OpenAI 兼容端点，使用 MAI Code 1.1 Flash 或 Qwen3.8 Flash Next，让路由器在符合条件的本地模型与云模型之间选择。</p>
+<p><strong>为什么值得看：</strong>它把“端侧模型”从用户手动切换的后端，升级为 Agent Harness 的一个候选执行路径。官方明确指出：<strong>本地推理不等于完全离线</strong>，因为 Fusion 仍在云端决策路由，BYOK 的全部本地模型也不自动满足路由条件。<strong>工程启发：</strong>浏览器端侧 AI 应设计显式的 Privacy Boundary、Cost/Latency Router、模型能力注册表和可解释的路由记录，并在离线模式有可靠回退。</p>
+<p>原始来源：<a href="https://github.blog/changelog/2026-10-28-github-copilot-fusion-now-supports-selection-of-local-models/">GitHub 本地模型发布</a> · <a href="https://github.blog/changelog/2026-10-28-route-and-orchestrate-models-with-github-copilot-fusion/">Fusion 调度原理</a>。</p>
+
+<h3>4. Akamai Agent Sandbox：将 WASM 隔离和默认拒绝出站访问产品化（10 月 27 日，7 日补推）</h3>
+<p><strong>发生了什么：</strong>Akamai 于 <a href="https://www.ir.akamai.com/news-releases/news-release-details/akamai-launches-ai-inference-service-and-agent-execution">10 月 27 日官方发布</a> Akamai Agent Sandbox 与 Inference。Sandbox 依托开源 Spin SDK：Agent 在 WebAssembly 沙箱中运行，它生成的 JavaScript/Python 又在更严格的受限运行时中运行，默认禁止网络出站，并提供 CPU/内存/执行限制。目前处于技术预览，公开说明其暂以短步骤、间歇 Agent 为主，长期持久化尚是规划。</p>
+<p><strong>为什么值得看：</strong>Browser Agent 和网页脚本天然处理不可信数据，安全边界不应该寄托在模型自觉上。<strong>工程启发：</strong>可参考其双层权限模型，把 Browser Runtime 的网络、文件、DOM 写操作和云端 Tool 调用交给独立能力控制层；但 WASM 隔离并不能自动证明对所有硬件侧信道、安全风险都免疫。</p>
+<p>原始来源：<a href="https://www.akamai.com/products/akamai-agent-sandbox">官方技术说明</a> · <a href="https://github.com/spinframework/spin">Spin GitHub</a>。</p>
+
+<h3>5. Harness Corp：一个真正把小模型和 Harness 迭代放进浏览器的实验（10 月 27 日，7 日补推）</h3>
+<p><strong>发生了什么：</strong>独立开发者在 <a href="https://simedw.com/2026/10/27/harness-corp/">10 月 27 日原始技术文章</a>发布浏览器实验游戏 Harness Corp，使用 Qwen3-0.6B 通过 WebGPU 在浏览器本地运行，玩家改变指令、工具与 JSON 输出约束，观察同一个模型的行为变化。Chrome/Edge 使用 WebLLM；由于作者遇到 Firefox WebGPU Storage Buffer 绑定数量限制，Firefox 改用大约 600 行 WGSL/TypeScript 的自定义推理路径（最多使用 6 个 Storage Buffer）。这是作者特定配置上的兼容性经验，不能推断所有 Firefox GPU 都有相同限制。</p>
+<p><strong>为什么值得看：</strong>这不是大规模商用系统，却把 Browser Harness 对小模型可靠性的影响，转化为可运行、可比较的实验。<strong>工程启发：</strong>可以用端侧 0.5B–1B 模型构造 A/B 验证，把工具使用、输入限制、模型输出格式和 WebGPU 资源上限做成版本化 Benchmark。项目成熟度为个人实验，不存在独立的成功率或设备覆盖验证。</p>
+<p>原始来源：<a href="https://simedw.com/2026/10/27/harness-corp/">作者技术文章与实验入口</a>。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table><thead><tr><th>发现/发布节点</th><th>项目、成熟度</th><th>区别、技术价值与下一步信号</th></tr></thead><tbody>
+<tr><td>10 月 30 日文章；10 月 28 日版本发布</td><td><a href="https://github.com/LambdaTest/kane-cli">Kane CLI 0.10.0</a> · 已发布 CLI，厂商管理服务</td><td>自动探索未知 Web App、增量流程地图、Skill 回流；重点看能否输出独立可重跑的测试、故障证据和跨版本成功率。仓库不是今天创建的。</td></tr>
+<tr><td>10 月 28 日 GA</td><td><a href="https://github.com/github/gh-aw">GitHub gh-aw</a> · 正式可用、开源</td><td>自然语言工作流编译为受控 Actions；重点看自动生成的 Reproducer/Benchmark 与维护者审查的真实通过率。不是新仓库首发。</td></tr>
+<tr><td>10 月 27 日产品预览</td><td><a href="https://github.com/spinframework/spin">Spin + Akamai Agent Sandbox</a> · 开源底座、托管产品预览</td><td>WASM 嵌套隔离，出站默认拒绝；关注工具权限和模型生成代码的审计性能、跨平台隔离测试。</td></tr>
+<tr><td>10 月 27 日作者文章</td><td><a href="https://simedw.com/2026/10/27/harness-corp/">Harness Corp</a> · 个人 WebGPU 实验</td><td>同一小模型在不同 Harness 下的可靠性，Firefox 需要另一套 WGSL 路径；关注真实移动端和 Firefox 对照 Benchmark。</td></tr>
+</tbody></table>
+<p>本期检索了近期创建的 GitHub 仓库和英文社区，但未发现其他<strong>创建日期、功能和工程质量都可核实</strong>、足以进入首选五条的新仓库；没有把旧项目的最新提交误写成“今日新开源”。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>Firefox 与 Chrome WebGPU 后端的兼容性差异：</strong>Harness Corp 的作者记录了同一 Qwen3-0.6B 浏览器模型在 Chrome/Edge 直接用 WebLLM，而 Firefox 因 Storage Buffer 使用限制切换到自定义 WGSL Kernel 的过程。这是可借鉴的 Runtime 策略：对 GPU Limit 做特性检测，选择不同 Shader/内存布局，而不是根据浏览器名称固定判断。对应 <a href="https://simedw.com/2026/10/27/harness-corp/">原始实验</a>。本期未核实到值得替代该案例的过去 24 小时 Chromium/WebKit/Firefox 官方架构更新，因此不重复低价值补丁。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>端云推理切换应由 Harness 显式管理：</strong>GitHub Fusion 10 月 28 日的预览表明本地模型已成为动态路由候选，但路由仍需要云服务，且不同系统的托管模型/自建模型支持存在差异。Browser Runtime 可以引入统一的模型注册表，记录内存、上下文长度、工具调用、能力、预计延迟和隐私边界，并将每次决策作为 Telemetry。<a href="https://github.blog/changelog/2026-10-28-github-copilot-fusion-now-supports-selection-of-local-models/">官方说明</a>。</p>
+<p><strong>WebGPU 小模型不等于无条件跨浏览器：</strong>Harness Corp 在 Firefox 采用专门实现，提示需要测试 GPU 绑定上限、WGSL 编译、首次 Token、Decode、模型下载以及中断恢复。作者性能经验仅限其设备与实验设置。<a href="https://simedw.com/2026/10/27/harness-corp/">技术文章</a>。</p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>从“调用页面工具”到“持续观测网页”： </strong>Kane CLI Exploration 将 Chrome 页面状态、导航/表单流和问题归档到可复查的地图中。虽然主要面向 Web App 测试，它启发 Browser Agent 以持续的 Flow Graph 作为上下文，而不是每次从零探索；同时把截图、控制台、网络证据与测试结果绑定。<a href="https://www.testmuai.com/blog/ai-agent-explores-web-app/">官方技术文章</a>。</p>
+<p><strong>权限执行层：</strong>Akamai 的 WASM 沙箱强调默认禁止外部访问，GitHub gh-aw 强调只读 Agent 和独立安全输出，两者可组合成 Browser AI Harness 的“可探索、不可越权”设计。二者是工程架构参考，并非已经集成到 Chromium。<a href="https://www.akamai.com/products/akamai-agent-sandbox">Akamai</a> · <a href="https://github.blog/changelog/2026-10-28-github-agentic-workflows-generally-available/">GitHub</a>。</p>
+
+<h2>Browser Self-Improvement</h2>
+<h3>本期重点：从无规格探索到可复用回归，再接入受控修复流程</h3>
+<table><thead><tr><th>案例</th><th>已验证/宣称的闭环范围</th><th>仍缺少什么</th></tr></thead><tbody>
+<tr><td>Kane CLI Exploration</td><td>Observe（自主探索）→ Diagnose（标注页面变化/异常）→ Verify（重跑路径）→ Learn（Skill/增量地图）；这些能力来自官方文章与 Release。</td><td>需独立证明在真实网站变化时稳定、能否自动定位 Chromium 罪魁提交、产生可信补丁及 Canary。</td></tr>
+<tr><td>GitHub Agentic Workflows GA</td><td>受控 Diagnose → 生成候选 Patch/Test → 安全输出/Review 的工程基础设施。</td><td>缺少浏览器专用 benchmark、真实自动修复的效果与生产 Canary/Telemetry。</td></tr>
+<tr><td>Harness Corp</td><td>同一模型上开展 Harness/工具/输出约束实验的作者 Demo；适合形成可复现评测。</td><td>非自动闭环；需要固定数据集、重复运行的独立对照、跨设备结果。</td></tr>
+<tr><td>Akamai Sandbox</td><td>权限边界与沙箱执行，能为 Observe/Improve 阶段隔离危险代码。</td><td>不是故障修复系统；需要与 Browser Reproducer/Review/Canary 流程连接。</td></tr>
+</tbody></table>
+<p><strong>迁移到浏览器工程的最小实验：</strong>① 用 CDP + WPT 或应用 UI 回放获取真实失败序列与当前 Browser Revision；② 用 Agent 生成最小复现、分类环境问题和产品问题；③ 在 gh-aw 一类受控 Actions 中运行候选修复，保存补丁、构建日志、Trace 与基线/候选对比；④ 只有独立的结果验证通过才允许进入 Canary；⑤ 将失败与成功案例转为回归测试或可审核 Skill。若无法完成独立验证，禁止将结果作为 Learn 信号。</p>
+<p><strong>Recursive Improvement：</strong>本期没有找到在 Chromium/WebKit/Firefox 上已证明自主完成“诊断、补丁、Benchmark、Canary、学习”的新系统。不要将普通开发工具的 GA 宣传等同于浏览器本体已经自我进化。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p><strong>Skill∞（10 月 26 日论文，7 日补推）：</strong><a href="https://arxiv.org/abs/2610.35434">Recursive Self-Improvement for Agent Skill Optimization</a> 让优化任务 Skill 的 Meta-Skill 也可以由 Agent 检查和修改，使用执行轨迹、候选方案和独立审查。论文报告在 83 个 SkillsBench 任务中达到 60.7% 通过率，对照人为策划 Skill 的 56.4% 和 SkillEvolver 的 54.5%；这是论文作者实验，非浏览器 Benchmark。<strong>迁移价值：</strong>Browser Harness 的站点 Skill 也可迭代，但验证集必须与优化集隔离，且每次策略升级需要检查权限与业务结果，避免以演示分数替代生产正确性。项目原始来源：<a href="https://arxiv.org/abs/2610.35434">arXiv</a>。</p>
+<p>原始工程资料汇总：<a href="https://github.com/LambdaTest/kane-cli">Kane CLI</a>、<a href="https://github.com/github/gh-aw">GitHub Agentic Workflows</a>、<a href="https://github.com/spinframework/spin">Spin</a>、<a href="https://simedw.com/2026/10/27/harness-corp/">Harness Corp</a>。没有给缺乏独立数据的项目杜撰下载增长、性能加速或社区热度。</p>
+
+<h2>今天的一个判断</h2>
+<blockquote><p>最值得关注的变化不是 Browser Agent 又多学会一个点击动作，而是业界开始分别解决三个工程问题：<strong>如何自动发现没有写入规格的页面流程、如何在受控 CI 中运行 Agent、如何让端侧推理和工具执行受资源与权限约束。</strong> 这三项接起来才可能成为 Browser Self-Improvement 的起点；距离真正自动修改浏览器内核并安全发布，仍然缺少独立的多平台 Benchmark 与 Canary 反馈。</p></blockquote>
