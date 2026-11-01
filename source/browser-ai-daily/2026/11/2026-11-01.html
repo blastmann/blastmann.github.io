@@ -1,0 +1,68 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-01
+date: 2026-11-01 09:48:00
+---
+
+<p><strong>观察窗口：</strong>2026-10-31 09:48 至 2026-11-01 09:48（北京时间）。先进行不带已知项目名的开放发现，再分别检查官方发布、英文社区/论文和已知仓库的工程变更。<strong>过去 24 小时明确可核实的重点</strong>是 Lightpanda 10 月 31 日至 11 月 1 日合并的 MCP 复用脚本及热点代码布局更新；其他重点明确标注为过去 7 天补充发现，不能误称今日新发布。项目性能与效果数字除非另行注明，均来自作者/论文或仓库发布说明，并非独立实测。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Lightpanda：MCP 可直接复用已保存脚本，同时更新浏览器热点代码布局（24 小时内合并）</h3>
+<p><strong>发生了什么：</strong>从零构建、面向 Agent 的 Zig Headless Browser <a href="https://github.com/lightpanda-io/browser">Lightpanda</a> 在 10 月 31 日 23:42 UTC 合并 <a href="https://github.com/lightpanda-io/browser/pull/4314">PR #4314</a>：MCP 的 <code>run</code> 可以使用 <code>{path}</code> 直接调用先前由 <code>save</code> 保存的脚本，不必每次重新发送源代码；<code>script</code> 和 <code>path</code> 必须二选一，绝对路径及 <code>..</code> 路径会被拒绝，所有入口共享 10 MB 限制。这使探索得到的脚本更接近可重复执行的工程资产。同日其 <a href="https://github.com/lightpanda-io/browser/pull/4330">MCP 超时回归测试 PR #4330</a> 也已合并，通过 <code>await null</code> 测试异步恢复后的死循环，避免把导航耗时误算成脚本超时缺陷。</p>
+<p>11 月 1 日 01:05 UTC 又合并 <a href="https://github.com/lightpanda-io/browser/pull/4337">PR #4337</a>，重新生成热点代码 <code>orderfile</code>；PR 记录了 16,540 KB 热点驻留集合与代码/只读数据符号规模，但<strong>没有公开可直接归因于这次变更的启动时间或 P95 改善数字</strong>。<strong>为什么值得看：</strong>它同时展示了 Agent 工具执行的“脚本资产化”和 Browser Runtime 的真实 Profile 引导布局调整。<strong>工程启发：</strong>把 Agent 生成的可复现步骤保存成受限脚本，并用独立超时/权限测试约束；对 PGO/orderfile 优化还应增加启动耗时、缺页、RSS 与跨平台回归测试。以上 PR 已合并，不等于完整自动性能优化闭环。</p>
+
+<h3>2. WebGPU GPU-Resident Speculative Decoding：把推测解码的决策留在 GPU 上（10 月 29 日论文，7 日补推）</h3>
+<p><strong>发生了什么：</strong>10 月 29 日上线的 <a href="https://arxiv.org/abs/2610.39761">GPU-Resident Speculative Decoding for In-Browser LLM Inference with WebGPU</a> 认为，浏览器内大模型推理的瓶颈不仅在算子，也在 CPU↔GPU 同步、每 Token 调度、读回与跨进程通信。论文将 Draft、Verify、Accept、KV Cache 维护放入 GPU 驻留循环，采用确定性小批量整数 Kernel，并依据设备成本动态调整推测宽度。</p>
+<p>作者在 7 个 0.5B–8B 模型、11 项任务和 3 类 GPU 的条件下，报告相对 WebLLM 的解码速度提升为 3.5–8.6 倍（取决于设备），可选 Draft Head 的最高峰值为 10.2 倍；这些是<strong>论文作者实验</strong>，不是对任意手机、浏览器和模型的通用承诺，也没有独立复测证据。<strong>为什么值得看：</strong>这是直接针对 WebGPU Browser Runtime 调度成本、而非只替换更快 MatMul 的架构方案。<strong>工程启发：</strong>用 Chrome/Firefox/Safari 真机测量 <code>submit</code>、readback、Token latency、模型切换以及后台恢复，检验 GPU 驻留是否带来稳定的端到端收益。<a href="https://arxiv.org/abs/2610.39761">原始论文</a>。</p>
+
+<h3>3. WebAnything：从真实网页自动生成可复现、可重置的 Agent 测试环境（10 月 27 日论文，7 日补推）</h3>
+<p><strong>发生了什么：</strong><a href="https://arxiv.org/abs/2610.37786">WebAnything</a> 提出 Explorer-Builder 从获授权的网站采集结构与交互结果，自动构建可执行镜像；独立 Verifier 对冻结候选执行检查，失败时触发局部修复或重新采样。论文作者报告 244 个网站工件、12,984 个已执行并接受的任务，以及训练后在多个 Web Agent 评测集上的提升。</p>
+<p><strong>关键边界：</strong><a href="https://github.com/china-qijizhifeng/Web-Anything">公开仓库</a>包含构建/验证管线、244 个站点的清单与 3 个有限 Demo，<strong>并未打包 244 个完整可运行的网站镜像</strong>。项目文档也明确区分“能启动/截图”与“功能真正通过独立验证”。<strong>为什么值得看：</strong>它可为 Browser Agent Regression 生成可重复测试环境，减少真实网站随时间变化造成的结果噪声。<strong>工程启发：</strong>把网站的授权范围、原始采样、镜像版本、操作轨迹和独立验收绑定为一次实验；仍需评估跨站认证、动态第三方脚本与重置可靠性。当前是研究原型及部分开放的验证资产，不等于 Chromium 内核可自动修复。</p>
+
+<h3>4. Pomerado：把网页业务流程“铸造”为可复用 MCP 工具（10 月 30 日 Canary，7 日补推）</h3>
+<p><strong>发生了什么：</strong>10 月 5 日创建的开源项目 <a href="https://github.com/Pomerado/pomerado">Pomerado</a> 提供从自然语言任务自动探索网站、运行一次实例、概括成可重用操作，再导出本地 MCP Server 的流程，不要求 HAR 或录制文件。10 月 30 日发布的 <a href="https://github.com/Pomerado/pomerado/releases/tag/v0.4.0-canary.493">v0.4.0-canary.493</a> 增强了重复写入确认、单对象写操作、用户拒绝后的状态处理及结果回读。</p>
+<p><strong>为什么值得看：</strong>“每次都重新让模型看 DOM、点击”之外，出现了“探索一次 → 得到确定性工具 → 后续轻量运行”的路线。项目开源 Core 包括 Minter、Guardian 和 Local Host；Cloud 的网站变更自动检测/自修复属于托管能力说明，不应视为本地开源版本已实现。仓库明确说明：已生成工具在运行阶段<strong>不会重新检查意图或读写权限</strong>，源代码/部署声明被手工修改也不自动重新审查。因此生成时有 Guardian 不等于运行时有持续权限保护。<strong>工程启发：</strong>Browser Harness 可将可重复的站点操作转成版本化 Tool，但执行前的权限校验与写入后回读应由宿主层独立承担。当前属于快速迭代的早期工具，性能优势未经独立对照。</p>
+
+<h3>5. OpenBot：每个 Agent 独立浏览器与权限网关，进入 GitHub 增长观察名单（10 月 29–31 日趋势）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/CopilotKit/OpenBot">CopilotKit/OpenBot</a> 是 8 月创建的开源平台，不是今天诞生的新项目。GitHub 项目热度跟踪在 10 月 29 日记录它单日增长约 628 Stars（第三方榜单口径，未独立重算）。项目让各 Agent 拥有独立的 Chromium/文件工作区，将浏览器、文件和 MCP 操作统一经由 Policy Gateway 决策、记录。10 月 31 日提交的 <a href="https://github.com/CopilotKit/OpenBot/commit/c396a5f68c817043846f1ca3c2b42061ee73ceb5">浏览器计算环境监听地址配置改动</a> 已进入仓库，但它只是配套工程改动，而非本次入选原因。</p>
+<p><strong>为什么值得看：</strong>项目将 Policy、审计和 Agent Browser 生命周期作为通用平台能力，而不是要求每个 Skill 各自实现。<strong>工程启发：</strong>对 AI Native Browser 的 Agent Workspace、多人并行、接管与工具授权很有参考价值。应继续验证用户接管后对 Shell/文件写操作的覆盖、真实授权一致性和异常退出时的资源回收。项目仍需独立的安全与规模化实测。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table><thead><tr><th>发现与时间</th><th>项目 / 成熟度</th><th>与现有方案的区别、后续信号</th></tr></thead><tbody>
+<tr><td>10 月 31 日～11 月 1 日合并</td><td><a href="https://github.com/lightpanda-io/browser">Lightpanda</a> · 持续开发的 Zig 浏览器</td><td>Agent MCP 脚本按路径复用，热点代码 Profile 调整；跟踪脚本权限测试、Profile 导致的启动/内存实测。</td></tr>
+<tr><td>10 月 29 日论文</td><td><a href="https://arxiv.org/abs/2610.39761">GPU-Resident Decoding</a> · 论文原型</td><td>用 GPU 驻留批量验证减少 CPU/GPU 同步；跟踪公开实现、浏览器跨平台复现与移动端能耗。</td></tr>
+<tr><td>10 月 27 日论文；仓库 10 月 16 日创建</td><td><a href="https://github.com/china-qijizhifeng/Web-Anything">WebAnything</a> · 研究代码</td><td>真实网站重建 + 独立 Verifier + 可重置评测；跟踪完整工件开放范围、任务成功率与授权边界。</td></tr>
+<tr><td>10 月 5 日创建；10 月 30 日 Canary</td><td><a href="https://github.com/Pomerado/pomerado">Pomerado</a> · 开源 Core / 早期 Canary</td><td>网页流程转确定性 MCP Tool；跟踪生成工具是否有独立权限、长期漂移与可靠回读。</td></tr>
+<tr><td>8 月创建；10 月 29 日增长信号</td><td><a href="https://github.com/CopilotKit/OpenBot">OpenBot</a> · 活跃开源平台</td><td>每 Agent 独立 Chromium + Gateway + 审计；跟踪授权在 Browser/Shell/File 的一致性。</td></tr>
+</tbody></table>
+<p>发现日期、论文发布日期、GitHub Release 日期和仓库创建日期分开标注；“项目进入新兴技术雷达”不等于“项目今天首次发布”。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>真正发生在观察窗口内的浏览器底层动作：</strong>Lightpanda 将 Agent MCP 脚本保存与执行接口统一，并在 async microtask 路径补充有时限的执行测试，避免某些 <code>await</code> 后不结束的脚本使 Agent 无响应。它并非 Chromium/WebKit 的新标准 API，但涉及新一代轻量浏览器的执行隔离与可重放操作。<a href="https://github.com/lightpanda-io/browser/pull/4314">PR #4314</a>、<a href="https://github.com/lightpanda-io/browser/pull/4330">PR #4330</a>。本期没有核实到过去 24 小时足够重大的 Chrome/Firefox/WebKit 官方架构或 Web API 宣发，因此不为填充栏目重复旧消息。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>WebGPU Speculative Decoding 的收益要按真实设备判断：</strong><a href="https://arxiv.org/abs/2610.39761">10 月 29 日论文</a>给出了把 Draft/Verify/Accept 放在 GPU 上、降低每 Token 同步的思路；论文中的 3.5–8.6 倍来自指定 GPU 和基线，尚无 Apple GPU / Snapdragon Adreno / 各浏览器的一致性结论。可与现有 WebLLM、ONNX Runtime Web 和浏览器统一模型 API 做首 Token、连续 Decode、功耗、内存和恢复耗时对照。</p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>三种不同的 Agent 可复用机制正在收敛：</strong>Lightpanda 复用已保存的脚本；Pomerado 把探索结果提升成独立 MCP Tool；WebAnything 将原网页交互变成可复现的评测环境。它们分别解决“重复执行成本”“工具定义稳定性”和“网站环境不稳定”问题，可以互补，但不可混成一个已经实现的自动修复平台。OpenBot 进一步为执行过程补充隔离浏览器和权限审计。</p>
+<p><strong>一条值得关注的安全补推：</strong><a href="https://github.com/vercel-labs/agent-browser/releases/tag/v0.41.0">agent-browser v0.41.0（10 月 29 日）</a> 修复 MCP 参数可能被解释成全局 CLI Flag、覆盖 <code>--allowed-domains</code> 的问题，并提供由 CLI 生成的 MCP Tool Schema 清单。它属于已发布的权限边界修复，不是普通的“测试小故障”。对 Browser Harness 的启发是：Tool 调用参数不得绕过宿主的持久策略与访问限制。</p>
+
+<h2>Browser Self-Improvement</h2>
+<p><strong>本期主线：Reproducer / Tool / Test Environment 三种工程资产的可信晋级。</strong>能重复运行并不自动意味着能自我改进；需要由不受 Agent 输出影响的机制，证明资产从观察产生、经过修正与验证、最终成为长期可复用的测试/工具。</p>
+<table><thead><tr><th>案例</th><th>已经完成的闭环环节</th><th>尚缺少什么</th></tr></thead><tbody>
+<tr><td>Lightpanda MCP 脚本/超时</td><td>Observe → Patch → 回归测试 → Merge；独立热点布局更新</td><td>真实业务回放成功率、性能基线、Canary 反馈、失败样本自动回流</td></tr>
+<tr><td>WebAnything</td><td>网站采样 → Builder → 独立 Verifier → 局部修复与重建（论文/部分公开代码）</td><td>可公开复现的完整站点工件、长期真实站点漂移验证</td></tr>
+<tr><td>Pomerado</td><td>探索 → 生成 MCP Tool → Guardian 审查 → 部署与回读（官方设计）</td><td>运行时持续授权、独立可靠性基准、网站变更后的开源自修复验证</td></tr>
+<tr><td>GPU 驻留推测解码</td><td>性能瓶颈诊断 → Kernel/调度设计 → 论文 Benchmark</td><td>代码独立复现、设备 Canary、长期性能回归与自动选择</td></tr>
+<tr><td>OpenBot</td><td>Agent 隔离执行 → Policy Gateway 决策/记录</td><td>自动故障归因、补丁生成、跨端测试与经验回流</td></tr>
+</tbody></table>
+<p><strong>可迁移到 Chromium/Firefox/WebKit 的短期动作：</strong>为 Agent 操作引入统一的 <code>Action Receipt</code>（原始输入、目标 Origin/Frame、权限结论、实际结果、Reproducer、Browser Revision），自动产出有限范围的复现脚本；仅当“旧版本失败 → 新版本通过 → 破坏修复后再次失败”的独立回归条件成立，才把脚本晋级为长期 Skill/测试资产。轻量浏览器的 orderfile/PGO 实验也应记录设备、Profile 样本与 Benchmark 原始值；没有这些就不进入 Learn。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p><strong>原始资料优先：</strong><a href="https://arxiv.org/abs/2610.39761">WebGPU GPU-Resident Speculative Decoding（10 月 29 日）</a>、<a href="https://arxiv.org/abs/2610.37786">WebAnything（10 月 27 日）</a>、<a href="https://github.com/china-qijizhifeng/Web-Anything">WebAnything 仓库与复现限制</a>、<a href="https://github.com/lightpanda-io/browser/pull/4314">Lightpanda MCP Script PR</a>、<a href="https://github.com/Pomerado/pomerado">Pomerado 开源 Core</a>、<a href="https://github.com/CopilotKit/OpenBot">OpenBot 独立 Agent Browser / Policy Gateway</a>。本期没有凭未经核实的论文或仓库名凑数量。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>浏览器 Agent 正在从“实时看网页再点击”，转向“先探索，再生成可复用的工具与测试环境”。</strong>这有利于降低执行成本、积累测试覆盖，但 Browser Self-Improvement 的可信门槛不在能否自动生成，而在权限限制、脚本重放结果和长期性能回归是否有独立验收。相比追求一次性自动修复 Chromium 的完整闭环，先实现“观察到问题 → 可复现实验 → 可信验证 → 测试资产回流”，更容易形成可量化的工程收益。</p>
+
+<p><a href="/browser-ai-daily/">返回日报聚合页</a></p>
