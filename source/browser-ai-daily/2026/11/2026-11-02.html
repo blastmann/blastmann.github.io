@@ -1,0 +1,68 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-02
+date: 2026-11-02 09:40:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-01 09:40 至 2026-11-02 09:40（北京时间）。本期按“开放发现 → 官方发布 → 英文社区/论文 → 已知仓库深挖”四轮寻找信息；首先不带已知项目名检索，再用 GitHub 创建时间、Commit、PR、Release 逐项核对。周末官方浏览器宣发较少，因此主线是<strong>新兴 WebGPU 工程项目、Agent 的结构化执行与真实测试资产回流</strong>。过去 7 天漏报的进展会标注“补推”；作者 Benchmark 与独立验证严格区分。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. MoGe-3 WebGPU：新开源端侧 3D 视觉推理，修正 Firefox/Metal Shader 兼容性（24 小时内提交）</h3>
+<p><strong>发生了什么：</strong>10 月 30 日创建的 <a href="https://github.com/xjodoin/moge3-webgpu">xjodoin/moge3-webgpu</a> 将 MoGe-3 ViT-L 的单图三维重建移植到浏览器，使用 ONNX Runtime WebGPU 执行稠密部分，以专用 WGSL Kernel 处理稀疏三维细化；这是<strong>第三方非官方移植</strong>，不是 Microsoft 官方新版本。11 月 1 日 23:35 UTC 的 <a href="https://github.com/xjodoin/moge3-webgpu/commit/ba465ca8ce805b4a4949ab51298939e0f33b080d">提交</a>修复 Firefox 158 + Metal 上 ONNX Runtime 生成的索引数组类型别名冲突；11 月 2 日 00:06 UTC 的 <a href="https://github.com/xjodoin/moge3-webgpu/commit/4ed37a192b3fcc70a3f967a23f834ea5df8f01fe">提交</a>引入有损紧凑权重下载与可无损恢复原始 FP32 字节的升级流程。</p>
+<p><strong>验证边界：</strong>作者给出 Apple M4 Pro 上 Firefox 158 的 18 组兼容性运行及 Chrome 156 的 54 组与 CUDA 参考的对照测试；没有独立复现。README 报告单一 Fast 模式模型约 1.24 GB 起始下载、需要数 GB 内存，WebGPU Subgroup 路径在 Chrome 156 上把 Fast 三轮细化的热运行耗时从 1.531 s 降至 1.272 s（作者 Benchmark），不能推广到手机。<strong>为什么值得看：</strong>同时覆盖跨浏览器 Shader 兼容、模型权重传输、Kernel 实测及数值验证。<strong>工程启发：</strong>把 Chrome/Firefox 的 WGSL 编译差异、模型原始哈希、推理误差及下载缓存变为同一份可重放实验记录；针对不同 GPU 能力选择 Kernel，而非假设通用性能。</p>
+
+<h3>2. Browser Harness：六个真实网站 Skill 经独立 Agent 重放后正式合并（24 小时内）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/browser-use/browser-harness/pull/961">browser-use/browser-harness PR #961</a> 于 11 月 1 日 20:09 UTC 合并，增加 Discogs、Google Trends、Wikipedia、Ticketmaster、Zoopla、Chess.com 六个站点 Skill。作者在真实云端浏览器探索公开页面，再由<strong>另一个独立 Agent</strong> 在新的未登录浏览器中原样执行每段代码；验证过程发现排序不稳定、页面元信息混入、抓取口径不准确等问题，并对部分内容进行了修正。</p>
+<p><strong>为什么值得看：</strong>这不是让 Agent“自行声称成功”，而是把已执行方法提升为可复验的领域资产。Skill 仅作为文档存在、需要显式启用 <code>BH_DOMAIN_SKILLS=1</code>，并规定尊重 robots.txt、不规避站点限制。<strong>闭环进度：</strong>Observe（真实网站）→ Learn 候选（Skill）→ 独立 Verify → 修订 → Merge；尚无持续线上故障反馈及 Canary。<strong>工程启发：</strong>浏览器工程的 Skill Registry 可以采用“原始操作记录、独立无登录复演、反例修正、版本化晋级”的门禁，对 WPT 自生成用例也适用。以上为 PR 作者提供的验证记录，未独立执行测试。</p>
+
+<h3>3. BrowserBear：本机 Chrome Profile + Native Host + CDP 的早期新项目（7 日内首次出现；24 小时内改进）</h3>
+<p><strong>发生了什么：</strong>10 月 29 日创建的 <a href="https://github.com/mikecann/browserbear">mikecann/browserbear</a> 使用 Chrome Extension、Native Messaging Host、本地 Unix Socket 与 <code>chrome.debugger</code>，让 Coding Agent 在指定的真实 Chrome Profile 与标签页工作，而不是每次启动全新隔离浏览器。其 Snapshot 支持增量差异，用户可通过 <code>handoff</code> 接管任务。11 月 1 日的 <a href="https://github.com/mikecann/browserbear/commit/60a3130a549c65cc59fae05f362ef0ca8e9c2de8">提交</a>补上输入框替换后的回读校验，避免受控输入组件偷偷恢复旧文本；另一次 <a href="https://github.com/mikecann/browserbear/commit/4809c9437de4e2085b066b54c58a10190f7edf6a">提交</a>处理第三方扩展 iframe 与 SVG 交错时的调试失败。</p>
+<p><strong>为什么值得看：</strong>它针对 Agent 真实使用中容易出错的 Profile 识别、标签所有权、自动输入及用户接管，提供了可读的实现，而不是只有产品宣发。<strong>成熟度：</strong>作者明确称为早期项目，仅 macOS + Chrome 156，暂无公开独立成功率测试；扩展对真实 Profile 和登录态的访问必须经过严谨授权审查。<strong>工程启发：</strong>将动作前的 Snapshot、动作后的字段回读和接管状态统一成 Browser Runtime 的可信操作回执。</p>
+
+<h3>4. Vercel Labs agent-desktop 1.0：结构化桌面访问补齐 Browser Agent 的跨应用能力（10 月 28–30 日发布，7 日补推）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/vercel-labs/agent-desktop/releases/tag/v1.0.0">10 月 28 日 1.0.0</a> 和 <a href="https://github.com/vercel-labs/agent-desktop/releases/tag/v1.0.2">10 月 30 日 1.0.2</a> 发布后，<a href="https://github.com/vercel-labs/agent-desktop">agent-desktop</a> 已以 Vercel Labs 名义提供 macOS、Windows、Linux 的 Rust CLI 与 C ABI。它读取操作系统 Accessibility Tree，并给可操作元素绑定含 Snapshot ID 的 Ref；当 UI 改变时返回 <code>STALE_REF</code> 或 <code>AMBIGUOUS_TARGET</code>，让 Agent 重新观察，而不是用旧坐标误点。默认通过系统无头接口操作，必要时再启用物理输入。</p>
+<p><strong>为什么值得看：</strong>Browser Agent 如果要操作浏览器设置、文件选择器、系统授权和原生桌面 App，网页 DOM/CDP 并不足够；这个项目提供了结构化的另一半。<strong>工程启发：</strong>为 CDP/WebDriver 与系统 Accessibility 两类工具统一 Ref 生命周期、错误码和重试语义。它本身不是浏览器，也没有公开独立跨平台任务成功率基准；快照和剪贴板可能包含敏感信息，应隔离日志与模型权限。</p>
+
+<h3>5. LiteRT-LM：WebGPU 并发加载模型的共享状态拆分，仍是候选 PR（24 小时内）</h3>
+<p><strong>发生了什么：</strong>11 月 2 日 01:34 UTC 创建的 <a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4332">google-ai-edge/LiteRT-LM PR #4332</a> 拟将 <code>streamed_weights_manager.cc</code> 内的全局权重流状态移入由互斥锁保护的 <code>WeightsStreams</code> 单例，并按线程记录当前编译的模型类型，以适应 WebGPU 权重上传回调与 <code>CompiledModel::Create()</code> 同线程执行的行为。目的是让多线程同时加载 Engine 不再互相干扰。</p>
+<p><strong>状态与边界：</strong>目前是<strong>未合并 PR</strong>，没有可核实的端到端内存与加载延迟改善数字；不把设计意图写成已经发布的能力。<strong>工程启发：</strong>AI Native Browser 中多个 Tab/Agent 共享推理服务时，权重缓存、模型实例、编译上下文及 WebGPU 回调线程需要明确生命周期和并发契约，并通过双模型并发加载与取消测试验证。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table><thead><tr><th>首次出现 / 变化时间</th><th>项目与成熟度</th><th>区别、风险及后续信号</th></tr></thead><tbody>
+<tr><td>10/30 创建；11/02 更新</td><td><a href="https://github.com/xjodoin/moge3-webgpu">MoGe-3 WebGPU</a> · 第三方实验移植</td><td>稠密 ONNX + 稀疏 WGSL + 跨 Firefox/Chrome 数值验证；追踪独立测量、移动端显存及模型首次加载。</td></tr>
+<tr><td>10/29 创建；11/01 更新</td><td><a href="https://github.com/mikecann/browserbear">BrowserBear</a> · 早期 macOS 项目</td><td>真实 Chrome Profile/标签页及 Native Host、增量 Snapshot；追踪登录态保护、跨平台与可重复测试。</td></tr>
+<tr><td>10/28 1.0；10/30 1.0.2</td><td><a href="https://github.com/vercel-labs/agent-desktop">agent-desktop</a> · 已发布跨端 CLI</td><td>系统 Accessibility Tree + 带 Snapshot ID 的 Ref；追踪跨应用 Benchmark、原生弹窗与错误恢复。</td></tr>
+<tr><td>10/30 首次开放源码</td><td><a href="https://github.com/aomni-com/open-duet">Open Duet</a> · 复杂开源 Workspace</td><td>Agent Runtime、共享记忆、浏览器/CLI、VM 工作区一并开放；自建需 Convex、鉴权和 VM 基建，非安装即可独立运行。</td></tr>
+<tr><td>10/28 创建；10/29 Beta</td><td><a href="https://github.com/caporro/tabs.chat">tabs.chat</a> · 轻量单文件 Beta</td><td>把本地/云端模型与 MCP Agent UI 放入单个 HTML；浏览器 localStorage 内 API Key 默认未加密，需要自行评估。</td></tr>
+</tbody></table>
+<p>以上日期按 GitHub 创建、Commit 或 Release 分别记录；新入选雷达并不代表全部项目今天发布。Open Duet、tabs.chat 均属于 7 日补推，当前未见高质量独立性能或安全评测。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>Firefox/Metal Shader 相容性比 API 是否支持更细。</strong>MoGe-3 WebGPU 报告 ORT 1.24.3 WGSL 输出的索引数组别名可能在 Firefox Metal 转译中产生不一致类型，导致 <code>Split</code>/<code>Concat</code> Pipeline 编译失败。其候选处理仅合并相同布局的别名名称，不改 Buffer 访问及 FP32 运算，并用参考结果验证。这是开发者仓库中的具体兼容处理，<strong>不等于 Firefox 官方修复已发布</strong>。<a href="https://github.com/xjodoin/moge3-webgpu/commit/ba465ca8ce805b4a4949ab51298939e0f33b080d">源提交</a>。</p>
+<p>本次没有核实到过去 24 小时值得单列的 Chrome、WebKit、Firefox、Edge、Opera、Brave 官方架构或 Web API 新公告，不重复 10 月下旬已推送的 Opera WebAI 和 Firefox Smart Window。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>模型分发与计算正确性应一起优化。</strong>MoGe-3 WebGPU 使用约 1.24 GB 的分块初始资源与浏览器缓存，尝试在后续下载恢复原始 FP32 权重；其部分 24-bit 存储属于精度取舍，在执行前扩展到 FP32，并不意味着等同于完整原始权重。每次模型升级必须同时检查权重哈希、视觉输出误差及跨设备缓存命中。LiteRT-LM 的 WebGPU 权重流并发 PR 则提醒：多个 Agent/Tab 的模型加载不能依赖无保护的全局状态。</p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>三个接口边界需要统一：</strong>BrowserBear 负责用户真实 Chrome Profile、标签与 CDP；agent-desktop 负责系统原生控件及 Accessibility Ref；LiteRT-LM 负责 WebGPU 模型权重与实例生命周期。产品不宜让 Agent 自行拼接这三套权限。可设计统一操作结构：Browser/OS/Model Target、Ref/Revision、权限结论、实际状态、可重放回执。</p>
+
+<h2>Browser Self-Improvement</h2>
+<p><strong>本期重点：Skill 只有经过独立复演，才应进入长期可用资产。</strong>Browser Harness 的六站点 Skill 是已合并的明确案例；MoGe-3 的跨浏览器数值比较与性能实验则展示了 Kernel 变体的独立正确性门槛，但均尚未触达浏览器正式 Canary/Telemetry 自动学习闭环。</p>
+<table><thead><tr><th>案例</th><th>真实走到的阶段</th><th>下一步缺口</th></tr></thead><tbody>
+<tr><td>Browser Harness 六站点 Skill</td><td>Observe 真实站点 → Learn 候选 Skill → Verify 独立 Agent → 修订 → Merge</td><td>随网站变更定期复演、失败分类、自动弃用失效 Skill</td></tr>
+<tr><td>MoGe-3 WebGPU</td><td>浏览器兼容问题 → Shader 修订 → 数值对照 / 作者 Benchmark → Git Commit</td><td>Firefox/Chrome CI、更多 GPU、持续 Benchmark、Canary 反馈</td></tr>
+<tr><td>BrowserBear</td><td>真实页面反例 → 输入回读与 iframe 兼容修复 → 提交</td><td>独立 E2E 回归、权限审计、用户接管测试</td></tr>
+<tr><td>LiteRT-LM 并发</td><td>共享状态风险识别 → 候选 Patch</td><td>回归测试、Review/Merge、并发加载性能与取消验证</td></tr>
+<tr><td>agent-desktop</td><td>结构化观察 → Ref 操作 → Stale/Ambiguous 拒绝机制（已发布工具）</td><td>跨应用基准、回归自动发现、性能/安全闭环</td></tr>
+</tbody></table>
+<p><strong>迁移建议：</strong>先做最小的 <code>Skill Promotion Gate</code>。每份由 Agent 发现的测试或操作 Skill 都保存来源 URL/版本、匿名化状态、输入、退出条件、预期输出；由独立 Harness 在冷启动与新 Session 中执行，失败时生成反例；只有通过之后才能放入共享 Skill 库，后续每周用新浏览器版本重新检验。这个机制可先在 Chromium/Firefox/WebKit 的自动化回归上落地，而无需立即尝试让 Agent 改浏览器内核。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>今日最有价值的可核实一手资料主要是 <a href="https://github.com/xjodoin/moge3-webgpu">MoGe-3 WebGPU 仓库及 Benchmarks</a>、<a href="https://github.com/browser-use/browser-harness/pull/961">Browser Harness 六站点 Skill PR</a>、<a href="https://github.com/vercel-labs/agent-desktop/releases/tag/v1.0.0">agent-desktop 官方 Release</a>、<a href="https://github.com/mikecann/browserbear">BrowserBear 源码</a>、<a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4332">LiteRT-LM 并发加载 PR</a>、<a href="https://github.com/aomni-com/open-duet">Open Duet 首次开源</a>。没有发现符合本观察窗口、可独立核实并且比以上进展更值得单列的新浏览器论文，因此不为凑数复述此前 WebGPU 推测解码和 WebAnything 论文。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Agent 与端侧 AI 的下一项共性工程能力，是把“观察到的状态”变成可重复验证的契约。</strong>对 Agent，它体现为真实 Profile/Tab、Snapshot Ref 与 Skill 的独立复演；对 WebGPU，它体现为模型权重、Shader 变体、跨浏览器数值结果和 Benchmark 证据。优先完成独立 Verify 与失败经验回流，比先追求端到端自动改 Chromium 更能快速产生可量化的收益。</p>
+
+<p><a href="/browser-ai-daily/">返回日报聚合页</a></p>
