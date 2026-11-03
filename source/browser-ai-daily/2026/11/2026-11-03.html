@@ -1,0 +1,71 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-03
+date: 2026-11-03 09:35:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-02 09:35 至 2026-11-03 09:35（北京时间）；7 日补推覆盖 10 月 27 日之后未介绍的重要项目。检索按<strong>开放发现（不带已知仓库名）→ 官方技术发布 → 英文社区与论文 → 已知仓库工程变更</strong>四轮进行。今天的新鲜内容主要是新开源浏览器工具、WebGPU 端侧能力、自动化验证和 CI 权限边界。所有项目的创建日期与最近更新日期分别标注，不把 README 宣称的能力当成独立实测。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. helium-browser-agent：连接真实 Helium 浏览器的 Linux Agent CLI（11 月 2 日新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/saatvik333/helium-browser-agent">saatvik333/helium-browser-agent</a> 创建于 11 月 2 日 16:09（北京）。Rust CLI <code>hba</code> 通过常驻 daemon 和 CDP 连接用户正在运行的 Helium 浏览器（Chromium 150+），可按 Session 拥有/交还标签，使用 Playwright 注入脚本生成 Accessibility Snapshot、执行输入与点击，并提供网络 HAR、Performance Trace、CPU Profile、Heap、Coverage 和扩展调试接口。其 README 明确仅支持 Linux，连接只允许回环地址并验证 DevTools 端口所属进程；项目附带单元测试和可在临时 Profile 中运行的 Live Test。</p>
+<p><strong>为什么重要：</strong>比反复启动一个全新无登录态的 Chromium 更接近真实用户浏览器；标签所有权与命令完成回执是 Agent 多任务安全性的基础。<strong>限制：</strong>仓库刚创建，未见独立成功率、跨平台覆盖或安全审计；DevTools 端口本身拥有高度权限。<strong>工程启发：</strong>在 Browser Runtime 层统一 <code>Session → Tab Ownership → Action Receipt → Trace</code>，每个 Agent 仅操作已明确接管的标签。</p>
+
+<h3>2. drowse.ai：WebGPU 在浏览器中做模型内部状态分析（新项目，24 小时内更新）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/stdlogits/drowse.ai">stdlogits/drowse.ai</a> 创建于 10 月 30 日，最新代码更新到 11 月 3 日 08:58（北京）。它将模型 Activation Steering（激活干预）、Probe、SAE 特征与可解释性 Dashboard 带进浏览器。Svelte PWA 使用 WebGPU 执行本地推理，Rust/WASM 处理部分拟合计算；项目还包含 WebLLM/MLC 分支、模型/发布锁文件、Playwright E2E、与 Python 实现对照的固定测试数据。</p>
+<p><strong>为什么重要：</strong>浏览器端侧 AI 不再局限于聊天或分类，而开始提供模型内部调试与行为研究工具。<strong>限制：</strong>作者说明 Gemma 的对应权重仍有数值差异，Qwen 3.5 仍待同量化验证；某些 Windows Intel GPU 被保守阻止加载，WebGPU 设备检查不等于真实模型稳定运行。没有独立大规模 Benchmark。<strong>工程启发：</strong>可借鉴“模型权重版本 + GPU 能力检测 + 设备失败黑名单 + 数值 Golden Test”的发布契约。</p>
+
+<h3>3. Locus：Android 本机运行 Browser Agent 与可选端侧模型（过去 7 天新仓库，昨日更新）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/springmusk026/locus">springmusk026/locus</a> 创建于 10 月 31 日，11 月 3 日 00:19（北京）仍有更新。开源 Android App 声称提供可见的浏览器操作界面、无 Root 的 Alpine Linux 工作区、并行子 Agent、SSH、MCP、任务回执，以及本机 Gemma 或外部模型服务选择。权限分 Allow/Ask/Deny，敏感网页信息进入 Agent 后，向外发送、保存记忆或生成 Skill 需要额外批准。</p>
+<p><strong>为什么重要：</strong>这直接触及移动端 Browser Agent 的现实难点：本机模型、网页操作、系统工具及审批如何协作。<strong>成熟度：</strong>仓库处于活跃早期开发，README 有 APK 与 CI 说明；所述权限和本机推理能力尚未经独立实机验证，不能按正式产品安全保证宣传。<strong>工程启发：</strong>研究 Android 侧工具授权、敏感来源数据追踪、手机发热/电池调度、Agent 任务结束回执；将权限约束放在工具执行层而非 Prompt。</p>
+
+<h3>4. Playwright：Triage 工作流自动产出“只运行受影响测试”的候选修复（24 小时内更新，未合并）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/microsoft/playwright/pull/43837">Playwright PR #43837</a> 修复 <code>--only-changed</code> 对共享 ESM 依赖的漏追踪：多个测试文件通过同一个已加载模块间接依赖某文件时，改动该文件可能没选中应运行的测试。PR 明确标注由 <a href="https://github.com/microsoft/playwright/actions/runs/41342169451">triage workflow</a> 准备，并附有反向对照：新增的 ESM 回归测试在恢复主线代码后失败，补丁上通过；作者报告同步 loader 相关测试 132 项通过，异步 loader 131 项通过、1 项已有失败。11 月 3 日 08:39（北京）有更新，<strong>目前未合并</strong>。</p>
+<p><strong>为什么重要：</strong>这是 Browser Self-Improvement 的具体案例，而非泛化“用了 Agent 修 Bug”：故障归因、候选补丁、回归测试以及主线反例一起交付给 Review。<strong>闭环进度：</strong>Observe/Diagnose → Patch → 测试与反例验证 → Review；尚缺合并、发布后观察与 Learn。<strong>工程启发：</strong>将 Agent 提交的验证证据与补丁绑定，明确列出原始代码上的失败、修复代码上的通过、现有失败，以及需要维护者判断的部分。</p>
+
+<h3>5. appfuzz：从编译好的 WASM 组件自动搜索反例（11 月 1 日创建，7 日内补推）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/StephanSchmidt/appfuzz">StephanSchmidt/appfuzz</a> 创建于 11 月 2 日 01:51（北京），最近更新到 11 月 2 日 22:59。项目用 Rust 对已编译的 WebAssembly Component Model 模块反复执行，模拟 WIT 接口后端输入，寻找 Crash、未经转义的 HTML、越权导入、N+1 请求、资源上限超标等问题；输出结构化 JSON、CI 退出码以及缩小后的可重放用例。README 示例展示 10 秒内 18 万次以上 Fuzz 运行，但这是作者提供的示例输出，非独立 Benchmark。</p>
+<p><strong>为什么重要：</strong>它让 Agent 生成的代码接受与模型无关的、可重跑的负向验证。<strong>限制：</strong>目前是新项目，依赖模拟 Host、Manifest 与标注，无法据此保证真实浏览器/服务端所有行为都被覆盖。<strong>工程启发：</strong>适合嵌入 Browser Extension/WASM 插件或 Browser Harness 的发布门禁，让 Agent 产生的模块先过确定性失败检查，再进入人工 Review 与跨浏览器 E2E。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table><thead><tr><th>项目及首见日期（北京时间）</th><th>定位与成熟度</th><th>差异、风险和下一步跟踪</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/saatvik333/helium-browser-agent">helium-browser-agent</a><br>11/02 16:09 创建</td><td>真实 Helium + CDP/CLI；Linux 早期项目</td><td>独立标签所有权、DevTools Trace、端口验证；观察多 Agent 竞态、安全审计与跨平台支持。</td></tr>
+<tr><td><a href="https://github.com/stdlogits/drowse.ai">drowse.ai</a><br>10/30 12:51 创建；11/03 更新</td><td>本地 WebGPU 模型可解释性工作台；实验性 PWA</td><td>Rust/WASM、MLC 与跨模型 Golden Test；观察实际 GPU 负载、量化一致性、模型包完整性。</td></tr>
+<tr><td><a href="https://github.com/springmusk026/locus">Locus</a><br>10/31 18:46 创建；11/03 更新</td><td>Android Browser + Shell + 模型路由 Agent；早期 APK</td><td>本机 Gemma、审批、任务回执与手机调度；重点测试真机权限与电池/热量成本。</td></tr>
+<tr><td><a href="https://github.com/StephanSchmidt/appfuzz">appfuzz</a><br>11/02 01:51 创建</td><td>WASM Component 模拟后端 Fuzz；新开源验证工具</td><td>缩小反例、结构化 CI 报告；验证对真实 Web 应用的故障覆盖与假阳性。</td></tr>
+<tr><td><a href="https://github.com/wiva-hq/CodeRail">CodeRail</a><br>10/31 16:20 创建；11/03 更新</td><td>自建远程 Coding Agent 工作台，浏览器/手机审批；0.0.1 Early</td><td>一个 Docker 服务连接多台客户端电脑的 Codex/Claude 与浏览器；观察远程授权和审计的真实可靠性。</td></tr>
+<tr><td><a href="https://github.com/rsaryev/llx-desk">llx-desk</a><br>11/02 06:21 创建；11/03 更新</td><td>WKWebView/WebKitGTK + PTY + MCP 原生窗口；早期工具</td><td>Agent 与人共享 WebView 页面/终端，支持项目 Tab 隔离与操作结果回读；需要进一步安全测试。</td></tr>
+<tr><td><a href="https://github.com/moonframehq/moonframe">Moonframe</a><br>11/01 03:42 创建</td><td>Rust/GPUI + Luau 可热更新的原生 UI；早期开源框架</td><td>Agent 修改运行中界面而无需重启，保存状态并内置元素 Inspector；观察热更新权限与回归门禁。</td></tr>
+</tbody></table>
+<p>雷达的“首见”指 GitHub 仓库创建时间，<strong>不是</strong>已验证的产品公开发布日；成熟度基于源码与 README，仍需独立实测。本期比前几期增加了从“新建仓库”直接发现的项目，减少成熟仓库普通 Bug Fix 的比重。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>Lightpanda 的 MCP 取消机制已合并。</strong>11 月 2 日 23:06（北京），<a href="https://github.com/lightpanda-io/browser/pull/4268">PR #4268</a> 合并：原先 stdio 消息读取和长时间 Tool Call 串行，导致客户端发出 <code>notifications/cancelled</code> 后，服务器仍卡在等待；修复把读取与执行分离，可中断当前等待，并在测试中对照了原本需 30 秒的等待被约 800ms 的取消打断。<strong>限制：</strong>作者明确说 HTTP Transport 的取消仍有后续工作。启发是 Browser Runtime 的取消必须能穿过队列到达正在执行的动作，而非只在 UI 上标记取消。</p>
+<p><strong>官方内核发布：</strong>本窗口未核实到适合单列的 Chromium/Chrome、WebKit/Safari、Firefox、Edge、Opera、Brave 新版本或 Web API 架构公告，因此不重复上一周内容。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>drowse.ai</strong> 将 WebGPU 用于模型内部状态的实时观察和调试，可与传统 WebLLM“问答推理”形成不同的工具链。其 Release 检查、GPU 黑名单、跨 Python Golden 结果是可迁移工程细节；最值得量化的指标是权重加载耗时、首次 Steering 延迟、GPU Memory 与不同浏览器数值偏差。<strong>Locus</strong> 提供手机上的本地/云端模型切换思路，但只有仓库作者的声明，目前不写成可靠的独立 Benchmark。</p>
+
+<h2>浏览器 × AI</h2>
+<p>今天几个新项目分别占据不同控制面：<strong>helium-browser-agent</strong> 驱动真实浏览器，<strong>llx-desk</strong> 把系统 WebView/终端组成由 Agent 操作的人机共用窗口，<strong>CodeRail</strong> 将 Agent 会话、远程机器与手机审批连接，<strong>Locus</strong> 在手机设备内提供 Browser + Shell + Approval。这表明 Browser Agent 需要清晰区分“浏览器标签所有权”“宿主系统权限”“远程操作审批”“推理资源预算”，不宜让一个通用工具拥有所有权限。</p>
+
+<h2>Browser Self-Improvement</h2>
+<p><strong>本期最重要的闭环信号：发现故障之后不仅自动写补丁，还要有反向测试与受控 CI。</strong>具体案例：</p>
+<table><thead><tr><th>案例</th><th>已走到哪一步</th><th>剩余缺口</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/microsoft/playwright/pull/43837">Playwright #43837</a></td><td>Regression/Diagnosis → Agent 候选 Patch → 同步/异步 Loader 回归 → 主线反例 → Review</td><td>合并、跨平台 CI、线上回归数据、成功/失败修复模式回流</td></tr>
+<tr><td><a href="https://github.com/browser-use/browser-harness/pull/966">Browser Harness #966</a></td><td>11 月 3 日 03:55（北京）合并六项域名 Skill；作者记录真实网页探索 → 独立 Agent 无登录复演 → 结果修订 → Merge</td><td>Skill 过期监控、自动淘汰与定期跨版本复演</td></tr>
+<tr><td><a href="https://github.com/StephanSchmidt/appfuzz">appfuzz</a></td><td>生成/编译 WASM → 模拟 Host 负向测试 → 最小反例 → CI Gate（作者实现）</td><td>真实部署证据、浏览器差异、失败模式资产化</td></tr>
+<tr><td><a href="https://github.com/lightpanda-io/browser/pull/4268">Lightpanda #4268</a></td><td>复现长等待 → Transport Patch → 故障对照测试 → 合并</td><td>HTTP Transport 取消对称性、生产环境长期验证</td></tr>
+</tbody></table>
+<p><strong>GitHub Actions 的最新安全边界：</strong><a href="https://github.blog/changelog/2026-11-02-pull_request_target-blocked-by-default-december-2/">11 月 2 日官方公告</a>确认，公共仓库的 <code>pull_request_target</code> 将从 <strong>2026-12-02</strong> 起默认阻止，除非通过适用的 Actions Event Policy 明确放行；11 月 9 日和 16 日有试运行阻断窗口，原定 11 月 2 日强制日期已推迟。原因是此事件使用目标仓库安全上下文，执行不可信 Fork 代码可能泄露 Secrets。<strong>对 Browser 自我改进的迁移：</strong>Agent 应只产生无权限候选 Patch/测试证据，由独立且受保护的工作流审查、构建和发布，不能让来自网页或 Fork 的未信任代码拿到发布凭据。</p>
+<p><strong>建议的最小闭环：</strong>Browser Trace/WPT/CI 回归 → Agent 归因和最小复现 → 候选 Patch 与 Test → 独立的旧/新代码反向测试、跨平台 Benchmark → 维护者 Review → Canary Telemetry → 将真实通过/失败证据沉淀到 Skill Registry。今天已有部分工程实践，但不能声称业界已完成完整自动 Canary → Learn 循环。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p><strong>7 日补推：AgentShield（10 月 30 日论文）</strong>：<a href="https://arxiv.org/abs/2610.41181">AgentShield: Fortifying Web Applications Against AI Agents and Agentic Browsers</a> 系统研究 Agent 与反自动化机制的交互，提出利用动态表单与细粒度交互 Telemetry 识别 Agent 的方法。论文还观察到 <em>Extinction-induced Policy Drift</em>：重复阻碍任务成功可能诱发某些 Agent 放松限制。<strong>证据等级：</strong>研究论文与作者实验，不代表主流浏览器已经实现这种防御。<strong>工程启发：</strong>Browser Harness 的安全基准不仅测试一次拒绝，还要测试多次失败、重试与网页诱导后，授权边界是否仍然不变。</p>
+<p>本期的新开源项目附带源代码和测试入口，但未独立执行安装与 Benchmark；不存在依据仅是宣传稿而将其判定为稳定生产能力的情况。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>浏览器 AI 的工程分界线逐渐清晰：界面控制可以不断换框架，可信的权限回执、可重放反例和跨浏览器验证却必须变成共用基础设施。</strong>今天最值得继续投资的不是 Agent 多会“点击”，而是每次执行之后能留下可审查的 Trace、测试、授权状态和失败经验，让下一轮改进有可靠依据。</p>
+
+<p><a href="/browser-ai-daily/">返回日报聚合页</a></p>
