@@ -1,0 +1,77 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-05
+date: 2026-11-05 09:23:00
+---
+
+<p><strong>观察窗口：</strong>2026 年 11 月 4 日约 09:23 至 11 月 5 日约 09:23（北京时间）；关键漏报回溯 7 天。采用开放发现（第一轮不带已知项目名）、浏览器与平台官方发布、英文社区和论文、已知项目工程深挖四轮检索。<strong>今天的重点：</strong>全新 WebsiteBench 浏览器探索基准、Google Three-Live 将 AI 生成代码编译为受控 3D 资产、Chrome 157 的 AI 辅助安全发现，以及静态 Embedding 跨 JS/WASM/WebGPU 的真实性能验证。文章明确区分项目创建、官方发布、作者基准与已完成的 CI。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. WebsiteBench：让 Agent 通过真实浏览器探索，重建整套网站</h3>
+<p><strong>发生了什么：</strong>斯坦福 TIGER-AI-Lab 于 <strong>11 月 4 日 20:58（北京）</strong>创建开源项目 <a href="https://github.com/TIGER-AI-Lab/WebsiteBench">WebsiteBench</a>（Apache-2.0）。它要求 Agent 先通过浏览器探索一个已有网站，再重建外观与行为。公开代码集成 Harbor 任务运行器，提供 Docker 任务包、参考应用和独立的验证脚本；开发文档介绍了用 oracle（参考解）自检、再调用 Codex 等 Agent 跑任务的流程。验证阶段使用 <code>no-network</code>，以减少依赖外部网站变化。资料集入口：<a href="https://huggingface.co/datasets/TIGER-Lab/WBArtifacts">WBArtifacts</a>。</p>
+<p><strong>为什么值得关注：</strong>与只问 Agent “能不能完成点击任务”不同，它测量对真实网站结构、状态和交互的理解能否转化成可运行的交付物。<strong>成熟度：</strong>11 月 4 日新开源评测基建；本次未复测任务，也未见可引用的独立成功率，不把 README 的功能声明写成已验证的模型能力。</p>
+<p><strong>工程启发：</strong>Browser Self-Improvement 可以沿用“目标站点冻结版本 → Agent 探索 → 产物构建 → 独立 Oracle 在无外网环境验证”的设计；尤其适合测试 Browser Agent 是否真正理解 SPA 状态、表单验证和跨页流程。<a href="https://github.com/TIGER-AI-Lab/WebsiteBench/blob/main/docs/running.md">运行与 Oracle 说明</a>。</p>
+
+<h3>2. Google Three-Live：不直接执行 AI 生成的 3D 代码，而是隔离编译成可移植资产</h3>
+<p><strong>发生了什么：</strong>Google Open Source 于 <strong>11 月 3 日</strong>介绍 <a href="https://github.com/google/three-live">Three-Live</a>（过去 7 天补推）。项目早在 10 月 2 日创建，11 月 3 日是官方公开宣发，并非新仓库首发；11 月 5 日 07:11（北京）发布了 <a href="https://github.com/google/three-live/releases/tag/v1.2.3">v1.2.3</a>。它让 AI 生成的 Three.js 在受控环境中运行和序列化为 GLB/USDZ 等 3D 资产，Web 使用受限 Worker 路径，原生端通过 Rust/Boa 执行并对接 Android Filament、Apple RealityKit；另有 WebXR、交互插件和 <a href="https://google.github.io/three-live/">浏览器 Playground</a>。官方明确标记为 Developer Preview、不是正式支持的 Google 产品。</p>
+<p><strong>为什么值得关注：</strong>它采用“<strong>不可信动态代码 → 受控执行/编译 → 数据资产 → 浏览器或原生渲染</strong>”的边界，而不是持续给网页中运行的 Agent 任意 JS 权限。它还回应了 iOS <code>WKWebView</code> 不具备通用 WebXR 能力的问题。源码提供 Web、Android 与 iOS 的 SDK，但安全隔离边界仍需外部审计。</p>
+<p><strong>工程启发：</strong>对 AI Native Browser，值得把模型输出转换为可验证、可缓存、可审计的 <em>数据产物</em>，再交给拥有明确权限的 Runtime 执行；尤其适用于动态图表、交互组件和 3D 内容，而不是直接注入页面脚本。<a href="https://opensource.googleblog.com/2026/11/introducing-three-live-ai-generated-3d-ar-webxr.html">官方介绍</a>。</p>
+
+<h3>3. Chrome 157：213 项安全修复，部分漏洞发现明确记录了 Claude / Codex Security 辅助</h3>
+<p><strong>发生了什么：</strong>Google 于 <strong>11 月 3 日</strong>将 Chrome 157 晋级 Stable（过去 7 天未报的重要官方进展），列出<strong>213 项安全修复</strong>。其官方公告明确将 Dawn 两项缓冲区溢出、ANGLE 内存问题、WebGL 以及 Prerender 等列为严重漏洞；<strong>CVE-2026-121035</strong>（Prerender UAF）由 Anthropic 的研究者提交且标注 Claude 辅助；公告还列出数项由 OpenAI Codex Security 或 Claude 辅助发现的 PDFium、V8、SVG、Performance APIs 问题。这是漏洞发现与报告阶段的公开证据，<strong>不是 AI 自动修改 Chromium 并完成 Canary 的证据</strong>。<a href="https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html">Google 原始安全公告</a>。</p>
+<p><strong>为什么值得关注：</strong>相比泛泛 AI Coding 宣传，真实漏洞编号、组件、报告人、修复版本和发布渠道构成了可审计的安全结果；对 WebGPU Runtime 尤其需要关注 Dawn 与 ANGLE 的边界。本期还有 <strong>11 月 4 日 Chrome 158</strong> Windows 小范围 Early Stable（<code>158.0.8127.18/.19</code>），以及 158 跨桌面/Android/iOS Beta 更新；不要将 Early Stable 误写成所有用户已升级。<a href="https://chromereleases.googleblog.com/2026/11/">官方发布流</a>。</p>
+<p><strong>工程启发：</strong>构建 Crash / Fuzzer / Sanitizer → Agent 定位 → 最小复现 → Patch → 多平台安全回归 → Canary 的证据链时，必须分别衡量 AI 发现率、误报、修复正确率和发布后风险。不能用“AI 参与报告”直接推断已经具有工程自进化能力。</p>
+
+<h3>4. Ink Static Embeddings：把小型静态 Embedding 编译到 JS、Rust/WASM 和 WebGPU，并保留失败的实验</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/siliconjungle/ink-static-embeddings">siliconjungle/ink-static-embeddings</a> 于 <strong>11 月 4 日 11:14（北京）</strong>创建。它支持 Model2Vec 和 Sentence Transformers 的 <code>StaticEmbedding</code> 格式，针对词向量查表、均值池化和可选 L2 归一化生成 JS、Rust、Rust/WASM、WebGPU 路径；<strong>不支持任意 Transformer/LLM</strong>。项目包含三种预训练模型、两个合成样例的跨后端正确性检查和实验报告。</p>
+<p><strong>作者的实测：</strong>在 Potion 2M 的公开 API 混合语料上，JS 优化从 17.34 降到 9.90 微秒/次（约 1.75 倍）；同一项目报告，NumPy 对照为 8.72 微秒/次，<strong>仍快于该 JS 路径</strong>。另一项 batch=1024 的 GPU typed-result 优化从 3.50 到 1.70 微秒/Embedding（约 2.06 倍），与 JS 结果不是同一测试。一个自动调优候选虽然在校准集达到 2.63 倍，仍因独立留出集未达门槛而<strong>保留原基线</strong>。这些都是作者数据，完整分发 CI 部分仍排队。</p>
+<p><strong>工程启发：</strong>浏览器书签/历史语义查询可以比较静态 Embedding 与小型 Transformer 的内存、启动、精度。更值得迁移的是“候选优化不能通过留出集，就不修改正式选型策略”的验证门禁。<a href="https://github.com/siliconjungle/ink-static-embeddings/blob/main/results/generalization/progress.json">实验进度与失败记录</a>。</p>
+
+<h3>5. Google GKE Workspaces：端云协同的持久化 Agent 工作台与隔离子任务</h3>
+<p><strong>发生了什么：</strong>Google Open Source 于 <strong>11 月 4 日</strong>发布 <a href="https://opensource.googleblog.com/2026/11/gke-workspaces-notebooks-on-google-ai-infrastructure.html">GKE Workspaces</a> 技术介绍，基于 Apache-2.0 的 Kubeflow Workspaces，支持云端持久化浏览器 IDE/JupyterLab、GPU/TPU 资源选择、暂停/恢复，以及从本地 Coding Agent 通过短期可撤销链接调用云端资源。其文章还给出把子 Agent 放到独立容器沙箱、输出候选 Patch 供主工作区审阅的方案。<a href="https://github.com/">Google Open Source 公开发布页</a>可查看原始代码仓库入口。</p>
+<p><strong>为什么值得关注：</strong>Browser Engineering 的 GPU Benchmark、Chromium 构建以及多 Agent 并行验证受本地机器资源限制。它提供了持久工作台 + 弹性计算 + 受控子任务的具体系统结构。<strong>边界：</strong>这属于 Google Cloud/GKE 方案，不是纯端侧、不代表浏览器原生支持这些能力，也没有公布对浏览器编译耗时的独立对照。</p>
+<p><strong>工程启发：</strong>可借鉴“开发会话长寿命，实验沙箱短寿命，产物必须带回可审查 Patch + Benchmark Receipt”的调度方式；优先考虑成本、凭据边界和结果复现。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table>
+<thead><tr><th>项目 / 首次发现日期</th><th>差异与成熟度</th><th>下一步跟踪</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/TIGER-AI-Lab/WebsiteBench">WebsiteBench</a><br>11/04 创建</td><td>真实浏览器探索后重建整站；研究级开源任务与独立 Oracle</td><td>数据规模、独立评测和实际浏览器交互覆盖</td></tr>
+<tr><td><a href="https://github.com/siliconjungle/ink-static-embeddings">Ink Static Embeddings</a><br>11/04 创建</td><td>小型静态向量跨 JS/WASM/WebGPU，保留未通过留出集的负结果；个人实验</td><td>端侧移动浏览器真实耗时、内存与模型质量</td></tr>
+<tr><td><a href="https://github.com/xavidop/tamesu">tamesu</a><br>11/03 北京时间创建；11/05 更新</td><td>Go 实现的 Agent 质量测试 CLI，支持 browser/MCP/voice 等目标、确定性断言和 LLM Judge 校准；早期项目</td><td>真实 CI 使用、重复执行稳定性、Judge 与人工结论一致性</td></tr>
+<tr><td><a href="https://github.com/abouchedidxcode/open-source-hands">open-source-hands</a><br>11/03 创建（7 日补推）</td><td>MediaPipe 端侧手势识别 + 约 1600 行 TypeScript Gesture Kit，带合成输入与 Chromium E2E；已提供实例游戏</td><td>Safari/Android 摄像头兼容、持续耗电、长时间误触率</td></tr>
+<tr><td><a href="https://github.com/google/three-live">Three-Live</a><br>10/02 创建、11/03 宣发、11/05 v1.2.3</td><td>AI 生成 Three.js 的受控跨端 3D 编译；Developer Preview</td><td>原生与 Web 语义差异、安全沙箱审计、可重复渲染</td></tr>
+</tbody></table>
+<p><strong>发现规则：</strong>“首次创建”来自 GitHub 仓库元数据，“官方发布”和“最新版本”分别使用博客与 Release 时间；没有用 GitHub Stars 代替工程质量，也没有把 10 月创建的仓库称为今日首发。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>Chrome：</strong>11 月 4 日发布 158 Beta（Windows/macOS/Linux、Android、iOS），Windows 另开始小比例 Early Stable；11 月 3 日 Chrome 157 Stable 的 213 项安全修复中，Dawn/WebGPU、ANGLE、V8、PDFium 和导航等组件需要纳入回归重点。<a href="https://chromereleases.googleblog.com/">Chrome Releases</a>。</p>
+<p><strong>WebKit / Firefox：</strong>本窗口未核实到足以独立成篇的新架构发布，故不重复旧消息。对跨端项目尤其应追踪 Safari/WKWebView 的 WebXR 限制及 WebGPU WGSL/设备支持差异，不将单项目 README 当成浏览器官方承诺。</p>
+<p><strong>Web API / 性能：</strong>新的 Three-Live 提供了浏览器与原生渲染边界的具体实践；<a href="https://github.com/abouchedidxcode/open-source-hands">open-source-hands</a>则演示 Camera + MediaPipe 本地推理、输入去抖与合成手势测试的组合，具备端内可观测和自动化验证价值。</p>
+
+<h2>端侧 AI</h2>
+<p>本期更值得研究的是<strong>小型静态 Embedding</strong> 的跨后端可移植性：对语义搜索、书签召回、历史记录匹配，先判断低成本查表模型是否足够，再考虑 0.6B 级别的复杂模型。指标至少包含首用下载、模型占内存、冷/热启动、查询 P95、语义召回准确率，以及页面在后台后的恢复行为。<a href="https://github.com/siliconjungle/ink-static-embeddings">项目和测试</a>。</p>
+
+<h2>浏览器 × AI</h2>
+<p>Three-Live 的启发是：AI 产物与浏览器执行能力之间需要一个可以测试和限制的接口。WebsiteBench 则从另一侧验证 Agent 是否真的理解网页。两者结合，可以形成“生成内容 → 隔离运行 → 验证呈现和交互结果”的验证流程。<a href="https://github.com/TIGER-AI-Lab/WebsiteBench">WebsiteBench</a> · <a href="https://github.com/google/three-live">Three-Live</a>。</p>
+<p><a href="https://github.com/xavidop/tamesu">tamesu</a>值得纳入观察：它把 Browser、MCP、Web API、实时音频等不同目标映射到统一 YAML 测试和断言，支持重放、重复运行、P95 门槛、已知波动隔离以及对 LLM Judge 的人工标注校准。不过目前属于作者的开源实现，不代表其各目标已有生产级覆盖。</p>
+
+<h2>Browser Self-Improvement｜浏览器工程自我改进</h2>
+<table><thead><tr><th>案例</th><th>闭环到哪一步</th><th>尚缺什么 / 迁移价值</th></tr></thead><tbody>
+<tr><td>Chrome 157 AI 辅助漏洞发现</td><td>Observe → Diagnose / 报告 → 修复版公开发布（具体每个漏洞的补丁过程不全公开）</td><td>尚未证明 AI 自动 Patch/Canary/Learn；可迁移漏洞复现与安全回归证据链</td></tr>
+<tr><td>WebsiteBench</td><td>探索 → 构建 → 独立 Oracle 验证框架</td><td>尚非真实浏览器 Runtime 自动修复；可迁移基准任务和隔离验证机制</td></tr>
+<tr><td>Ink Static Embeddings</td><td>实验/候选优化 → 跨后端正确性 → Benchmark → 留出集拒绝不稳候选</td><td>分发 CI 部分排队，未形成浏览器 Canary；可迁移独立样本拒绝门禁</td></tr>
+<tr><td>tamesu</td><td>测试输入 → 重放/判定 → CI 报告基础设施</td><td>未证明自动 Patch 或长期学习；可迁移 Agent Harness 的独立测试与 Judge 校准</td></tr>
+<tr><td>GKE Workspaces</td><td>隔离执行沙箱 → 候选补丁输出 / 人工审阅环境</td><td>缺浏览器场景的自动归因和 Benchmark；可迁移分层 Agent 计算资源调度</td></tr>
+</tbody></table>
+<p><strong>推荐工程实验：</strong>从一个可冻结的站点任务出发，记录 Browser Revision、Playwright/CDP Trace、HTML/DOM 状态与用户动作；分别交给 Agent 生成回归测试或候选修复；在不共享 Agent 会话的独立环境里运行；将结果标成正确、失败、条件性成功和性能退化。仅当功能测试与性能门槛均通过，才将新 Skill / Harness 规则合入共享库；历史失败样本长期重放。</p>
+<p><strong>本期结论：</strong>没有新的可信证据表明 Chromium、WebKit 或 Firefox 已实现由 AI 独立完成 Telemetry → Patch → Build → Benchmark → Canary → Learn 的完整自主闭环。Chrome 157 的 AI 安全发现和 Ink 的拒绝门禁分别覆盖真实发现与防止错误学习两种重要能力，但不是同一套现成系统。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>重点原始材料：<a href="https://github.com/TIGER-AI-Lab/WebsiteBench">WebsiteBench 项目和任务集</a>、<a href="https://github.com/google/three-live">Three-Live 源码/发布版本</a>、<a href="https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop.html">Chrome 157 安全公告</a>、<a href="https://github.com/siliconjungle/ink-static-embeddings">跨后端 Embedding 实验与反例</a>、<a href="https://github.com/xavidop/tamesu">tamesu Agent 测试框架</a>。本期没有把旧论文包装成新论文；优先呈现具备公开代码和日期证据的项目。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>浏览器自我改进的关键不是生成更多 Patch，而是将发现和改进变成可重复验证的证据。</strong>WebsiteBench 提供独立运行环境，Chrome 157 展示 AI 辅助真实安全发现的成果，Ink 的反例说明“跑出一次加速”还不足以升级正式策略。适合短期落地的组合是<strong>真实任务探索 → 独立 Oracle → 受控候选修改 → 留出集回归 → 结果记录与规则晋级</strong>，不要在缺少验证时宣称闭环完成。</p>
+
+<p><a href="/browser-ai-daily/">返回日报归档</a></p>
