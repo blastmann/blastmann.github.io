@@ -1,0 +1,70 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-06
+date: 2026-11-06 09:07:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-05 09:07 至 2026-11-06 09:07（北京时间），重要漏报回看近 7 天。按开放发现（不带已知仓库名）→官方发布→英文社区/论文→已知仓库工程深挖四轮筛选。<strong>本期重点：</strong>微软把 27B 级 Coding 模型优化为本地执行；Safari Technology Preview 256 推进 WebGPU 功能、显存回收与媒体能力；Lightpanda 真正解决网页动态注册 WebMCP 工具的发现和信任边界；Browser Harness 对 Skill 加入独立复验和站点访问政策门禁。已区分正式发布、预览版、已合并 PR、候选 PR 和作者自述，未把仓库近期提交当成新产品首发。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Foundry Local：Qwen3.8-27B 本地 Coding，具体优化已公开</h3>
+<p><strong>发生了什么：</strong>微软 11 月 5 日发布 <a href="https://devblogs.microsoft.com/foundry/foundry-local-agentic-coding-qwen3-8-27b/">Bring Agentic Coding On-Device with Foundry Local</a>。使用 ONNX Runtime，在 NVIDIA GPU 上为 Qwen3.8-27B 增加 DFlash2 推测解码、CUDA Graph/Kernel 优化、INT4 权重、KV Cache 量化、CPU Offload、Prefix Cache 和 Continuous Batching。官方称 4-bit 权重约 18GB，24GB 显存可运行最长约 64K 上下文；32GB 以上在适当配置下可扩大上下文。提供 Foundry Local CLI ≥0.13.0 与 GitHub Copilot BYOK 接入流程。</p>
+<p><strong>为什么值得关注：</strong>优化焦点不只在算子计算，还覆盖长上下文重用与多个 Agent 并发调用。官方使用真实 GitHub Issue 数据集对比 llama.cpp，声称在 RTX 5090 和 DGX Spark 测试平台具有速度优势；文章图表是<strong>厂商测量，尚无本期独立复现</strong>。当前主要针对桌面 NVIDIA CUDA，不是手机端 WebGPU 的现成实现。</p>
+<p><strong>浏览器工程启发：</strong>Browser AI Runtime 也需要统一的模型下载、缓存、KV Cache、会话并发和端云切换；可参考其测量维度，但 Safari/Android/WebGPU 应独立验证内存、首 Token 和后台恢复，不直接套用 CUDA 数据。</p>
+
+<h3>2. Safari Technology Preview 256：WebGPU texture swizzle、显存回收及视频解码改进（7 日补推）</h3>
+<p><strong>发生了什么：</strong>WebKit 11 月 4 日发布 <a href="https://webkit.org/blog/18602/release-notes-for-safari-technology-preview-256/">Safari Technology Preview 256</a>，覆盖 WebKit 323398…324653@main。WebGPU 新增 <code>texture-component-swizzle</code>，允许 <code>GPUTexture.createView()</code> 的 <code>swizzle</code> 参数重排/填充纹理通道；同时修复 <code>GPUTexture</code> 销毁后因旧 <code>GPUBindGroup</code> 引用而无法释放 GPU 内存，并优化 WebGPU OffscreenCanvas 读回。媒体部分修复 WebCodecs FLAC 解码失败、超过双声道的 Opus 解码、<code>MediaRecorder</code> 丢失最后一段数据、MSE 视频 Track flush 后卡死等问题。</p>
+<p><strong>为什么值得关注：</strong>这类变化直接影响浏览器端侧视觉和语音推理、多模态视频管线以及显存可靠性。它是<strong>Safari Technology Preview</strong>，不是 Safari 正式版全量可用的证明；没有公开量化 WebGPU 读回速度提升幅度。</p>
+<p><strong>浏览器工程启发：</strong>在多 Tab 推理/绘制压力下测试 GPU Buffer/Texture 生命周期、视频与推理相互争抢 GPU、冷/热切换和 AudioDecoder 兼容；将 GPU 内存泄漏作为 Browser Runtime 的独立回归项。</p>
+
+<h3>3. Lightpanda：网页动态 WebMCP 工具能够被 Agent 可靠发现，且不污染模型工具声明</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/lightpanda-io/browser/pull/4454">Lightpanda PR #4454</a> 于 11 月 5 日 19:11（北京时间）合并。过去只在导航结果列出 WebMCP 工具，但多数页面在 <code>load</code> 之后才注册，导致 Agent 不知道工具存在。补丁在页面工具集合变动后，于下一次相关工具结果中附带工具名称、说明、输入 Schema 和提示；通过 <code>ModelContext</code> 的 generation 计数和 frame/loader 标识避免重复与过时通知。</p>
+<p><strong>为什么值得关注：</strong>开发者明确<strong>没有</strong>把网页动态工具直接加入模型顶层 tools：这样会破坏 Prompt Cache、让恶意或错误 Schema 拒绝整次模型请求、还会把网页文本提升为高信任指令，导致工具名冲突。补丁描述提供了一个真实网站延迟注册工具的人工验证场景。<strong>状态：</strong>PR 已合并，未见独立的大规模成功率基准。</p>
+<p><strong>浏览器工程启发：</strong>把网页工具视为“来自当前 Origin 的不可信能力清单”，经 Browser Runtime 验证后作为结构化数据回执供 Agent 决策，而不是直接变成系统工具声明；同时绑定 Frame、Loader、Version，防止导航后使用旧能力。</p>
+
+<h3>4. Browser Harness：独立复验 Skill，同时因 robots.txt / 条款拒绝晋级</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/browser-use/browser-harness/pull/975">Browser Harness #975</a> 于 11 月 6 日 07:53（北京）合并四个站点 Skill（PokeAPI、NVD、TVmaze、Treasury Fiscal Data）。作者说明每段代码先在真实未登录浏览器执行，再由另一 Agent 在新的浏览器中<strong>原样复演</strong>；审查修复部分描述与 API 事实不符的地方。作者也因服务条款限制主动丢弃了 Roblox、Coinbase 候选。此前 <a href="https://github.com/browser-use/browser-harness/pull/972">#972</a> 于 11 月 5 日 08:11（北京）删除一个 NBA Skill，因为该站 robots.txt 针对 AI Agent 的规则更严格，虽然通配 User-agent 规则允许。</p>
+<p><strong>为什么值得关注：</strong>这里最重要的是“Skill 验证通过仍不一定可以发布”：功能正确性、来源合规和权限条件是彼此独立的晋级门槛。<strong>限制：</strong>这些是项目 PR 记录的单次结果，未证明 Skill 在后续网站改版后能自动修复。</p>
+<p><strong>浏览器工程启发：</strong>针对 Browser Agent Skill 库设置三层独立门禁：可重放正确性、站点/API/机器人访问政策、长期可靠性；失败和撤下的 Skill 也需沉淀成规则和测试。</p>
+
+<h3>5. Microsoft Foundry azd 扩展 GA：测试、评估、优化与部署配置开始进入同一工程链路</h3>
+<p><strong>发生了什么：</strong>微软 11 月 5 日发布 <a href="https://devblogs.microsoft.com/foundry/microsoft-foundry-azure-developer-cli-ga/">Microsoft Foundry extension for Azure Developer CLI 1.0 GA</a>：在版本化的 <code>azure.yaml</code> 中维护 Agent 配置，使用 <code>azd ai agent run</code> 本地测试、Agent Inspector 检查请求/响应、<code>azd ai eval generate</code> 生成待审核的评测数据与准则、<code>azd ai eval run start</code> 重跑评测，并可用 <code>azd ai agent optimize</code> 基于配置好的评测提出候选优化（明确要人工审查后再部署）。</p>
+<p><strong>为什么值得关注：</strong>这不是浏览器原生功能，但把 Agent 的<strong>配置、执行记录、基准和发布</strong>整理成了一套可在 CI 复用的开发流程。需要 Azure 资源与配额，部分模型及特性仍有预览限制；官方文章未给出浏览器特定 Benchmark 的改进幅度。</p>
+<p><strong>浏览器工程启发：</strong>Browser Harness 可照此把 Prompt/Tool/Skill、固定测试集和运行环境一起版本化，测试在独立环境执行，再依据 Canary/Review 回执决定是否升级策略。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p>新发现项目来自 GitHub 指定创建日期的开放搜索及源码 README 复核；“首次发现”是<strong>本期纳入雷达</strong>，不等于作者宣布正式发行。以下三项均在 GitHub <code>created:2026-11-04..2026-11-06</code> 搜索范围内，实际成立时间应以 GitHub 仓库元数据为准。本期未对其进行本地运行测试。</p>
+<table><thead><tr><th>项目 / 时间依据</th><th>差异与工程价值</th><th>成熟度及后续信号</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/Jakub30cz/safari-browser-mcp">safari-browser-mcp</a><br>本期首次发现；近 3 日创建候选</td><td>使用真实 macOS Safari（Apple Events + WebDriver），默认按 Host 只读、独立配置允许写操作；对网页返回文本包裹“不可信内容”边界，并进行字符转义，避免网页文本逃出边界。提供构建和安装说明。</td><td>个人开源、未独立安全审计；重点验证默认只读是否会被导航/系统 Apple Events 绕过、Safari 27 兼容性、可信输入权限。</td></tr>
+<tr><td><a href="https://github.com/damnitjoshua/dia-mcp">dia-mcp</a><br>本期首次发现；近 3 日创建候选</td><td>Chrome Debugger MV3 扩展 + 本机 Bridge + FastMCP，使外部 Agent 接入已运行的 Dia 浏览器和登录态。仓库提供单元/Live Self Test，作者声称不需要启动新的 Profile。</td><td>早期工具；重点观察真实 Profile 权限、扩展到本地 Bridge 的身份验证、跨标签操作边界；README 自述测试并非独立证据。</td></tr>
+<tr><td><a href="https://github.com/ziwen-wang/browser-agent-mcp">browser-agent-mcp</a><br>本期首次发现；近 3 日创建候选</td><td>Chrome/Edge MV3 扩展加 Loopback MCP Server，默认只读、按 Origin 授权、关键操作确认，敏感输入字段屏蔽；使用配对密钥并限制消息长度/请求速率。</td><td>早期工具；值得对照 Safari 方案验证 host-permission 无法区分端口时的 origin 二次校验、审计是否完整、隐式扩权与暂停行为。</td></tr>
+</tbody></table>
+
+<h2>浏览器技术</h2>
+<p><strong>WebKit：</strong>Safari TP 256 中除了 WebGPU 之外，SVG 2 文本布局、Canvas 文本绘制属性、CSS <code>font-palette-mix()</code>，以及 Web Inspector Timelines 缺失帧/Call Tree 内容等修复也与开发者体验相关。特别值得关注的是 <code>requestIdleCallback()</code> 使用实际 60Hz 帧周期修正空闲调度，不再把工作安排在帧截止之前。详见 <a href="https://webkit.org/blog/18602/release-notes-for-safari-technology-preview-256/">官方 Release Notes</a>。</p>
+<p><strong>Chrome DevTools MCP 候选增强：</strong><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3384">PR #3384</a> 提出请求覆盖（network overrides），能在受控页面将生产资源替换成本地文件或测试服务器资源，用于修改前后对比。作者报告 1,828 项测试通过，但截至本期<strong>仍为待合并 PR</strong>。这为浏览器差异验证提供潜在测试能力，不能按已发布功能使用。</p>
+
+<h2>端侧 AI</h2>
+<p>本期重点是微软公开的 <a href="https://devblogs.microsoft.com/foundry/foundry-local-agentic-coding-qwen3-8-27b/">Qwen3.8-27B 本地 Coding 优化路径</a>。与手机端 0.5B～3B 小模型不同，27B 的部署代价高，因此其工程价值更多体现在推测解码、量化权重、Prefix Cache 与并发调度。跨到 WebGPU/WASM 需要分别处理浏览器显存预算、GPU Process 边界与权限，不能将 CUDA 的 Benchmark 当成浏览器性能。</p>
+<p>WebKit TP 256 对 GPUTexture 生命周期和 WebGPU OffscreenCanvas 的修复则说明：浏览器端侧推理的持续稳定性不仅依赖模型 Kernel，也依赖图形运行时的资源回收、读回及媒体协作。</p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>WebMCP 动态工具发现：</strong>Lightpanda #4454 的“页面 Schema 只作为工具结果”与新发现的真实 Safari/Dia/Chrome Profile MCP 桥形成两类实现。前者解决网页作为<strong>工具提供者</strong>时的动态能力发现与信任分层；后者解决 Agent 作为<strong>浏览器操作者</strong>时的授权和状态。产品层应该分离这两类能力：网页不能修改 Browser Runtime 的高权限工具；真实 Profile 操作需按 Origin/Tab/动作类型授权，并记录谁执行了什么。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table><thead><tr><th>真实案例</th><th>Observe → Diagnose → Improve → Verify → Learn 的实际位置</th><th>仍缺少什么</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/browser-use/browser-harness/pull/975">Browser Harness #975</a> + <a href="https://github.com/browser-use/browser-harness/pull/972">#972</a></td><td>真实站点试跑 → Skill 编辑 → 独立 Agent 复演 → 访问政策筛选 → 合并/删除；出现早期 <strong>Learn</strong>（条款限制成为后续规则）</td><td>网站改版的持续复检、自动失效/修复、独立长期成功率</td></tr>
+<tr><td><a href="https://github.com/lightpanda-io/browser/pull/4454">Lightpanda WebMCP</a></td><td>观察迟到注册缺失 → 分析工具发现断层 → 修改 Frame/Loader/Generation 回执 → 人工验证 → 合并</td><td>端到端任务提升 Benchmark、跨网站/版本 Canary、自动规则学习</td></tr>
+<tr><td><a href="https://devblogs.microsoft.com/foundry/microsoft-foundry-azure-developer-cli-ga/">Foundry azd GA</a></td><td>可将 Agent 配置、运行、测试集、评测和候选优化版本化，为 Harness 优化建立部署流程</td><td>并非 Chromium/Firefox/WebKit 自动修复；需独立 Benchmark 以及发布反馈</td></tr>
+<tr><td><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3384">DevTools MCP Network Override</a></td><td>候选 Verify 工具：测试时覆盖请求，比较替换资源的影响；PR 未合并</td><td>真实浏览器性能回归集成、发布/Canary 的证据链</td></tr>
+</tbody></table>
+<p><strong>可迁移的最小实验：</strong>让 Browser Agent 捕获页面工具的动态注册与操作结果，按 Frame/Origin 生成可重放 Reproducer；独立运行旧/新 Runtime 并比较正确性、Trace 与性能；提交候选 Skill/补丁时同时检查站点权限和政策；将被拒绝的优化、回归与条款冲突保留为下一轮规则。这样可逐步实现 Observe → Diagnose → Patch → Build/Benchmark → Verify → Canary → Learn。<strong>本期没有证据证明任何主流浏览器已实现上述完整自动闭环。</strong></p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>本期原始证据优先于概念文章：<a href="https://github.com/lightpanda-io/browser/pull/4454">Lightpanda WebMCP 已合并实现</a>、<a href="https://github.com/browser-use/browser-harness/pull/975">Browser Harness 可复验 Skill</a>、<a href="https://github.com/browser-use/browser-harness/pull/972">访问政策导致的撤回</a>、<a href="https://webkit.org/blog/18602/release-notes-for-safari-technology-preview-256/">WebKit 256 发布说明</a>和 <a href="https://devblogs.microsoft.com/foundry/foundry-local-agentic-coding-qwen3-8-27b/">Foundry Local 模型优化说明</a>。经过检索，未发现足够可信且不重复此前日报的新浏览器相关论文，故不补旧论文凑数。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser AI 的下一项基础能力应是“动态能力发现 + 可验证权限 + 可复演结果”，而不只是更长的工具列表。</strong>WebMCP 清单可以由网页迟到注册，但不应获得系统级工具信任；Skill 可以验证通过，但仍应因来源政策不满足而拒绝晋级；本地 Coding 模型能提高计算效率，但不能替代 Browser Runtime 自身的隔离、可观测与基准测试。对 Chromium/WebKit/Firefox 都有现实迁移意义。</p>
+
+<p><a href="/browser-ai-daily/">返回日报聚合页</a></p>
