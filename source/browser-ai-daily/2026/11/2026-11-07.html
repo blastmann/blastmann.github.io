@@ -1,0 +1,72 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-07
+date: 2026-11-07 09:20:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-06 09:07 至 2026-11-07 09:20（北京时间），重要遗漏回看近 7 天。按开放发现（不带已知仓库名称）→官方发布→英文社区与论文→已知仓库工程深挖四轮检索。<strong>本期重点：</strong>新兴 WebGL 2 本地推理、WebGPU 模型可解释性、浏览器 Agent 只读执行、Browser Harness 删除 55 个不符合站点访问政策的 Skill，以及跨浏览器到本机 Agent 的权限边界。本期官方浏览器重大新公告较少，没有用一般 Bug 修复填充头条。所有数字均标明作者报告或仓库状态，未独立复测。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Browser Harness：一次审查删除 55 个违反项目访问规则的站点 Skill（11 月 7 日已合并）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/browser-use/browser-harness/pull/976">browser-use/browser-harness PR #976</a> 于 11 月 7 日 07:47（北京时间）合并，删除 55 个站点专属 Skill，另调整 X、GitHub、NASA 的部分访问路径。作者于 11 月 6 日审查每个 Skill 对应站点的 <code>robots.txt</code> 或服务条款，并安排独立反驳式复核，重新获取来源后再判断；PR 总计涉及 63 个文件。触发条件包括针对具名 AI User-Agent 的禁止路径、明确禁止 AI/ML 自动化利用的条款。项目将一般反爬声明与其明确政策条件区分开来。</p>
+<p><strong>为什么重要：</strong>与此前新增 Skill 的报道相反，这次的“改进”是<strong>主动缩减不应使用的能力</strong>。这不是在宣称 <code>robots.txt</code> 本身等同法律，而是项目对自己工具执行范围实施一套明确政策，并保留变更证据。</p>
+<p><strong>工程启发：</strong>Browser Harness 除正确性、稳定性外还应具备持续的权限/站点规则复核；发现规则变化时自动降级或撤销 Skill，而不是让模型绕过限制。<strong>状态：</strong>已合并；实际运行站点覆盖率下降，长期重新验证尚未见证据。</p>
+
+<h3>2. WebGLLM：绕开 WebGPU 依赖，在 WebGL 2 中执行本地语言模型（11 月 6 日新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/webgllm/webgllm">webgllm/webgllm</a> 于 11 月 6 日 08:24（北京时间）创建，已公开 npm <code>webgllm</code> 0.1.x。它使用 WebGL 2 的浮点渲染目标、Worker 和 OffscreenCanvas 来运行 LFM3、LFM2.5、Qwen3.5，缓存模型于 Origin Private File System，对外提供兼容 OpenAI 的接口、流式输出、取消、工具调用和受约束 JSON。11 月 6 日发布的 <a href="https://github.com/webgllm/webgllm/releases/tag/webgllm%400.1.3">0.1.3</a> 还提供 <code>onMemoryClaim</code> 内存预算协调回调；<a href="https://github.com/webgllm/webgllm/releases/tag/webgllm%400.1.5">0.1.5</a> 修正 Schema 约束逻辑。</p>
+<p><strong>为什么重要：</strong>WebGPU 尚不可用或不稳定的移动浏览器上，WebGL 2 仍可能为小模型提供兼容性备选，尤其适合比较 Firefox Android 和旧版 iPhone 的实际情况。多模型内存管理接口也比一次性推理 Demo 更贴近真实产品。</p>
+<p><strong>工程启发：</strong>对端侧 AI Runtime 采用明确的 <code>WebGPU → WebGL 2 → WASM/CPU</code> 能力检测和降级策略。<strong>限制：</strong>这是 0.x 早期实现，作者文档中的支持范围未经过跨设备独立验证；不应把“支持 WebGL 2”直接等同于所有手机高性能可用。</p>
+
+<h3>3. OnlyRead：在网络请求层拒绝 Browser Agent 的写操作（11 月 5 日首发，7 日内补推）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/onlyreadai/onlyread">onlyreadai/onlyread</a> 11 月 5 日创建并发布 <a href="https://github.com/onlyreadai/onlyread/releases/tag/v1.0.0">v1.0.0</a>。其 Chromium MV3 扩展通过 Chrome Debugger API 观察和阻断请求，结合 HTTP 规则、站点专属解码器、缓存判定和可选 AI 审查，尝试让 Agent 在登录状态下“可以读、不能发帖/修改/删除”。不确定的写入请求采取拒绝策略。其第二级 AI 审查使用外部模型服务，只发送经过筛选的请求片段，并非完全离线。</p>
+<p><strong>为什么重要：</strong>这把安全约束从 Prompt 移到模型之外，直接影响 Browser Agent 权限体系与低风险阅读模式。<strong>工程启发：</strong>区分站点读取权限和具有副作用的网络/DOM 行为，并使用真正独立的执行约束。<strong>限制：</strong>基于网络请求的阻断不等于覆盖所有客户端状态修改、后台同步或其他扩展/进程渠道；项目自述的站点覆盖和安全效果尚未经独立审计。许可证 AGPL-3.0。</p>
+
+<h3>4. Qwen3-0.6B Inside Out：把完整模型层间激活展示在浏览器内（11 月 6 日新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/davidheineman/qwen-web">davidheineman/qwen-web</a> 11 月 6 日 11:48（北京时间）创建，手写 WGSL 完成 Qwen3-0.6B 的前向计算，展示每层注意力、MLP、残差流、Logit Lens 与权重矩阵，可逐 Token 观察中间结果。作者提供与 Python Transformers 参考实现的对照，报告残差/Logit 相对误差约 3e-6、注意力约 1e-6，并保留浏览器 E2E 自检。</p>
+<p><strong>为什么重要：</strong>不同于黑盒聊天 UI，它为 Browser AI Runtime 提供了面向数值正确性和算子调试的可观测入口。模型原始 BF16 权重约 1.19GB；为了保留完整注意力图，当前没有 KV Cache，最多 256 Token。</p>
+<p><strong>工程启发：</strong>跨 WebGPU Backend 做优化时可以把 Python Ground Truth、层间激活差异和浏览器端自检作为发布前验证。<strong>限制：</strong>早期可视化原型，非生产推理引擎；相关性能和误差为作者自述数据。<a href="https://davidheineman.github.io/qwen-web/">交互 Demo</a>。</p>
+
+<h3>5. ThisBash：普通网页会话可借 AI 远程控制跨越本机权限边界（11 月 4 日研究，7 日补推）</h3>
+<p><strong>发生了什么：</strong>Forever Security 于 11 月 4 日发表 <a href="https://forever.security/blog/thisbash-claude-dispatch-browser-extension-rce">ThisBash 原始研究</a>。研究者演示：有权控制 <code>claude.ai</code> 的浏览器扩展，利用 Claude Dispatch 在网页端可访问的接口，驱动已配对的 Claude Desktop 执行本机命令，甚至可能作用于同一账号下的另一台电脑。研究者在 2026 年 5 月已报告，Anthropic 当时确认为有效并以已知重复问题结束报告；研究方称 Dispatch 计划退役，但未在本期确认所有部署是否已经完全停用。</p>
+<p><strong>为什么重要：</strong>登录状态、账号身份与用户对本机操作的明确授权不能混为一谈。<strong>工程启发：</strong>远程 Browser/Agent Runtime 必须让执行命令和批准命令发生在不可被同一低权限页面或扩展同时控制的边界内；跨设备需要重新确认权限。<strong>限制：</strong>这是研究者在特定受控配置中的演示，不代表任何浏览器扩展都能直接利用。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table>
+<thead><tr><th>项目</th><th>时间/状态</th><th>独特价值与继续跟踪</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/webgllm/webgllm">WebGLLM</a></td><td>11/06 创建；0.1.5 已发布；早期</td><td>WebGL 2 本地 LLM、OpenAI API、跨模型内存预算；跟踪 Android Firefox、iOS Safari 的延迟/功耗</td></tr>
+<tr><td><a href="https://github.com/davidheineman/qwen-web">Qwen-Web</a></td><td>11/06 创建；研究/可视化原型</td><td>WGSL 层间数值检验；跟踪不同 GPU 的误差、首屏加载和显存</td></tr>
+<tr><td><a href="https://github.com/onlyreadai/onlyread">OnlyRead</a></td><td>11/05 创建并发布 1.0；扩展原型</td><td>网络层只读防护；跟踪站点误判率、无法阻断的路径和隐私边界</td></tr>
+<tr><td><a href="https://github.com/DomiR/claude-do-it">claude-do-it</a></td><td>11/05 创建并发布 0.1.1；早期工具</td><td>Markdown 任务清单、Loro CRDT、本地守护进程和版本化 CLI。特别有趣的是已有 Herdr Worker 支持；跟踪多 Agent 并发修改和任务状态是否可靠</td></tr>
+<tr><td><a href="https://github.com/gravion-ux/agent-browser">Gravion Agent Browser</a></td><td>11/05 创建；受限 Playwright 原型</td><td>显式域名允许列表、私网禁止、遇登录/MFA 时停止；当前只是一次有界导航，不是成熟自治 Agent</td></tr>
+</tbody>
+</table>
+<p>上述“首次出现”依据 GitHub 仓库创建时间，而非行业首发声明。WebGLLM 与 Qwen-Web 没有把 Stars 或作者 Demo 当成独立质量保证；claude-do-it 的浏览器编辑器和 Herdr 集成仍需要实际测试。</p>
+
+<h2>浏览器技术</h2>
+<p>过去 24 小时未核实到值得与以上进展同等优先级的 Chromium、WebKit 或 Firefox 重要官方架构公告，故不重复昨日已收录的 Safari TP 256。<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3411">Chrome DevTools MCP PR #3411</a> 值得作为工程观察：MCP 客户端取消 WebMCP 或第三方工具调用时，现有调用未将 AbortSignal 传给页面侧。候选补丁把信号向下传递并增加模拟测试，但截至本期<strong>仍待合并</strong>，队列释放另由 #3079 负责。</p>
+
+<h2>端侧 AI</h2>
+<p>WebGLLM 和 Qwen-Web 代表两类不同任务：前者追求 WebGPU 不可用时的小模型可部署性，后者追求 WebGPU 计算可解释性及数值可证。对移动端建议用同一任务比较 WebGPU/WebGL 2/WASM 的首 Token、持续输出、模型加载、峰值内存、后台恢复和能耗，并区分开发者演示与完整设备测试。近期项目均尚无独立手机端 Benchmark。</p>
+
+<h2>浏览器 × AI</h2>
+<p>OnlyRead 将只读限制放在网络/策略层；Chrome DevTools MCP 候选补丁让 Cancel 真正到达页面工具；claude-do-it 则将多 Agent 任务放进共享且带版本号的 Markdown 文档。三者分别针对“允许做什么”“取消能否真正生效”“并发工作是否丢任务”。这些问题共同构成 AI Native Browser 的运行时边界。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table>
+<thead><tr><th>案例</th><th>已验证阶段</th><th>还缺少什么</th></tr></thead>
+<tbody>
+<tr><td>Browser Harness 删除 55 Skill</td><td>访问政策观察 → 审查/独立复核 → 删除 → Merge</td><td>定期政策检查、规则变化触发重新审核、下游运行验证</td></tr>
+<tr><td>Qwen-Web</td><td>GPU 实现 → Python 对照 → 浏览器 E2E 自检（作者）</td><td>跨设备持续性能 CI、真实发布门禁</td></tr>
+<tr><td>Chrome DevTools MCP 取消传播</td><td>复现 → 候选 Patch → 模拟测试</td><td>合并、真实浏览器 CI、队列取消整链路覆盖</td></tr>
+<tr><td>OnlyRead</td><td>策略/网络拦截器 → 项目自测</td><td>独立攻击测试、误拦率、策略更新反馈</td></tr>
+</tbody>
+</table>
+<p><strong>本期判断：</strong>这里最接近 Harness 自我改进的是“已有 Skill 因外部访问规则变化而被撤销”，而不是模型改进了多少代码；目前尚无证据证明主流浏览器内核已完成 Telemetry → 自动 Patch → Canary → Learn 的完整循环。可以先建立定期 Skill 重新审查和独立回放，再让新/旧资产随证据晋级或撤销。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>本期最有价值的一手材料来自新创建的开源仓库、已合并 PR 与公开安全研究。没有找到可核实时间、与用户方向紧密相关且未在最近几期出现的全新论文，因此没有用旧论文补齐配额。<a href="https://github.com/DomiR/claude-do-it/releases/tag/v0.1.1">claude-do-it 0.1.1</a> 可另外观察其版本化 CLI 与 Loro CRDT 在多任务、多 Agent 下是否能够避免相互覆盖。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>浏览器 AI 能力的提升，并不总是增加工具或参数。</strong>能识别不该执行的操作、能真的取消正在运行的调用、能发现兼容性与数值错误，以及能撤销过期 Skill，都是更可靠的工程进步。对移动端与 Browser Runtime 团队，最值得立即试做的是“可撤销权限 + 可证实的操作回执 + 定期复验”的小范围集成。</p>
