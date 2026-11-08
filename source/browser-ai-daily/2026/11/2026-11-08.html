@@ -1,0 +1,74 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-08
+date: 2026-11-08 09:22:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-07 09:22 至 2026-11-08 09:22（北京时间）；重要漏报回看近 7 天。按“开放发现（不输入已知仓库名）→浏览器/平台官方发布→英文社区与论文→已知仓库工程 PR”四轮检索。本期为周末，官方浏览器重大新发布较少，重点转为<strong>当日创建的新仓库的实际工程证据、模型权重分发兼容性，以及浏览器 Agent 验证的可信程度</strong>。以下“创建/合并/待合并”均按 GitHub 元数据区分；早期仓库功能主要是作者源码和说明，尚未独立运行或安全审计。</p>
+
+<h2>今天最值得看</h2>
+<h3>1. Wap：把本地 Agent 与 Chromium Patch Series 放进一个浏览器项目（11 月 7 日新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/minpeter/wap">minpeter/wap</a> 于 2026-11-07 15:32（北京时间）创建，尝试构建 Chromium 下游浏览器 + 本地 Daemon + CLI + MV3 侧栏 + Native Host。仓库包含固定 Chromium Revision、顺序化 Patch Series、构建和原生 QA 脚本、<a href="https://github.com/minpeter/wap/blob/main/docs/security-model.md">详细的安全模型</a>。其本地身份以安装该软件的操作系统用户为边界，Daemon/CDP Gate 用安装密钥的双向挑战认证，明确说明不同 accountId 不构成隔离的安全主体。</p>
+<p><strong>值得关注：</strong>与仅仅通过 CDP 连接现有浏览器不同，Wap 探索将 Agent 能力和安全契约嵌入浏览器发行版，适合作为研究原生 AI Browser 的工程材料。</p>
+<p><strong>重要限制：</strong><a href="https://github.com/minpeter/wap/blob/main/docs/publication-readiness.md">仓库自行标明“公开源码分发尚未通过审查”</a>，项目范围尚未授予明确开源许可证，部分资产、Patch 来源、凭据和发布签名仍待处理；CI 也未证明完整 Chromium 编译与产品二进制验证。故<strong>公开可读不等于许可完整、可合法再分发的开源浏览器</strong>。建议研究架构与安全边界，不直接集成或分发。</p>
+
+<h3>2. browser-verified-skill：Agent 探索一次，编译出可重放 Playwright 脚本（11 月 7 日新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/OMD-123/browser-verified-skill">OMD-123/browser-verified-skill</a> 于 2026-11-07 21:12（北京时间）创建，采用 TypeScript/Playwright，提供 CLI、MCP、操作策略门禁、审计工件、可编译的确定性脚本，以及针对失效定位器的局部修复。明确拒绝验证码绕过等隐蔽访问方式；登录/验证码交给人处理。其 <a href="https://github.com/OMD-123/browser-verified-skill/blob/main/package.json">package.json</a> 列出单元、集成、E2E、覆盖率和验收脚本，并标注 MIT。</p>
+<p><strong>为什么重要：</strong>Agent 不必每次为同一网站重新进行昂贵的探索；把成功操作变成附带证据的脚本，再以常规 Playwright 执行，是从“会做任务”走向“可复用工程资产”的实用路线。</p>
+<p><strong>工程启发：</strong>可探索 <code>Task → Evidence → Policy Check → Compile → Independent Replay → Skill Promotion</code>，独立执行时不再让原 Agent 的判断充当通过证据。<strong>限制：</strong>目前是仅有少量外部关注的早期项目，作者“self-healing”等描述尚无公开跨站成功率或长期误修率的独立评测。</p>
+
+<h3>3. ghost-qa：让 Coding Agent 交付前真正跑一遍桌面/移动浏览器（11 月 8 日新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/avivgerz-hue/ghost-qa">avivgerz-hue/ghost-qa</a> 创建于 2026-11-08 03:23（北京时间），提供 <code>npx ghost-qa test http://localhost:3000</code>，基于 Playwright 自动遍历开发环境页面和部分交互，同时检查 Console/React Hydration、网络 4xx/5xx、移动端横向溢出、可访问性和性能资源问题。可生成 Markdown/JSON/HTML 报告；<code>init</code> 把浏览器验收规则写入 Agent 使用的配置文件；可通过 MCP 触发检测。</p>
+<p><strong>工程启发：</strong>用真实浏览器错误和移动视口差异阻止“代码编译成功就宣布完成”。尤其适合 Web 前端自动验证台的早期工具目录；关键指标应是误报率、误点率、真正复现的 Bug 比例，而非扫过多少 DOM 元素。</p>
+<p><strong>重要边界：</strong>“自修复”主要通过把报告交还给外部 Coding Agent 实现，不能说这个 CLI 自己完成代码修改。作者的自动点击会屏蔽常见支付/删除关键词，但未知网站操作仍可能有副作用；建议仅用在本地受控测试环境，不能凭 README 视为真正无风险。</p>
+
+<h3>4. LiteRT-LM：权重去重与运行时版本门禁同时落地（11 月 7 日合并）</h3>
+<p><strong>发生了什么：</strong>Google 的 <a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4454">LiteRT-LM PR #4454</a> 于 11 月 7 日 09:02（北京时间）合并：默认将符合条件的 TFLite 权重从模型 FlatBuffer 外置到 <code>.litertlm</code> 尾部的 <code>TFLiteWeights</code> 节，多个模型完全相同的权重可去重。<a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4455">PR #4455</a> 于 09:27 合并，要求含外置权重的模型元数据至少标注运行时 0.19.0，避免旧 GPU Runtime 加载时崩溃；<a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4453">PR #4453</a> 同日合并，避免多 LLM Session 切换时不必要的 KV Cache 深拷贝。</p>
+<p><strong>为什么重要：</strong>端侧 AI 除了 Kernel 性能，模型包体、相同权重的复用、Session 切换开销和文件格式兼容性同样影响真实体验。尤其是模型产物升级必须有 <strong>min runtime version</strong> 这样的防崩溃门禁。</p>
+<p><strong>工程启发：</strong>可为 iOS/Android/Browser 的统一端侧模型资产定义版本契约，并测“首次下载、磁盘占用、运行峰值内存、切换耗时和旧 Runtime 失败方式”。<strong>限制：</strong>这些为已合并代码变更，并未公开本期的包体/延迟量化收益；它们属于 LiteRT-LM 通用端侧运行时，不能直接推断 WebGPU/手机端收益。</p>
+
+<h3>5. Lightpanda：并发 Browser Context 的权限与网络隔离进入跨版本验证（11 月 8 日更新，仍为 Draft）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/lightpanda-io/browser/pull/4151">Lightpanda #4151</a> 正在尝试让一个 CDP 连接内的多个 Browser Context 各自拥有 Session、存储、HTTP Client、权限、坐标和视口。作者更新了跨 Context 的路由、取消及销毁回归测试，声称三 Context 探针的 30 项基础控制与 Chrome 一致。其前置 <a href="https://github.com/lightpanda-io/browser/pull/4149">#4149</a> 将权限覆盖移到 Session；<a href="https://github.com/lightpanda-io/browser/pull/4150">#4150</a> 将页面和 Worker 请求归属 Session。</p>
+<p><strong>工程启发：</strong>一个 Browser Runtime 服务多个 Agent 时，真正难点不是多开 Tab，而是权限、网络路由、事件句柄、销毁后回调和调试会话不串线。适合作为多 Session 隔离测试案例。<strong>状态：</strong>#4149 Open、#4150 Draft、#4151 Draft，均未合并；测试数据来自提交者和其 Fork CI，不能当作主干已交付特性。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table>
+<thead><tr><th>项目与本期首次发现</th><th>创建时间 / 成熟度</th><th>差异点、工程价值及下一跟踪信号</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/minpeter/wap">Wap</a> · 本期 11/08 首次发现</td><td>11/07 15:32 北京时间；研究级源码</td><td>Chromium Patch + Daemon + 本地双向认证；重点看许可审查、全量 Chromium Build、二进制发布可信度</td></tr>
+<tr><td><a href="https://github.com/OMD-123/browser-verified-skill">browser-verified-skill</a> · 本期 11/08 首次发现</td><td>11/07 21:12；早期开源 Skill</td><td>探索→证据→Playwright 编译→回放；重点看跨站成功率、策略误判和独立验证</td></tr>
+<tr><td><a href="https://github.com/avivgerz-hue/ghost-qa">ghost-qa</a> · 本期 11/08 首次发现</td><td>11/08 03:23；早期 QA CLI</td><td>零脚本浏览器冒烟、移动视口、结构化失败；重点看误报、可重复性、误触发写操作</td></tr>
+<tr><td><a href="https://github.com/Rickaym/seti">Seti</a> · 本期 11/08 首次发现</td><td>11/07 02:22；Linux 自托管原型，Apache-2.0</td><td>浏览器/手机通过语音、任务事件流和审批控制多个 Claude Code Agent；含沙箱、任务恢复、权限审计；关注实际隔离和重启恢复</td></tr>
+<tr><td><a href="https://github.com/hacksurvivor/effie-browser">Effie Browser 开放组件</a> · 本期 11/08 首次发现</td><td>11/05；部分源码开放</td><td>Chromium 浏览器与 MCP、测试任务、补丁对外开放，但应用 UI 和 Agent 引擎闭源；关注真实 Profile 接管/权限与可独立复测的基准</td></tr>
+</tbody>
+</table>
+<p>上述时间来自 GitHub 创建元数据，未将当天提交视为新产品正式发布。Seti、Effie 为回看 7 天补充；多数新项目星数很低，不能以项目自述推断稳定性。<a href="https://github.com/Rickaym/seti">Seti</a> 特别适合与已有的多 Agent 调度工具比较，但其参考环境是 Linux/Ubuntu 24.04，而非 macOS 原生 Herdr。</p>
+
+<h2>浏览器技术</h2>
+<p>过去 24 小时没有核实到足以单列的 Chrome/WebKit/Firefox/Edge/Opera/Brave 重大正式发布；因此不重复前几天的 Safari TP 256 和 Chrome 157。工程进展方面，Lightpanda 多 Context 改动值得关注隔离，<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3419">Chrome DevTools MCP PR #3419</a> 正尝试补齐 Dedicated Worker 的未捕获异常：Worker 自己的 CDP Session 上会出现 <code>Runtime.exceptionThrown</code>，而只监听 Page Session 会漏掉异常；该 PR 仍 Open，不能当作已发布特性。</p>
+
+<h2>端侧 AI</h2>
+<p>LiteRT-LM 本周的变化聚焦<strong>模型权重分发契约与多 Session 内存开销</strong>，没有新的官方 WebGPU GPU Kernel 性能数字。对移动端，建议将模型文件版本门禁与运行时能力检测放在同一套 E2E 测试中，显式验证不兼容模型包被安全拒绝，而不是在 GPU 初始化后崩溃。</p>
+
+<h2>浏览器 × AI</h2>
+<p>Wap 与 Effie 分别尝试“修改 Chromium Runtime”和“共享浏览器 + MCP 工具”两条路线；browser-verified-skill 强调可重放任务，ghost-qa 强调真实结果和视口验证，Seti 强调人类如何持续监督多 Agent 工作。它们关注点不同，不能把“工具多”当成更好。比较时应统一测：操作可回执、最小权限、会话隔离、取消响应、失败后的复现、用户接管及内存预算。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table>
+<thead><tr><th>案例</th><th>已经到哪一步</th><th>仍缺少什么</th></tr></thead>
+<tbody>
+<tr><td>browser-verified-skill</td><td>探索→操作证据→脚本编译→可重放的验证入口（作者实现）</td><td>独立成功率、失效修复误报、长期回归</td></tr>
+<tr><td>ghost-qa</td><td>网页 Observe→结构化 Diagnosis→报告交给外部 Coding Agent</td><td>自身并不自动 Patch；缺独立验证是否真实改进</td></tr>
+<tr><td>Lightpanda Context PR</td><td>发现隔离缺口→拆分 Session 权限/网络→候选 Patch→本地/分支 CI</td><td>上游合并、跨平台回归、Canary/学习</td></tr>
+<tr><td>Browser Harness 访问政策回查</td><td>旧 Skill 重新审核→撤销/合并；<a href="https://github.com/browser-use/browser-harness/pull/979">#979</a> 于 11/08 07:39 又删除 2 项</td><td>真正的自动周期审查、规则变化触发器和运行侧反馈</td></tr>
+<tr><td>LiteRT-LM 包体契约</td><td>产品风险识别→Patch→合并（运行时版本下限）</td><td>实际设备发布、稳定性追踪、长期收益数据</td></tr>
+</tbody>
+</table>
+<p><strong>可落地实验：</strong>先为 Browser Harness 提供两个独立工具：<code>RunAndCaptureEvidence</code>（记录浏览器 Revision/Origin/执行轨迹/网络与 Console/失败截图），<code>ReplayAndCompare</code>（新 Session 重放，带权限与结果断言）。只有独立重放通过才保存或升级 Skill；长期失败则降级或撤销。这是“建设工具和可探索环境”而不是固定 Agent 工作流：由 Agent 自行决定何时调用，验证规则保持独立。</p>
+<p>目前没有证据表明 Chromium/WebKit/Firefox 已实现 Telemetry → 自动诊断 → Patch → Canary → Learn 的完整自主闭环；现有案例主要落在 Observe、Diagnose、局部 Verify 和 Harness 资产回流。</p>
+
+<h2>开源与论文 / 工程实践</h2>
+<p>本期最新实证集中在 Github 新仓库与真实 PR。过去 24 小时未找到新发布且证据更充分的浏览器端侧 AI 论文，因此不重复近期 WebGPU 推测解码等材料。近 7 天漏报的一条工程度量来自 <a href="https://github.blog/changelog/2026-11-05-usage-metrics-api-adds-code-review-details-and-addressed-rate/">GitHub 11 月 5 日 Copilot 代码审查反馈指标更新</a>：企业/组织每日仓库报告新增 <code>total_comments_evaluated</code>、<code>total_comments_addressed</code> 等，可计算审查意见采纳/响应比例。注意“已响应”还包括回复将在后续 PR 修复，<strong>不等于缺陷已修复或性能提高</strong>；可用作 Harness 的 Learn 信号之一，但必须结合独立回归和生产故障。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>下一代 Browser Agent 的护城河可能不是自动点击能力，而是从一次探索生成“有证据、可审查、能重放、过期可撤销”的长期资产。</strong>从今天新项目和真实 PR 看，工具目录、Session 权限边界、模型包兼容门禁和可回放测试，比复杂的固定 Agent 流程更值得率先建设。</p>
