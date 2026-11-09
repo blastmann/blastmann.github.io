@@ -1,0 +1,74 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-09
+date: 2026-11-09 09:56:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-08 09:56 至 2026-11-09 09:56（北京时间），重要遗漏回看近 7 天。依次进行了不输入既有仓库名的开放发现、浏览器官方发布检查、英文社区/论文检索、已知仓库 PR 深挖。本期主要是新出现的工具和可核实的工程测试；没有找到足够重要的过去 24 小时 Chrome/WebKit/Firefox 官方架构发布或可靠新论文，不用旧消息凑数。<strong>创建日期、公开展示、PR 合并与作者自测分别标注。</strong></p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. browser-memory：让 Browser Agent 在下一次访问同一网站时自动拿到过去经验（11/08 新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/hivecode-app/browser-memory">hivecode-app/browser-memory</a> 创建于 11 月 8 日 19:20（北京时间），MIT。它不是另起一个自动化浏览器，而是给 <a href="https://github.com/microsoft/playwright-mcp">Playwright MCP</a> 增加一个 Gateway，透传原有工具，并从真实网络和操作回执中提取域名级经验：成功路径、错误修复、死胡同和站点 API。首次到达站点时，Gateway 将此前经验附到导航结果，无须 Agent 主动搜索记忆。网络提取保留 API 结构、去除常见参数值，不保存响应体。</p>
+<p><strong>为什么重要：</strong>针对“Agent 自称保存经验，实际上什么都没留下”的问题，作者把证据捕获放到了工具执行路径而非 Prompt 中。项目还允许把审核后的步骤变成可调用的过程工具，失败两次的修复建议不再主动给出。</p>
+<p><strong>数据边界：</strong>作者的冷/热记忆比较在两站点任务上只有 4 对实验，报告中位轮数 <code>15.5→12.5</code>、耗时 <code>105→73.5s</code>、成本 <code>$0.91→$0.74</code>；样本极小且区间重叠，不可据此宣称普适提升。更要审查自动采集的页面信息是否含个人数据和不可靠的网页指令。<strong>工程启发：</strong>把 <code>Tool Trace → Candidate Lesson → Independent Replay → Publish/Expire</code> 做成独立基建，尤其需要区分“看到了响应”与“真正完成目标”。</p>
+
+<h3>2. Browser Harness：用 45 个真实站点对照定位“网络空闲”假超时（11/08 Draft PR）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/browser-use/browser-harness/pull/982">browser-use/browser-harness #982</a> 于 11 月 8 日提交，仍为 <strong>Draft、尚未合并</strong>。<code>wait_for_network_idle()</code> 错把在独立 CDP Target 结束的 Worker Script 和跨进程 iframe 文档请求当成永不结束的主页面请求，导致等待常常拖到 10 秒上限。候选补丁通过 Target attach/detach 识别请求归属，并保留真实页面尚未结束的请求。</p>
+<p><strong>验证证据：</strong>作者同时提供本地 Chrome 集成回归、266 个单测，以及两个云端浏览器对 45 个真实站点的同期重放。超时比例由 <code>38/45（84%）</code> 降到 <code>3/45（7%）</code>，平均等待从 <code>8.86s</code> 降到 <code>3.25s</code>，没有出现原本正常却变为超时的样本。数字是 PR 作者测试，不是上游发布或第三方复核。</p>
+<p><strong>工程启发：</strong>Browser Agent 的超时/网络空闲判定必须知道 Page、OOPIF 和 Worker 的会话边界，且在改判定标准时用多站点正反例验证，防止单纯“更快返回”掩盖仍在加载的请求。</p>
+
+<h3>3. guadian-ondevice：Android 本地 1.7B 模型验证网页风险，同时公开失败实验（7 日补推）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/jisu217/guadian-ondevice">guadian-ondevice</a> 创建于 11 月 7 日 22:54（北京时间）。其 Android 实现从 URL、隐藏 WebView 的页面内容等收集证据，使用经 LoRA 微调的 Qwen3-1.7B/Q8_0（1.83GB）通过 llama.cpp 回答六项事实性问题，再由独立的 <code>verdict_table.json</code> 给出风险级别。项目强调页面内容不离开设备，但属于作者实现主张，尚需独立安全审查。</p>
+<p><strong>验证证据：</strong><a href="https://github.com/jisu217/guadian-ondevice/blob/main/docs/technical-report.md">技术报告</a> 记录了六轮训练和两轮<strong>主动不采纳</strong>：部分版本降低漏报，却显著提高误报。最新版本在 156 条人工复核样本准确率 <code>78.8%</code>；188 个风险页面漏判 <code>24</code> 个（<code>12.8%</code>）。414 条测试中只有 156 条经过人工复核，其余采用模型复核，不能写成“414 条独立人工验证”。</p>
+<p><strong>工程启发：</strong>将模型输出限定为可审查事实、把策略放在独立规则表，并以漏判/误报/量化一致性多维度门禁决定是否晋级。该项目不是生产级防钓鱼产品，也不是 WebGPU 推理案例。</p>
+
+<h3>4. ccfox：Firefox/Zen 真实浏览器与 Claude Code 共享标签和可录制 Skill（11/09 新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/thedankest/ccfox">thedankest/ccfox</a> 创建于 11 月 9 日 06:43（北京时间），MIT。在 Zen/Firefox 侧栏调用本机已安装的 Claude Code，借助 Native Messaging/本地 Unix Socket 操作现有 Profile 的标签页，读取页面、Console 和 Network；可录制人工操作并导出 <code>~/.claude/skills/&lt;name&gt;/SKILL.md</code>。记录过程声明剔除密码/验证码和常见 URL Token。</p>
+<p><strong>关键边界：</strong>macOS 是作者测试平台；普通 Firefox Release 不能持久安装源码构建的未签名扩展，需要 Developer/Nightly/ESR 或临时调试模式。侧栏聊天由自身批准卡约束；外部 Claude Code 的 MCP 调用依赖 Claude Code 自身的工具权限，不应误称两者具有同一审批策略。<strong>工程启发：</strong>研究多会话共享真实 Tab、人工接管、录制 Skill 与权限回执如何区分。当前为早期源码，未经独立安全审计。</p>
+
+<h3>5. gen-ai-rs：Rust/WASM 浏览器 Agent 主循环，把工具权限留在同源服务器（11/09 新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/mraad/gen-ai-rs">mraad/gen-ai-rs</a> 于 11 月 9 日 00:03（北京时间）新建，Apache-2.0。它用 Rust/WASM 在网页内执行模型请求、工具调度、消息压缩和按需加载 Skill；MCP 工具在页面的同源服务器执行。原型主动移除了复杂编排、动态 Hook 和多 Agent 路由，提供模型调用与工具调用事件、超时及取消语义。</p>
+<p><strong>重要边界：</strong>“Agent 在浏览器内”不等于模型本地运行：默认模型可以通过 OpenAI 兼容 HTTP API 调用外部服务，宿主可另外接入浏览器本地推理引擎；实际操作权限和危险操作确认必须由服务端保证。<strong>工程启发：</strong>适合作为 AI Native Browser 的薄 Agent Runtime 研究材料：将模型决策、工具执行边界与可观测事件分离，而不是先设计固定工作流。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table>
+<thead><tr><th>项目（本期首次发现）</th><th>原始日期 / 成熟度</th><th>差异点及工程价值</th><th>后续跟踪信号</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/hivecode-app/browser-memory">browser-memory</a> · 11/09</td><td>11/08 19:20 北京时间创建；早期 MIT 工具</td><td>MCP 透明代理捕获工具执行证据并自动注入站点经验；4 对冷/热对照</td><td>独立多网站 A/B、隐私脱敏、过期经验淘汰</td></tr>
+<tr><td><a href="https://github.com/thedankest/ccfox">ccfox</a> · 11/09</td><td>11/09 06:43 创建；Firefox/Zen macOS 早期扩展</td><td>真实 Profile + Claude Code + 录制 Skill + 两种审批路径</td><td>签名发布、MCP 安全审计、跨平台验证</td></tr>
+<tr><td><a href="https://github.com/mraad/gen-ai-rs">gen-ai-rs</a> · 11/09</td><td>11/09 00:03 创建；Apache-2.0 实验</td><td>浏览器 Rust/WASM Agent 核心、同源 MCP 工具和事件</td><td>真实 WebGPU 本地模型、错误恢复与隔离测试</td></tr>
+<tr><td><a href="https://github.com/jisu217/guadian-ondevice">guadian-ondevice</a> · 11/09（7 日补推）</td><td>11/07 22:54 创建；Android 研究原型</td><td>WebView 证据 + Qwen3-1.7B 本地事实问答 + 规则表，完整失败实验记录</td><td>真机延迟/功耗、更多人工复核、漏判变化</td></tr>
+<tr><td><a href="https://github.com/Ketchup3D/app">KetchUp3D</a> · 11/09 社区热度新发现</td><td>10/23 已创建，非本日新仓库；MIT 产品原型</td><td>Rust/WASM + WebGPU/WebGL2 的原生/浏览器双端 3D 编辑器</td><td>跨浏览器 WebGPU fallback、场景复杂度与性能</td></tr>
+</tbody></table>
+<p>以上“创建时间”来自 GitHub 仓库元数据；“首次发现”是本日报首次收录，不等于产品正式发布或经过独立验收。特别排除了同日新增的大量 Fork/重复镜像。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>社区信号：</strong><a href="https://github.com/Ketchup3D/app">KetchUp3D</a> 于 11 月 9 日进入 <a href="https://news.ycombinator.com/">Hacker News</a> 热门讨论。它并非本日创建：仓库早在 10 月 23 日成立。项目将一个 Rust 3D 编辑器同时构建为桌面程序和 WASM 网页，渲染优先使用 WebGPU，不满足条件时回退 WebGL2；支持本地保存与 SketchUp 几何导入，手机端不是当前目标。对 WebGPU Runtime 的启发是单套计算/渲染核心的跨平台构建、能力回退和真实复杂交互验证；产品性能暂无独立基准数据。</p>
+<p><strong>运行时问题：</strong><a href="https://github.com/lightpanda-io/browser/pull/4515">Lightpanda #4515</a> 在 11 月 9 日 06:44（北京时间）已合并：当 iframe 资源加载被禁用时，仍给页面提供期望的 contentWindow/contentDocument，却阻止由 iframe 发起的 HTTP/WebSocket 请求。背景是此前的兼容修订导致真实网站多加载脚本与额外内存消耗。是“兼容性要求与资源预算冲突”的工程案例，并非 AI 自动修复闭环。<a href="https://github.com/lightpanda-io/browser/pull/4523">V8 预编译库校验 #4523</a> 仍为 Open：拟对下载文件和缓存校验 SHA-256，以避免损坏或替换的二进制进入构建；哈希校验不等于发行者签名。</p>
+<p>检查了 Chrome、WebKit/Safari、Firefox、Edge、Opera、Brave 的官方渠道。本期未核实到值得单列的过去 24 小时重大正式浏览器架构公告，因此不将旧版发布重新标成今日新闻。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>手机端证据：</strong>guadian-ondevice 把本地模型的“事实问答”与风险策略解耦，且用量化前后的一致性、漏判和误判选择模型，而不是仅看总体准确率。对于端侧模型实际发布，应增加模型版本、峰值内存、耗电、后台恢复、WebView 页面内容获取失败等观察项。</p>
+<p><strong>浏览器端：</strong>gen-ai-rs 证明的是 WASM Agent 控制层与工具边界，并非新的浏览器端本地模型速度突破；模型可云端、可本地的描述必须明确分开。KetchUp 则提供 Rust/WASM + GPU 回退的非 AI 工程验证参考。</p>
+
+<h2>浏览器 × AI</h2>
+<p>browser-memory 将站点经验注入工具返回路径；ccfox 让用户/Agent 共享真实浏览器；gen-ai-rs 把 Agent 主循环放在网页中但把实际工具保持在服务端。这三种方案的共同问题是：必须能够回答<strong>谁观察了页面、谁批准执行、哪个工具做了什么，以及所得经验能否被另一个会话复现</strong>。尤其不能把从网页抓到的 API 和文字直接提升为高权限指令。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table>
+<thead><tr><th>案例</th><th>真实闭环到哪</th><th>向 Chromium / WebKit / Firefox 的迁移与缺口</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/hivecode-app/browser-memory">browser-memory</a></td><td>Observe（MCP、网络）→ 候选 Learn（站点经验）→ 小样本 A/B；程序化积累由作者实现</td><td>可迁移工具回执和分站点记忆；缺独立 Judge、多浏览器评测、错误经验回滚与隐私审计</td></tr>
+<tr><td><a href="https://github.com/browser-use/browser-harness/pull/982">Browser Harness #982</a>（Draft）</td><td>Observe（真实站点超时）→ Diagnose（CDP Target 归因）→ Patch → Verify（45 站点对照）</td><td>可迁移多 Target 观测与超时语义；尚未合并、缺版本发布、Canary 与自动 Learn</td></tr>
+<tr><td><a href="https://github.com/jisu217/guadian-ondevice">guadian-ondevice</a></td><td>Observe（误报/漏判）→ 改模型任务/策略 → 多轮 Verify → 拒绝退化候选</td><td>可迁移端侧模型与验证门禁；不是浏览器内核代码改进，缺生产反馈</td></tr>
+<tr><td><a href="https://github.com/browser-use/browser-harness/pull/984">Browser Harness #984</a>（已合并）</td><td>实际网页探索→新增 3 站点 Skill→独立新浏览器原样复演→Review 修订→Merge</td><td>可迁移 Skill 晋级门禁；仍缺持续版本触发的回归和自动淘汰。新增的是 Lichess、USGS、Federal Register，非旧 Skill 重复新闻</td></tr>
+</tbody></table>
+<p><strong>可落地实验：</strong>给 Browser Runtime 的每条工具调用记录 <code>{runId, browserRevision, targetId, frameId, origin, action, observedResult, permissionDecision, evidenceRef}</code>。当模型提出等待策略、Skill 或性能优化时，在隔离 Session 用相同任务的基线和候选方案进行对照；明确把“没有超时”与“真正达到预期状态”分开判定。由 Agent 决定是否调用，不强制固定工作流。</p>
+<p><strong>当前边界：</strong>这些案例仅提供部分 Observe→Diagnose→Improve→Verify→Learn 环节。没有证据证明 Chromium/WebKit/Firefox 已存在从真实 Telemetry 到自动 Canary 和持续学习的完整自改进闭环。</p>
+
+<h2>开源与论文</h2>
+<p>本期未检索到证据充分、可确认发生在过去 24 小时的新 Browser Agent/端侧 AI 论文，因此不重复此前已介绍的 WebGPU 推测解码和 WebAnything。值得归档的原始工程材料是 <a href="https://github.com/browser-use/browser-harness/pull/982">45 站点对照 PR</a>、<a href="https://github.com/jisu217/guadian-ondevice/blob/main/docs/technical-report.md">Android 模型六轮实验报告</a> 和 <a href="https://github.com/hivecode-app/browser-memory">browser-memory 的冷/热对照及源码</a>。三者指标分别是超时率、漏判率、任务成本，不能相互替代。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 的关键不是让 Agent 记得更多，而是让旧经验能被独立复测、错误经验能够失效，且每一次“变快”不会损害结果正确性。</strong>今天的站点记忆 Gateway 和多 Target 网络空闲修订，分别提供了“持续积累”和“避免假成功”的具体例子。优先构建可信工具回执与对照验证，比建立更多固定编排步骤更有价值。</p>
