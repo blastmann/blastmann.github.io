@@ -1,0 +1,80 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-10
+date: 2026-11-10 09:34:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-09 09:34 — 2026-11-10 09:34（北京时间），重要遗漏回溯 7 天。依次进行四轮独立检索：①不输入已知仓库名称的 GitHub 新仓库/社区开放发现，②浏览器官方博客及发行说明，③英文技术社区与论文，④已知仓库 PR、测试及发布状态复核。与 11 月 9 日及此前日报去重。下文严格区分<strong>新仓库、正式 Release、已合并 PR、待合并 PR、作者自测</strong>；数据未经独立复测时会说明。</p>
+<p><strong>今天的主线：</strong>浏览器端计算正在从“能跑 Demo”转向“可分发的计算引擎、可重复的性能证据和清晰的多会话状态”；Agent 自动化则开始把触发权限、验证证据和长期 Skill 分开管理。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. skild-ai/steel-webgpu：新发布的浏览器 WebGPU 机器人接触求解器（11/09 新仓库 + v0.1.0）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/skild-ai/steel-webgpu">skild-ai/steel-webgpu</a> 于 11 月 9 日 19:36（北京时间）创建，<a href="https://github.com/skild-ai/steel-webgpu/releases">0.1.0 Release</a> 在当日 20:36 发布。它将 Newton 的 <code>SolverSteel</code>（FeatherPGS 关节接触求解器）移到 WebGPU，支持 <code>URDF</code>、<code>MJCF</code>、<code>USDA</code> 场景导入，提供独立核心、three.js 和 React Three Fiber 三种入口，Apache-2.0。</p>
+<p><strong>为什么重要：</strong>这不是把机器人视频放进网页，而是让浏览器 GPU 计算物理场景。渲染使用 GPU→GPU 位姿拷贝，正常帧无需把姿态读回 CPU；对 WebGPU 端侧复杂计算、GPU 资源同步和实时交互都很有参考价值。</p>
+<p><strong>证据与成熟度：</strong>有可安装包、示例、测试命令和首个正式版本，属于早期 0.1.0；未找到独立的 Chrome/Safari/移动端正确性对照及可比较的仿真性能数据。<strong>工程启发：</strong>复杂计算 Runtime 应同时记录 GPU 设备能力、CPU Readback 次数、数值误差和 Frame Pacing，不仅看平均 FPS。<a href="https://github.com/skild-ai/steel-webgpu/tree/main/packages/steel-webgpu">包使用说明</a>。</p>
+
+<h3>2. browser-tts-benchmark：新开源、保留原始证据的浏览器本地语音基准</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/ngelik/browser-tts-benchmark">browser-tts-benchmark</a> 于 11 月 9 日 13:28（北京时间）创建，为 Google Chrome 中的 CPU/WASM 与 WebGPU 语音生成提供统一的 20,000 字符英文固定负载、固定模型、运行回执、音频样本及可审查的 PR 结果。</p>
+<p><strong>为什么重要：</strong>过去本地 TTS 常见的问题是把“首音频”、“热推理”、“模型加载”混在一起比较。这个项目明确分开协议，并且把不同协议的历史数据标记为<strong>不可直接算加速比</strong>。</p>
+<p><strong>作者实测：</strong>同一台 Apple M1 Pro/16 GiB、Chrome 157 上的 Piper 单人声模型，五次热运行中位耗时从 CPU/WASM 的 <code>170.64 s</code> 到 WebGPU 的 <code>12.07 s</code>（约 <code>14.1×</code>）；计时不包括初始化、哈希及 WAV 保存。合成的是约 1053 秒语音，<strong>不是</strong>首包耗时或全部模型通用加速；只有一台机器、一种声音、英文，未验证 Safari/Android/音质。<strong>工程启发：</strong>可直接借鉴其“固定模型 + 相同输入 + 原始回执 + 同协议对照”测试门禁。<a href="https://github.com/ngelik/browser-tts-benchmark/blob/main/comparisons/m1-pro-piper-native/summary.md">可审查的实验记录</a>。</p>
+
+<h3>3. Playwright：用 Agent 标签把工程任务交给独立执行平台（11/10 已合并）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/microsoft/playwright/pull/44019">microsoft/playwright #44019</a> 于 11 月 10 日 07:24（北京时间）合并。维护者给 Issue/PR 标记 <code>agent-triage</code>、<code>agent-implement</code>、<code>agent-task</code> 或 <code>agent-review</code> 后，新的轻量 GitHub Actions 桥接文件会触发 <code>microsoft/devops.playwright.dev</code> 中相应 Agent 流程。桥接流程不检出不可信代码，只负责发起受控任务；旧标签仍暂时保留在原流程中。</p>
+<p><strong>为什么重要：</strong>这里体现的不是某个 AI 一次修 Bug 的结果，而是大型浏览器测试基础设施正在正式接受 Agent 工程任务，并把“谁授权触发”与“在哪里执行”分开。</p>
+<p><strong>边界：</strong>已合并的是触发器/路由基础设施，不等于 4 类 Agent 已全部验证质量，也不能声称自动修复和 Canary 闭环已经建成。<strong>工程启发：</strong>团队可以采用“任务标签/权限 → 隔离执行 → 独立验证 → 候选变更”的架构，不必预设 Agent 必须走固定步骤。</p>
+
+<h3>4. LiteRT-LM：修正 NPU 多会话上下文克隆的 KV Cache 隔离（11/10 已合并）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4465">LiteRT-LM #4465</a> 于 11 月 10 日 06:32（北京时间）合并，修复单个 NPU Engine 在多会话克隆上下文时遗漏仅供 Decode 使用的 KV Cache Buffer 的问题。先前从 <code>prefill_input_buffers</code> 拷贝状态可能漏掉真实缓存，某些量化模型还会错误地复制 Float32 占位缓冲，而不是 Int8/Int4 的真正 KV Cache。</p>
+<p><strong>为什么重要：</strong>这属于端侧多会话状态正确性，而不仅是普通 Bug Fix。多个 Tab、Agent 共享一个本地模型时，不能让 Session A 的缓存状态覆盖 Session B。补丁改为使用 <code>ActiveContextGroup().input_kv_cache_buffers</code>，并检查 Buffer 的类型和维度。</p>
+<p><strong>证据边界：</strong>PR 已合并；未找到公开的手机多会话 Benchmark 或跨设备发布后反馈。<strong>工程启发：</strong>对共享模型 Runtime，建立可独立验证的 <code>Clone/Restore</code> 一致性、不串话测试，以及量化与未量化状态的差异检查。</p>
+
+<h3>5. llama.cpp WebGPU：语音解码算子回退造成的数量级性能差异（待合并 PR）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/ggml-org/llama.cpp/pull/31708">llama.cpp #31708</a> 自 11 月 5 日提交，11 月 10 日仍有更新，<strong>截至本期尚未合并</strong>。它为 WebGPU 新增 <code>COL2IM_1D</code> F32 算子，解决 Qwen3-TTS/PocketTTS 波形解码在 CPU 与 GPU 之间回退和同步的问题。</p>
+<p><strong>作者实测：</strong>NVIDIA L4 + 原生 WebGPU，16 种正确性用例与 CPU 参考一致；同样的 64 帧完整 TTS、各版本五次交替运行，Qwen3-TTS 0.6B 从 <code>33.299±0.361s</code> 降到 <code>5.676±0.202s</code>（<code>5.87×</code>），PocketTTS 从 <code>1.158s</code> 到 <code>0.838s</code>（<code>1.38×</code>）。模型加载不在计时内，音频字节对照一致。</p>
+<p><strong>工程启发：</strong>端侧 AI 的大幅改善可能不来自更快 Shader，而来自<strong>避免某个算子导致整条执行图反复跨 CPU/GPU</strong>。应将 CPU Fallback 次数和总同步时间纳入 Kernel 性能门禁。<strong>尚缺：</strong>合并、Safari/移动 GPU 复测、真实应用数据；不能称为已正式发布的收益。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p>本期首次发现均记为 <strong>2026-11-10</strong>；仓库创建时间、Release、作者测试和成熟度分别标注，避免把仓库曝光当成生产级发布。</p>
+<table>
+<thead><tr><th>项目 / 首次发现</th><th>原始时间与成熟度</th><th>差异与工程价值</th><th>后续跟踪信号</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/skild-ai/steel-webgpu">steel-webgpu</a> · 11/10</td><td>11/09 19:36 创建；20:36 v0.1.0 Release；早期可安装包</td><td>Newton 机器人关节接触物理迁移到 WebGPU；GPU→GPU 渲染，机器人模型导入</td><td>Chrome/Safari/手机的数值对照、GPU 内存与复杂场景帧时间</td></tr>
+<tr><td><a href="https://github.com/ngelik/browser-tts-benchmark">browser-tts-benchmark</a> · 11/10</td><td>11/09 13:28 创建；可复测的作者基准</td><td>浏览器端 TTS CPU/WASM 与 WebGPU 同协议对照、回执、声音样本、失败记录</td><td>独立复测、iOS/Android、TTFA/功耗/语音质量</td></tr>
+<tr><td><a href="https://github.com/TakanashiHaryth/opera-devtools-mcp">opera-devtools-mcp</a> · 11/10</td><td>11/09 13:56 创建；0.9.0-rc.2，尚未发 npm</td><td>基于 Puppeteer/CDP 对 Opera/GX 提供 19 项 MCP 工具；作者称 Windows 11 本地 44 项测试、36 种连接场景</td><td>正式发布、CI 公开结果、macOS/Opera Neon 兼容和隔离授权审计</td></tr>
+<tr><td><a href="https://github.com/lucioduran/webgpu-local-inference">webgpu-local-inference</a> · 11/10</td><td>11/10 04:37 创建；微型研究演示</td><td>以 12 条合成样本的朴素贝叶斯任务，透明展示 WebGPU/WASM 自动回退、离线缓存、数值对照和原始运行报告</td><td>多设备、真实离线重启、GPU Device Lost 与 Timer 精度；勿外推为通用 LLM 性能</td></tr>
+</tbody>
+</table>
+<p>还检查了 GitHub 新建 Browser Agent/MCP 仓库，大量结果是 Fork、镜像、低内容量 Demo 或未验证的功能声明，本期不为凑数量收录。<a href="https://github.com/marselaneziraj/BrowserTaskLab">BrowserTaskLab</a>（11/10 04:51 创建）仅展示模拟本地任务，缺真实网页 E2E，列入观察候选而非正式推荐。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>浏览器底层：</strong><a href="https://github.com/lightpanda-io/browser/pull/4553">Lightpanda #4553</a> 于 11 月 10 日 06:19（北京时间）提交，将 HTTP 请求解析改为单趟 Header Parser，并称增加针对 DNS Rebinding 的路由保护。<strong>尚为 Open PR</strong>，没有独立安全验证或性能结论，适合作为 Agent 本地服务攻击面检查清单，而非已完成的安全修复。</p>
+<p><strong>调试工具：</strong><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3349">Chrome DevTools MCP 1.13.0 Release PR</a> 的版本说明已更新至 11 月 9 日，包含 Logpoint 与权限收紧等改进，但该 Release PR 尚为 Open、对应 tag 的正式 Release 未核实存在，故不把它写成已正式发布。<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3411">WebMCP 取消信号传递 #3411</a> 也仍待合并。</p>
+<p>复查 Chrome/Chromium、WebKit/Safari、Firefox、Edge、Opera 和 Brave 官方渠道，未确认过去 24 小时出现足够重要的新架构公告；不将 11/04 Safari TP 256、11/05 Chrome 157 等此前日报消息重复作为头条。</p>
+
+<h2>端侧 AI</h2>
+<p>浏览器端从“模型能运行”走向<strong>完整操作链路可测量</strong>：TTS 基准在相同模型、负载、声音和设备下分离冷/热执行；<code>COL2IM_1D</code> 说明一个 CPU Fallback 就可能改变整条推理图的成本。不同硬件、模型和计时口径的数字不能横向比较。</p>
+<p>LiteRT-LM 的 NPU 上下文修订提醒：共享模型的第一优先级是状态正确与隔离，再谈 Prefix/KV Cache 复用。对移动端应该补上多 Session 混合抢占、内存压力、暂停恢复和取消后的状态一致性测试。</p>
+
+<h2>浏览器 × AI</h2>
+<p>Playwright 的 <code>agent-*</code> 标签路由与新出现的 Opera DevTools MCP 从两侧体现“任务与执行环境分离”。前者控制谁可以让 Agent 启动工程工作；后者允许外部 Agent 调用浏览器调试能力。两者都需要操作权限、浏览器 Revision、运行证据和失败恢复；只有能 Click/Fill 远不足以成为生产 Runtime。</p>
+<p>浏览器 Agent 的实际任务如果涉及用户已登录 Profile，不应把读到的网页内容直接当成高权限指令。本期还没有公开证据证明新 Opera MCP 通过了独立安全审计。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table>
+<thead><tr><th>案例</th><th>闭环实际走到哪</th><th>可迁移能力、缺口</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/microsoft/playwright/pull/44019">Playwright Agent 标签路由</a>（已合并）</td><td>为 Diagnose/Improve 建立受控任务触发器；不是自动学习闭环</td><td>可迁移 Chromium/WebKit/Firefox 工程任务授权；缺实际 Agent 质量、独立 Verify/Canary/Learn 证据</td></tr>
+<tr><td><a href="https://github.com/browser-use/browser-harness/pull/990">Browser Harness #990</a>（11/10 07:47 合并）</td><td>真实网页运行 → 3 个官方 API Skill → 独立 Agent 在新浏览器逐段复演 → Review → Merge</td><td>可迁移 Skill Promotion 与访问政策审查；缺跨版本周期性回归、自动撤销与用户效果反馈</td></tr>
+<tr><td><a href="https://github.com/ngelik/browser-tts-benchmark">浏览器 TTS 基准</a></td><td>Observe/Benchmark → 留存运行环境、音频和可核对结果；尚未自动优化</td><td>可迁移 WebGPU/CPU 多设备性能门禁；缺自动候选策略、分布验证与 Canary</td></tr>
+<tr><td><a href="https://github.com/ggml-org/llama.cpp/pull/31708">llama.cpp #31708</a>（Open）</td><td>Profile/归因 → GPU 算子实现 → CPU 数值对照 + 多次端到端 Benchmark</td><td>可迁移跨后端 Kernel 验证；缺合并、Safari/Android 对照和 Learn</td></tr>
+<tr><td><a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4465">LiteRT-LM #4465</a>（已合并）</td><td>多会话状态问题 → Diagnose → Patch → Merge</td><td>可迁移 Browser 模型服务状态隔离；缺公开的独立多会话回归数据/Canary</td></tr>
+</tbody></table>
+<p><strong>短期建议：</strong>为每个 Agent 候选修改保留 <code>{runId, targetRevision, inputFixture, environment, permission, beforeEvidence, afterEvidence, verifier, promotionDecision}</code>。让 Agent 自行选择工具和实验，但使用独立验证器判断结果是否更好；不仅看速度，还要要求任务结果、权限和多会话状态保持正确。今天 Playwright 的授权入口、Browser Harness 的 Skill 复演和 TTS 的精确计时是可以直接复用的三项基础设施。</p>
+<p><strong>当前边界：</strong>尚无本期证据表明 Chromium、WebKit 或 Firefox 已实现完整 Observe→Diagnose→Improve→Verify→Canary→Learn 的无人值守内核自我改进系统。</p>
+
+<h2>开源与论文</h2>
+<p>本期优先保留有源码、版本、测试回执或真实 PR 的工程材料，包括 <a href="https://github.com/skild-ai/steel-webgpu">steel-webgpu</a>、<a href="https://github.com/ngelik/browser-tts-benchmark">browser-tts-benchmark</a>、<a href="https://github.com/microsoft/playwright/pull/44019">Playwright Agent 路由</a>和 <a href="https://github.com/ggml-org/llama.cpp/pull/31708">WebGPU TTS Kernel 试验</a>。本次论文/社区检索未确认有未重复、日期可靠且比工程案例更具价值的过去 24 小时新论文，因此不拿旧论文凑数。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>浏览器与端侧 AI 的工程价值正从“新模型更快”转向“能解释哪里快、验证没有变错，并把可复测的结果传递给下一轮 Agent”。</strong> 当前最适合团队优先建设的，是可组合的运行证据、性能对照与受控任务执行环境；是否让 AI 自动修改代码，应由后续独立验证能力决定，而不是先建固定工作流。</p>
