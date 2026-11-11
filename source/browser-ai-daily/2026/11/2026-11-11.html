@@ -1,0 +1,77 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-11
+date: 2026-11-11 09:15:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-10 09:15 — 2026-11-11 09:15（北京时间），重要遗漏回溯 7 天。本期按“开放发现（不带已知仓库名）→ 浏览器官方发布 → 英文社区与论文 → 已知仓库 PR/测试复核”四轮开展。与此前日报去重。严格区分<strong>新建仓库、已合并补丁、待合并 PR、作者自测和正式 Release</strong>。</p>
+<p><strong>今日主线：</strong>Browser Agent 的验证正在从“看见成功提示”走向“独立核对真实状态”；与此同时，DevTools MCP 将可控网络响应注入合并到主干，Playwright 把失败 CI 自动交给工程 Bot 判断。浏览器端侧推理的新项目则开始把完整模型计算与数值差异公开留证。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. browser-agent-verifier：真实浏览器显示成功，后端可能根本没有写入（11/11 新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/braylo-ai/browser-agent-verifier">braylo-ai/browser-agent-verifier</a> 于 2026-11-11 07:39（北京时间）创建，提供 Playwright + 真实 Chrome + SQLite 的可重置测试网站，覆盖提交表单、下单和设置。它刻意注入“显示成功但没有保存”“已保存却返回 503”“点击被吞”“按钮延迟出现”等故障，比较不重试、原地重试和分段恢复三种策略。</p>
+<p><strong>为什么重要：</strong>Agent 看到成功 Toast 并不等于任务真的完成；尤其“写入成功但响应失败”之后的盲目重试，可能造成重复订单。项目的独立 Verifier 不采信 Agent 当前页面，而是通过<strong>独立浏览器 Context + 只读 API</strong>检查真实后端状态、写入是否恰好一次；由测试 Harness 读取 SQLite 作为判定基准。</p>
+<p><strong>证据与成熟度：</strong>README 声明 2026-11-10 的真实 Chrome 测试 <strong>19/19 通过</strong>；原计划 135 个 Episode 的基准测试因宿主机器过载中断，<strong>没有完整的成功率/误报率统计</strong>；Agent 是脚本计划而非 LLM 自主规划，故只能证明验证机制，不代表真实模型能力。<strong>工程启发：</strong>Browser Self-Improvement 应先引入与 Agent 操作页面隔离的独立验收者，并明确检查 exactly-once 状态，特别适合表单、支付、账号设置、发布流程。<a href="https://github.com/braylo-ai/browser-agent-verifier/blob/main/README.md">原始说明和限制</a>。</p>
+
+<h3>2. Chrome DevTools MCP：页面级网络 Mock 正式合并（11/11 00:33）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3384">ChromeDevTools/chrome-devtools-mcp #3384</a> 于 2026-11-11 00:33（北京时间）合并。增加 <code>mock_network</code> / <code>remove_network_mock</code>，可按 URL Pattern 和资源类型用本地文件替换 Chrome 页面的网络响应；规则支持统计命中次数、匹配检查和文件失效报告。</p>
+<p><strong>为什么重要：</strong>Agent 可在<strong>不改线上服务</strong>的情况下，对失败的 JS、CSS、接口响应或网络资源做可重复实验。默认不开放，需显式开启 <code>--categoryNetworkMocks</code>；Mock 生效时禁用页面缓存并拦截请求，因此性能 Trace 与 Lighthouse 会附带测量警告；录制 Trace 时也不能任意改规则。</p>
+<p><strong>证据与边界：</strong>PR 作者报告 <strong>1,863 测试通过、3 跳过</strong>，含真实 Chrome 集成测试。已合并的是<strong>本地文件响应替换</strong>；上游 URL 代理与 abort/allow-origin 仍由后续 PR <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3420">#3420</a> / <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3421">#3421</a> 继续推进。<strong>工程启发：</strong>将网络故障注入作为 Agent 可发现工具，但必须把测试污染标记进证据，避免把 Mock 下的性能收益当成真实线上改善。</p>
+
+<h3>3. Playwright：失败 CI 自动交给 Bot 判断是否由当前 PR 引入（11/11 04:45 已合并）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/microsoft/playwright/pull/44042">microsoft/playwright #44042</a> 于 2026-11-11 04:45（北京时间）合并。当 PR 测试报告有失败，且作者具备仓库写权限或是 Bot 时，<code>create_test_report.yml</code> 的 <code>triage</code> Job 会把<strong>PR 和失败 Run</strong>交给 Playwright Bot；Bot 会在 PR 中留言判断该 PR 是否造成失败。与此同时移除旧的重复 Triage Workflow 和 Bot Voice Guide。</p>
+<p><strong>为什么重要：</strong>这是有真实触发信号的工程 Agent 任务连接，不是抽象的“让 AI 自我改进”。CI 失败本身是 Observe；由 Bot 结合 PR 判断归因是 Diagnose，但<strong>本次没有证明它会自动修复、独立验证或自动吸收经验</strong>。</p>
+<p><strong>工程启发：</strong>浏览器团队可提供 <code>{failingRun, changedFiles, revision, flakyHistory, platform, artifacts}</code> 的标准证据入口，让 Agent 自主选择 bisect、日志对照或复现工具；随后通过独立验证决定是否接纳修改，而不是硬编码修复流程。</p>
+
+<h3>4. Boltz2 WebGPU：在浏览器内完成蛋白质—配体联合折叠与打分（11/10 新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/pablo-arantes/boltz2-webgpu">pablo-arantes/boltz2-webgpu</a> 于 2026-11-10 22:39（北京时间）创建，基于 LocalFold 移植 Boltz-2。在 WebGPU 页面内输入蛋白质序列和多个 SMILES 配体，逐一联合折叠、预测两种亲和力指标、排序、比较三维姿态，输出 CSV/结构和图表。页面静态托管，无需应用服务器。首次需要下载约 <strong>365 MiB 结构权重 + 6.5 MiB 亲和力模块</strong>；选择可选 MSA 搜索时会把序列发往外部 ColabFold API。</p>
+<p><strong>为什么重要：</strong>体现浏览器端侧 GPU 可以承载复杂科学推理，但更值得研究的是完整模型分发、CacheStorage、不同模型分支、数值对照和失败留证，而不是页面能否展示 3D 结果。</p>
+<p><strong>证据与成熟度：</strong>作者将移植结果与<strong>上游 PyTorch Boltz-2</strong>比较，六个配体的两种排序相关系数分别报告为 <code>+1.000</code> 与 <code>+0.886</code>；但使用的 20 个扩散步与上游 200 步不同，<strong>没有用真实实验亲和力数据验证预测准确性</strong>。作者也列出修正后的错误、仍然存在的数值偏差和许可证注意事项。<strong>工程启发：</strong>端侧 AI 推理需要区分“和参考实现一致”“真正预测正确”“设备上跑得快”三项不同指标。<a href="https://github.com/pablo-arantes/boltz2-webgpu/blob/main/docs/MEASURED.md">原始测量记录</a>。</p>
+
+<h3>5. Playwright Extension：明确 Tab 所有权和可恢复分组（11/11 待合并）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/microsoft/playwright/pull/44047">microsoft/playwright #44047</a> 于 2026-11-11 07:54（北京时间）提交，<strong>截至观察时尚未合并</strong>。候选方案在扩展中维护客户端与 Tab 的 Owner 映射，禁止客户端操作不属于自己的 Tab，并拒绝修改 Cookie 与浏览器全局权限等跨会话状态；用户可以选择授权整个 Tab Group 或指定标签，断开后原分组保留供下一个客户端接管。</p>
+<p><strong>为什么重要：</strong>真实 Profile 多 Agent 共用一个浏览器时，资源隔离不能只按对话 Session 分开；必须明确浏览器标签、登录态和全局权限的归属。<strong>工程启发：</strong>可以为 AI Native Browser 设计可撤销的 <code>TabLease/Owner</code>，并在跨 Agent 接管时生成审计回执。但这是提案，不能当成 Playwright 正式发布的功能。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p>本期新增项目的<strong>首次发现时间均为 2026-11-11</strong>；原始创建时间为北京时间。以下不把新仓库等同成熟产品，也不把测试自述当成独立复验。</p>
+<table>
+<thead><tr><th>项目与原始日期</th><th>差异点 / 工程价值</th><th>成熟度与后续信号</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/braylo-ai/browser-agent-verifier">browser-agent-verifier</a><br>11/11 07:39 新建</td><td>真实 Chrome + 有状态网站 + 外部 Verifier；解决“页面成功却实际失败”和重试重复写入</td><td>MIT 早期测试台；19 项自述通过，135 Episode 全量 Benchmark 未完成；跟踪独立复跑、LLM Agent 和误判率</td></tr>
+<tr><td><a href="https://github.com/pablo-arantes/boltz2-webgpu">boltz2-webgpu</a><br>11/10 22:39 新建</td><td>浏览器 GPU 运行科学模型与 MSA/CacheStorage 协调；保留上游数值差异</td><td>实验移植；跟踪多 GPU 复现、真实亲和力、移动端内存与模型加载</td></tr>
+<tr><td><a href="https://github.com/oberdfr/dsh-agent-browser">dsh-agent-browser</a><br>11/10 10:46 新建</td><td>DeepSeek Harness 侧栏与 Agent 共享一个 Electron Chromium WebView；单工具调度、受控 Tab 分享、Network/Console/Test 面板</td><td>MIT 早期；原生截图当前 <code>CAPTURE_TIMEOUT</code>、无法观察 Worker/OOPIF 网络；跟踪 E2E 截图、权限隔离与重启会话恢复</td></tr>
+<tr><td><a href="https://github.com/msimon/pi-browser-handoff">pi-browser-handoff</a><br>11/10 22:58 新建</td><td>用户在 cmux 浏览器完成登录后，按域名过滤 Cookie 并移交给无头 agent-browser，独立确认登录恢复</td><td>MIT 早期；跟踪 OAuth/Passkey 安全边界、过期检测和敏感 Cookie 泄露测试；不等于可绕过站点验证</td></tr>
+<tr><td><a href="https://github.com/amintikk/kronos-webgpu">kronos-webgpu</a><br>11/11 03:48 新建</td><td>时间序列模型导出为 ONNX，在 WebGPU / 多线程 WASM 运行，KV Cache 保留在 GPU，并提供回测入口</td><td>MIT 实验项目；跟踪上游 PyTorch 数值一致性、模型质量与不同浏览器实际回退</td></tr>
+</tbody></table>
+
+<h2>浏览器技术</h2>
+<p><strong>Chrome DevTools MCP 的 Network Mock 是本期最值得复用的浏览器底层变化。</strong>其最大价值不是新增一个按钮，而是为 Agent 提供受控替换网络资源、运行同样的页面任务、比较 Trace 与错误输出的基础工具。对 Chromium 端可以直接做网络/媒体资源降级实验；迁移 WebKit/Firefox 则需要等价的网络拦截与隔离测试接口。</p>
+<p>Google 在 <a href="https://chromereleases.googleblog.com/2026/11">11 月 9 日的官方更新</a> 中将 Chrome 桌面稳定通道推进到 157.0.8103.50/.51（Windows/macOS）和 157.0.8103.50（Linux）；这是两天前的更新，<strong>不是今天新功能</strong>。本次未确认 Chrome、WebKit、Firefox、Edge、Opera、Brave 在过去 24 小时有更高价值且日期可靠的官方架构公告，不用普通版本公告凑头条。</p>
+
+<h2>端侧 AI</h2>
+<p>Boltz2 WebGPU 和新兴 Kronos WebGPU 同时显示，越来越多复杂推理任务被移到静态网页：权重在线下载并本地缓存、GPU 或 WASM 执行、可选云端服务增强。但“不上传推理内容”必须具体到每项网络调用；例如 Boltz2 的可选 MSA 会传输蛋白质序列。</p>
+<p><a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4517">LiteRT-LM #4517</a> 于 11 月 11 日 09:10（北京时间）提交，提出移除 WebGPU Sampler Readback 中约 4ms 的计时器停顿。它是<strong>尚未合并的候选补丁</strong>，不是已测得的整机生成速度改善。建议继续观察实际浏览器 Profile、每 Token 同步次数和发布后的 Safari/Android 数据。</p>
+
+<h2>浏览器 × AI</h2>
+<p>Playwright 的 Tab Owner 提案、dsh-agent-browser 的显式分享标签，以及 pi-browser-handoff 的受限登录态移交，围绕同一个真实需求：<strong>Agent 应可在用户熟悉的浏览器中工作，但不能因为拥有 MCP 连接就自动拥有所有标签和全局权限</strong>。</p>
+<p>针对自己搭建的 Browser Agent，可把 <code>TabOwnership</code>、<code>CredentialScope</code>、<code>ActionReceipt</code> 拆成独立能力。Cookie 等敏感数据不返回给模型；一次浏览器操作也需能明确识别执行者、站点范围和实际效果。</p>
+
+<h2>Browser Self-Improvement</h2>
+<p>本期只收录有可检查运行证据的部分闭环，不将普通 Bug Fix 或模型宣传称为自我改进。</p>
+<table>
+<thead><tr><th>案例 / 当前状态</th><th>完成到哪里</th><th>能迁移什么 / 缺少什么</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/microsoft/playwright/pull/44042">Playwright #44042</a>（已合并）</td><td><strong>Observe</strong>：PR CI 失败 → <strong>Diagnose</strong>：交给 Bot 判断是否为 PR 导致</td><td>可迁移 Chromium/WebKit/Firefox 的多平台 CI 失败归因；缺自动候选补丁、独立验证、长期反馈</td></tr>
+<tr><td><a href="https://github.com/braylo-ai/browser-agent-verifier">browser-agent-verifier</a>（新测试台）</td><td>故障注入 → 运行/重试 → <strong>独立 Verify</strong> 实际状态及恰好一次写入；19 项测试自述通过</td><td>可做 Browser Harness 的 Verify 工具；目前无 LLM 规划/自动 Improve、完整 135 Episode 数据及长期 Learn</td></tr>
+<tr><td><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3384">DevTools MCP #3384</a>（已合并）</td><td>可控网络注入 → 重放 / 统计 / 测量污染提醒，提供 <strong>Observe/Verify</strong> 环境</td><td>可迁移 Browser Agent 资源故障实验；尚未直接组成 AI 修复闭环，缺自动改进/Canary</td></tr>
+<tr><td><a href="https://github.com/browser-use/browser-harness/pull/995">Browser Harness #995</a>（11/11 07:38 已合并）</td><td>真实网站 API 探索 → 3 个 Skill → <strong>独立 Agent 新浏览器原样复演</strong> → 审查修订 → Merge</td><td>可迁移 Skill 质量门禁；缺周期性失效检测、自动淘汰、发布后持续反馈；本次是官方公共 API Skill 而非浏览器内核补丁</td></tr>
+</tbody></table>
+<p><strong>工程建议：</strong>优先建设两个自由调用的工具：<code>ObserveRun</code> 留下浏览器 Revision、Target/Frame、输入、网络 Trace、Console 与实际结果；<code>VerifyEffect</code> 在不同 Session 或后端独立只读入口检查成功条件和是否发生重复写入。Agent 自主决定何时使用，不预设固定步骤；但任何候选修改或 Skill 的晋级由独立证据决定。</p>
+<p><strong>边界：</strong>本期没有证据表明 Chromium、WebKit 或 Firefox 内核已经建立完整的自动 Observe→Diagnose→Improve→Verify→Canary→Learn 生产闭环。</p>
+
+<h2>开源与论文</h2>
+<p>本期高价值信号集中于 <a href="https://github.com/braylo-ai/browser-agent-verifier">独立结果验证原型</a>、<a href="https://github.com/pablo-arantes/boltz2-webgpu">Boltz2 浏览器科学推理</a>、<a href="https://github.com/microsoft/playwright/pull/44042">Playwright CI Agent 归因</a>及 <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3384">网络 Mock 主干合并</a>。论文检索未核实到过去 24 小时内有未重复且证据充分、值得单独报道的论文，因此不把之前的 WebGPU 与 RSI 论文再次列为今天首发。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Self-Improvement 的关键分界线，正在从“Agent 是否宣称完成”转向“独立环境能否验证真实效果”。</strong> 如果把失败 CI、网络注入、浏览器操作回执和后端状态验证接入同一套可探索工具环境，就能先形成可信的局部改进，再决定何时自动提交、推广或回退。对端侧 AI 也一样：参考模型一致、任务准确和性能改善必须分别验证。</p>
