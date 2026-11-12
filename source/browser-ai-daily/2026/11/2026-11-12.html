@@ -1,0 +1,80 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-12
+date: 2026-11-12 09:03:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-11 09:03 — 2026-11-12 09:03（北京时间），遗漏补推最多 7 天。依次独立检索了开放新项目（未带已知仓库名）、浏览器厂商公告、英文开发社区及论文、已知项目的工程变更。对照前期日报去重。时间和状态以本次读取的 GitHub 仓库元数据、Release 和 PR 为准；作者实验不等于独立复测。</p>
+<p><strong>今日主线：</strong>真实浏览器 Agent 正在把“探索结果写成脚本”升级为“写入前在只读环境重放验证”；Chrome DevTools MCP 首次将网络响应替换、远端上游响应和 Logpoint 一并纳入正式版本。与此同时，浏览器 AI 与端侧模型开始要求更多独立的权限、会话及决策接口。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Lightpanda：Agent 保存脚本之前先无模型重放验证（待合并）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/lightpanda-io/browser/pull/4588">Lightpanda #4588</a> 于 11 月 11 日 23:06（北京时间）提交，仍是<strong>开放 PR、未合并</strong>。此前 <code>agent --task ... --save</code> 直接保存模型生成的脚本，选择器一旦是模型凭空猜测的，后续执行可能得到空数组。维护者以 Craigslist 找自行车任务作例子，称此前约一半脚本回放返回 <code>[]</code>。</p>
+<p><strong>改动与价值：</strong>新方案仅对<strong>只读</strong>脚本执行一次不调用模型的重放；若失败、超时（60 秒）或返回空值，再让 Agent 读取真实页面，最多执行一次受限修订，并再次重放。工具表中新增 <code>replaySafe</code>，执行层另加 <code>read_only</code> 拒绝写操作。含点击、提交等副作用的脚本<strong>不自动重放</strong>，避免重复下单或重复提交。</p>
+<p><strong>工程启发：</strong>这是“Observe（真实页面）→ Diagnose（空结果）→ Improve（重新生成）→ Verify（独立脚本重放）”的局部闭环；还缺合并、长期回归和 Learn。浏览器测试工具可以把<strong>只读脚本自动重放、写操作交独立状态验证</strong>设为两条不同的晋级路径。PR 描述的是提交者实验，不是正式发布的成功率提升。</p>
+
+<h3>2. Chrome DevTools MCP 1.13.0 正式发布：Network Mock 与 Logpoint</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/releases/tag/chrome-devtools-mcp-v1.13.0">Chrome DevTools MCP v1.13.0</a> 于 2026-11-11 20:40（北京时间）正式发布，Release Notes 确认新增 <strong>Logpoint</strong>、页面级网络响应 Mock，以及从上游 URL 提供替换响应。此前日报报道的是相关 PR 已合并，这次首次可以确认<strong>正式 Release 已交付</strong>。</p>
+<p><strong>为什么重要：</strong>Agent 可以在不修改线上代码的情况下替换 JS、CSS、接口响应或调试特定行为，Logpoint 可在运行时记录证据而非反复修改源码。后续 <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3421">#3421</a> 又于 11 月 12 日 01:15（北京时间）合并“阻断请求”和允许指定 <code>Access-Control-Allow-Origin</code> 的能力，但<strong>该合并发生在 1.13.0 发布之后，不应误称已包含在 1.13.0</strong>。PR 自述 1955 测试通过、3 跳过，含真实 Chrome 验证。</p>
+<p><strong>工程启发：</strong>将 Network Mock 视作受控测试环境，记录 Mock 是否开启、替换规则、命中数以及对缓存和性能测量的影响。默认功能关闭，需要显式使用 <code>--categoryNetworkMocks</code>；不能把被 Mock 改写的 Lighthouse/Trace 当成生产真实性能。</p>
+
+<h3>3. LiteRT-LM：新增可复用的结构化模型决策接口（已合并）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4549">LiteRT-LM #4549</a> 于 11 月 12 日 08:26（北京时间）合并，新增 <code>DecisionEngine</code> 与 <code>LlmDecisionEngine</code>。它通过现有 <code>Engine</code> 和 <code>Session</code>，对 A–Z 候选选项使用 <code>RunTextScoring</code>，在克隆 Session 中进行评分，可与现有 Conversation 共享 Engine，也可以自己创建 Engine。</p>
+<p><strong>为什么重要：</strong>端侧模型服务不必把所有决策实现为长文本生成，诸如是否需要检索、要不要升级权限、选择哪项工具可用更清晰的<strong>受约束分类接口</strong>实现。但这只是核心接口已合并，不等于浏览器端已有稳定产品 API，也没有公开证明决策校准或延迟收益。另有 <a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4548">#4548</a> 合并了 LiteRT-LM Web 聊天 Demo 的独立静态构建能力。</p>
+<p><strong>工程启发：</strong>AI Native Browser 可把“模型提出动作”和“执行系统实际授权”分离：决策接口负责有限选项评分，浏览器运行时负责权限检查、动作回执和结果验证。</p>
+
+<h3>4. browser-mcp-debug：同一 Chrome 中并用 Playwright MCP、DevTools MCP 和 VS Code 调试</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/mm-lab-dev/browser-mcp-debug">mm-lab-dev/browser-mcp-debug</a> 创建于 11 月 11 日 17:01（北京时间），提供 VS Code 调试扩展：在专用持久化 Chrome Profile 中启动项目，允许 <strong>Playwright MCP、Chrome DevTools MCP 与 VS Code Debugger 共用同一浏览器</strong>。支持 Remote-SSH：代码与服务器可在远端，Chrome 和 MCP 保留在本机。调试结束时一起停止后台进程。</p>
+<p><strong>为什么重要：</strong>它实际缓解了 AI Coding 中“工具各自打开一个浏览器、登录态与页面不一致”的问题。特别适合前端调试、错误复现和自动截图、Trace 联合采集。</p>
+<p><strong>成熟度与工程启发：</strong>新仓库，README 和 VSIX 发布说明可核实，尚无独立生产稳定性数据；当前专门支持 Chrome。可借鉴其<strong>一个调试 Session 对应一个浏览器实例及一套工具连接</strong>的生命周期，避免 Agent 进程和浏览器 Context 泄漏。</p>
+
+<h3>5. Chrome DevTools MCP 正在准备进入 devtools-frontend 原生构建体系（待合并）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3465">Chrome DevTools MCP #3465</a> 于 11 月 11 日 22:35（北京时间）提出将工具的测试路径、GN 构建依赖、Chrome for Testing 路径以及 CI Runner 适配 <code>devtools-frontend/for_agents</code> 的源码树与输出目录，说明维护者正在为未来的合并做准备。</p>
+<p><strong>为什么重要：</strong>若后续落地，Browser Agent 工具与 DevTools 前端可能共享更多测试与构建基础设施，减少独立 MCP 运行环境和 Chromium 调试版本之间的差异。但<strong>当前仅为准备性 PR，尚未证实 DevTools MCP 已迁入主仓库</strong>。</p>
+<p><strong>工程启发：</strong>浏览器自身的 DevTools/Agent 工具应该共用可复现的构建、测试工件与 Chrome Revision；不要把工具层长期看成和浏览器版本无关的外部脚本。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p>以下项目均为<strong>本期首次发现（2026-11-12，北京时间）</strong>。创建日期来自 GitHub 仓库元数据，成熟度以可读源码/README 为准。没有将新建项目当作经验证的成熟产品。</p>
+<table>
+<thead><tr><th>项目 / 原始创建时间</th><th>差异点与工程价值</th><th>成熟度及继续跟踪</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/mm-lab-dev/browser-mcp-debug">browser-mcp-debug</a><br>11/11 17:01</td><td>VS Code Debugger + Playwright MCP + DevTools MCP 同一真实 Chrome，兼顾 Remote-SSH 和退出清理</td><td>早期扩展；跟踪跨平台调试稳定性、重复启动与进程回收</td></tr>
+<tr><td><a href="https://github.com/hyrious/chrome-use">hyrious/chrome-use</a><br>11/11 17:24</td><td>可见 Chrome、CDP、元素 Ref、可直接调用 JEV 决策；<code>decide</code> 只建议动作而 <code>agent</code> 执行</td><td>MIT、未发布 npm；脚本无沙箱，跟踪真实任务正确率、审批回执、安全隔离</td></tr>
+<tr><td><a href="https://github.com/mitulkanani/autonomous-browser-qa-agent">autonomous-browser-qa-agent</a><br>11/11 19:55</td><td>Playwright + FastAPI 的可限定站点 QA，收集 Console、网络与 Trace，Mock Planner 默认开启，LLM Planner 可选</td><td>早期本地工具；不做提交/购买等副作用；跟踪独立回放、误报、权限绕过</td></tr>
+<tr><td><a href="https://github.com/tuhuynh27/browser-mcp">browser-mcp</a><br>11/11 21:49</td><td>MV3 扩展连接真实 Chrome/Edge，经本地 Bearer Relay 暴露远程 HTTP MCP，可选 Tailscale 访问</td><td>新项目；跟踪远程令牌与 Profile 安全、CDP 作用域、跨设备审计</td></tr>
+<tr><td><a href="https://github.com/Mahgal/agent-browser-trace">agent-browser-trace</a><br>11/11 14:43</td><td>用 Python 标准库校验浏览器操作 JSON、生成可读时间线和规范化回放文件，离线工作</td><td>小型实验工具；并非浏览器录制器；跟踪与真实 Trace 的对应和复演一致性</td></tr>
+</tbody>
+</table>
+<p><strong>观察：</strong>新项目集中解决 Agent 与真实浏览器连接、会话共享、故障证据以及谨慎执行；本期没有发现足够成熟的新 WebGPU 推理引擎值得强行占据雷达位置。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>WebKit：</strong><a href="https://github.com/WebKit/WebKit/pull/80585">#80585</a> 是 11 月 12 日 08:42 提交的候选修复：<code>WebKitTestRunner</code> 的模拟位置和定位错误留在 UI Process 中，可能泄漏到下一个测试，导致测试相互污染；目前<strong>待合并</strong>。这值得 Browser Self-Improvement 关注，因为测试环境不独立时，Agent 会对错误信号做出错误归因。<a href="https://github.com/WebKit/WebKit/pull/80571">#80571</a> 提议在 Layout Test 失败时上传实际输出，同样待合并。</p>
+<p><strong>Firefox / WebGPU：</strong>11 月 12 日凌晨创建的<a href="https://github.com/sargunv/firefox-webgpu-stale-frames">最小复现仓库</a>针对 <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=2091844">Firefox Bug 2091844</a>，记录 Worker 驱动的 WebGPU Canvas 与 DOM 动画一起运行时出现旧帧的情况。当前是<strong>开发者提供的复现与缺陷报告，不是浏览器官方确认的修复或正式结论</strong>。对 GPU Canvas、OffscreenCanvas 与页面合成的跨浏览器测试很有价值。</p>
+<p><strong>Playwright：</strong><a href="https://github.com/microsoft/playwright/pull/44063">#44063</a> 已于 11 月 12 日 03:04（北京时间）合并，把 Chrome Extension 的 E2E 测试改为在 Ubuntu Headless CI 并行运行，使用 Chrome Stub 协调现有 Profile 与新窗口；这是让 Browser Agent 扩展长期可验证的工程基建。<a href="https://github.com/microsoft/playwright/pull/44047">Tab Ownership #44047</a> 仍待合并。<a href="https://github.com/microsoft/playwright/pull/44046">AV1 MP4 Screencast #44046</a> 也是候选特性，只支持 Chromium 的录制路径，不应当作 Firefox/WebKit 已有能力。</p>
+<p>本期未确认 Chrome、Safari、Firefox、Edge、Opera、Brave 官方在观察窗口内发布足够重要的新浏览器稳定版架构公告，故不以旧公告充数。Safari 27.3 Beta 是 11 月 3 日发布，亦非今天的新发布。</p>
+
+<h2>端侧 AI</h2>
+<p>Google <a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4549">DecisionEngine</a> 体现了本地模型从“生成一段话”扩展到“给有限备选项评分”的工程接口，模型能力与运行时授权需要分别测量。另外，<a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4536">StatefulDecoder / WhisperDecoder #4536</a> 提出对带时间戳的音频解码加入有状态缓存；作者称约 2 倍推理提升，<strong>截至观察时仍待合并且无独立设备测量</strong>。<a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4548">静态 Web Demo 构建</a> 已合并，更便于离线静态托管实验，但不是模型推理性能的证明。</p>
+<p><strong>工程启发：</strong>端侧 Runtime 的对照需要区分模型本身的决策质量、GPU/CPU 延迟、Session 安全、模型加载和安装后的离线可用性。不能把某个 Decoder 的局部耗时推断成完整 Android / iOS 应用提升。</p>
+
+<h2>浏览器 × AI</h2>
+<p>这次新出现的 <a href="https://github.com/mm-lab-dev/browser-mcp-debug">browser-mcp-debug</a>、<a href="https://github.com/hyrious/chrome-use">chrome-use</a> 和 <a href="https://github.com/tuhuynh27/browser-mcp">browser-mcp</a> 展示三种不同的浏览器连接方式：专用 Debug Session、多步骤 CDP CLI、真实 Profile 经远程 Relay 暴露 MCP。应统一比较它们是否提供<strong>可撤销的连接、可判定的目标、对用户登录态的保护、操作后的独立状态回读以及进程清理</strong>，而不是单纯比较 MCP 工具数量。</p>
+<p>Chrome DevTools MCP 的新 Release 和原生构建准备也说明，Browser Agent 运行时与 DevTools 测试、浏览器版本号之间的联系将更紧密。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table>
+<thead><tr><th>案例 / 代码状态</th><th>实际已走到哪里</th><th>迁移价值与缺口</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/lightpanda-io/browser/pull/4588">Lightpanda #4588</a>（待合并）</td><td>真实页面 Observe → 空输出 Diagnose → 受限修订 Improve → 无模型 Replay Verify</td><td>可迁移 Chromium/WebKit/Firefox 的只读脚本门禁；缺真实多站点基准、合并、持续 Learn；有副作用动作禁止直接重放</td></tr>
+<tr><td><a href="https://github.com/lightpanda-io/browser/pull/4580">Lightpanda #4580</a>（已合并）</td><td>跨 Chrome 校验 <code>net/*.html</code> 测试 → 发现分歧 → 修改 WebSocket/XHR/Fetch 等 → 合并</td><td>可作为浏览器 Runtime 的差分测试方法；没有 AI 自动归因与长期版本回归结论</td></tr>
+<tr><td><a href="https://github.com/browser-use/browser-harness/pull/1002">Browser Harness #1002</a>（已合并）</td><td>真实 API 探索 → 3 个 Skill → 独立 Agent 新浏览器原样复演 → 政策审查 → 合并</td><td>已有独立 Verify 的 Skill 晋级门禁；仍缺周期性重放、自动撤销和用户反馈 Learn；不等于内核自我修复</td></tr>
+<tr><td><a href="https://github.com/WebKit/WebKit/pull/80585">WebKit #80585</a>（待合并）</td><td>识别 Mock Geo 数据跨测试泄漏 → 修正重置逻辑的候选补丁</td><td>可用于改善 Harness 的测试隔离；目前未合并，不存在自动 Improve→Canary→Learn 证据</td></tr>
+</tbody></table>
+<p><strong>优先可迁移的方法：</strong>把任务分成<strong>只读操作</strong>和<strong>可能产生副作用的操作</strong>。只读脚本可在新 Session 重放并比较产出；会发消息、修改设置、支付或提交的脚本不能无条件重放，应由只读后端验收入口、测试沙箱或人工审查确认。每次验证需记录浏览器版本、数据环境、输出和失败原因，再决定是否把修改晋级为可复用 Skill。这比让 Agent 按固定流程跑更容易形成可自由探索且可信的环境。</p>
+<p><strong>结论边界：</strong>本期没有证据证明 Chromium、WebKit 或 Firefox 已经实现端到端 Observe → Diagnose → Improve → Verify → Canary → Learn 的自动持续改进。</p>
+
+<h2>开源与论文</h2>
+<p>本期高价值材料来自 GitHub 新仓库、官方 Release、差分测试 PR 与真实环境的验证设计。检索了英文学术来源，未确认过去 24 小时内有日期可靠、足以单列且未被前期日报报道的高价值新浏览器论文，因此不重复此前已报告的 WebGPU 推测解码与 Browser Agent Benchmark。可作为方法参考的 <a href="https://arxiv.org/abs/2610.35823">MiniWeb（10 月 26 日提交）</a> 是较早论文，不属于今天新发现或新发布。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Agent 能否学会一套浏览器操作，已不再是最难的部分；更重要的是，它敢不敢在保存经验之前重放、会不会把不可信的空结果当成成功，以及如何避免对真实账号重复执行有副作用的动作。</strong> Lightpanda 的只读 Replay Gate、DevTools MCP 的可控网络环境、Playwright 的隔离测试、Browser Harness 的独立复演，正在为这套机制提供可组合的基础能力。</p>
