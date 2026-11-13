@@ -5,34 +5,19 @@ date: 2026-11-13 09:12:00
 ---
 
 <p><strong>观察窗口：</strong>11 月 12 日 09:12—11 月 13 日 09:12（北京时间）；重要遗漏回溯 7 天。本期先不带已知仓库名开放发现 GitHub 新项目，再检查官方发布、英文社区/论文，最后深挖已知工程仓库。已和最近一周日报去重。仓库创建、PR 合并、产品正式发布和作者自测严格分开。</p>
-<p><strong>主线：</strong>Browser Agent 的正确性正从“工具调用成功”推进到“有归属的浏览器状态 + 跨引擎验证 + 可复演的错误证据”。</p>
-
+<p><strong>修订说明（11 月 13 日晚）：</strong>按技术机制的新颖性重新筛选，撤下普通 MCP 包装、新仓库与常规工程 PR 的头条位置。今日真正高价值的首发不多，以下三项包含过去七天值得补推的技术进展，均标明原始日期与成熟度。</p>
 <h2>今天最值得看</h2>
-
-<h3>1. Chrome 官方：现代 Web Guidance 让 Coding Agent 默认考虑跨浏览器回退（11/12 新文章）</h3>
-<p><strong>发生了什么：</strong>Chrome for Developers 11 月 12 日发布<a href="https://developer.chrome.com/blog/cross-browser-by-default">《跨浏览器默认兼容：Baseline 回退方案如何工作》</a>，解释 <a href="https://github.com/GoogleChrome/modern-web-guidance">Modern Web Guidance</a> 为 Agent 提供 <code>web-features</code> 的 Baseline 支持状态、支持版本和经过核实的回退实现。<strong>这是新文章，不是新仓库：</strong>项目创建于 3 月 23 日，1.0 已于 11 月 10 日推出。</p>
-<p><strong>为什么重要：</strong>Widely Available API 可直接使用；Newly Available 或 Limited Availability 应提供 Fallback。例如 <code>&lt;dialog closedby&gt;</code> 在 Safari 可能要走 JS 回退，而 Chrome/Firefox 可运行原生功能。文章建议 Agent 同时接入 Chrome DevTools、Firefox DevTools MCP（BiDi）与 Safari <code>safaridriver --mcp</code>，验证原生和回退两条路径。只在 Chrome 测试会漏掉 Safari 的代码。</p>
-<p><strong>工程启发：</strong>把 Baseline 兼容数据作为 Agent 工具输入，并为原生/回退分支各生成可复现 E2E；不要仅靠 Prompt 假定兼容。项目 README 展示 11 月 8 日 Codex 等模型的自有对照评测（如 54%→82%），属于作者结果，尚无独立生产验证。来源：<a href="https://developer.chrome.com/blog/cross-browser-by-default">Chrome 官方</a>、<a href="https://github.com/GoogleChrome/modern-web-guidance">GitHub</a>。</p>
-
-<h3>2. Playwright：多 Agent 标签所有权与可恢复 Tab Group 已合并（11/13 02:54）</h3>
-<p><strong>发生了什么：</strong><a href="https://github.com/microsoft/playwright/pull/44047">Playwright #44047</a> 于 11 月 12 日 18:54 UTC 合并。浏览器 Extension 维护所有客户端的 Tab Owner 表；客户端只能控制自己拥有的 Tab，不允许更改浏览器级 Cookie 和权限。用户可以选择共享标签或 Tab Group，客户端断开后 Group 保留，其他客户端可接管。</p>
-<p><strong>为什么重要：</strong>真实浏览器/登录态共享不应让 Agent 互相串台。<strong>代码已合并</strong>，但不代表已进入正式 npm/扩展发布，也没有独立权限审计。工程启发：把 Owner、Tab Group、Session 和接管记录建成 Runtime 的明确数据结构，执行前检查权限，执行后回读结果。来源：<a href="https://github.com/microsoft/playwright/pull/44047">PR 与源码</a>。</p>
-
-<h3>3. agentwatch：读现有 Claude Code 记录的 Rust 多 Agent 观察台，并有自我改进提案入口（新仓库）</h3>
-<p><strong>发生了什么：</strong><a href="https://github.com/coreylallojr/agentwatch">agentwatch</a> 创建于 11 月 12 日 18:08 UTC（北京时间 11 月 13 日 02:08）。它从 <code>~/.claude/projects/</code> 读取 Session 和子 Agent 记录，构建本地浏览器时间线、卡住/失败识别与只读 MCP 工具。<code>agentwatch_wait</code> 用事件等待代替 Agent 的重复轮询，<code>agentwatch_errors</code> 分类失败，<code>agentwatch_snapshot</code> 提供结构化上下文。</p>
-<p><strong>为什么重要：</strong>额外的 <code>agentwatch_suggest_improvement</code> 和 <code>agentwatch-evolve</code> 把未满足的需求记录为建议，在用户 Fork 的候选分支上修改代码、运行 Rust/Node 一致性测试，经审批再推动 PR。当前仅是<strong>具备候选改进能力的早期工具</strong>，不是已证明可自主长期学习的系统。</p>
-<p><strong>工程启发：</strong>为 Browser Harness / Agent Manager 提供只读事件索引、等待、故障分类、Parity Oracle 与候选改进工具；既减少 Poll 上下文开销，也让错误可被验证。作者声称约 50 MB 内存、空闲 0.8% 单核，尚无第三方复测。只支持其声明的 Claude Code 记录格式，不能假设兼容 Herdr 等全部运行时。来源：<a href="https://github.com/coreylallojr/agentwatch">README 与测试脚本</a>。</p>
-
-<h3>4. Chrome DevTools MCP：将一次操作期间页面发生的错误与操作回执绑定（待合并）</h3>
-<p><strong>发生了什么：</strong><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3431">#3431</a> 于 11 月 12 日更新，提出 <code>click</code>、<code>fill</code>、<code>navigate_page</code>、<code>evaluate_script</code> 等工具响应直接包含该调用期间的 Console Error、资源加载错误、CSP 错误，上限 10 条，剩余错误可通过 Console 工具查询。</p>
-<p><strong>为什么重要：</strong>避免 Agent 把“点击返回成功”误判成“页面业务已成功”。提交者明确指出当前<strong>不能捕获跨进程 iframe</strong> 的错误，也无法覆盖两次调用之间产生的所有事件。当前是<strong>开放 PR</strong>，不能误记成 1.13.0 的正式能力。工程启发：所有操作回执应包含 Action ID、Frame/Worker、起止时间、相关错误和最终状态核验。来源：<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3431">PR</a>。</p>
-
-<h3>5. webgpu-particles-bench：JS/WASM/WebGPU 对照不隐藏数值错误（新仓库）</h3>
-<p><strong>发生了什么：</strong><a href="https://github.com/nemolize/webgpu-particles-bench">webgpu-particles-bench</a> 创建于 11 月 12 日 14:41 UTC（北京时间 22:41）。它用同一粒子模拟规则分别在 JS、Rust/WASM 与 WebGPU 执行，从百级到千万级粒子测 p50/p99、GPU Timestamp 与数值偏差，并保留 <code>results.json</code>、复现命令、<code>trace-outlier.mjs</code>。</p>
-<p><strong>为什么重要：</strong>作者在 Apple M2 Max / Chrome 157 的 100 万粒子、100 步对比中，WASM 与 JS 一致，但 GPU 有一个粒子的位置/速度误差超出 <code>0.001</code> 容差。它是很好的“加速不等于正确”的例子。工程启发：WebGPU 模型 Kernel 也应保留 CPU Golden Reference、数值容差、失败输入和尾延迟，而非只报告吞吐。属于作者的早期单机实验，未经独立跨浏览器复测。来源：<a href="https://github.com/nemolize/webgpu-particles-bench">源码和原始结果</a>。</p>
-
+<h3>1. HTML-in-Canvas：把真实 HTML 绘制到 GPU 场景（此前已发布，重要技术补推）</h3>
+<p><strong>新机制：</strong>浏览器通过 <code>layoutsubtree</code>、<code>drawElementImage</code>、<code>texElementImage2D</code>、<code>copyElementImageToTexture</code> 和 <code>paint</code> 事件，将 DOM 内容作为 Canvas/WebGL/WebGPU 场景的可绘制来源，而不只是把 DOM 覆盖在 Canvas 上。它有潜力改变空间浏览器、3D UI 和 AI 生成界面的渲染结构。<strong>状态：</strong>Edge Origin Trial，非正式跨浏览器标准；试验到 2027-03-02，不能宣称 Safari/Firefox 已支持。<strong>工程验证：</strong>需要重点测试输入事件映射、无障碍语义、纹理刷新、跨帧资源成本。来源：<a href="https://developer.microsoft.com/en-us/microsoft-edge/origin-trials/trials/a297467e-0030-4c4c-8739-48e130026c03">Edge Origin Trial</a>；<a href="https://next.opera.com/">Opera 技术介绍</a>。</p>
+<h3>2. Declarative Performance Observer：浏览器原生遥测（Edge 实验能力，非今日首发）</h3>
+<p><strong>新机制：</strong>由 HTTP 响应头声明性能观察需求，浏览器负责从导航开始到页面终止的采集，减少 JS 初始化晚、页面关闭时数据丢失等问题。与 JS Self-Profiling Markers、Speculative Load measurement 一同值得研究。<strong>状态：</strong>Origin Trial/实验性 API，不等于稳定跨浏览器支持。<strong>工程价值：</strong>为 Browser Self-Improvement 提供比页面自报更独立的性能观测；优先测试生命周期完整性、隐私与上报开销。来源：<a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/156">Edge 官方发布说明</a>。</p>
+<h3>3. Firefox 160：WebTransport 与本地语音能力（11 月 10 日发布，7 日补推）</h3>
+<p><strong>新能力：</strong>WebTransport 支持在扩展 CONNECT 建立阶段传递自定义 HTTP Header，并暴露响应 Header；同版本还带来本地语音识别相关进展。<strong>为什么重要：</strong>浏览器端实时语音 Agent 同时依赖低延迟双向传输和端内语音处理。<strong>验证：</strong>需确认不同操作系统的本地识别可用性、离线行为、WebTransport 服务端兼容性，不能从版本说明直接推断跨平台统一支持。来源：<a href="https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/160">Mozilla 官方 Firefox 160 开发者说明</a>。</p>
+<h3>技术深挖候选（非本周新发布）：GPU Goldmines</h3>
+<p>研究提出针对 WebGPU 矩阵乘、矩阵向量乘与 Flash Attention 的可调优 Kernel 库及跨设备配置选择；论文作者报告矩阵乘几何平均性能优于 ONNX Runtime WebGPU 7.0 倍、优于 llama.cpp WebGPU 1.41 倍，并在 llama.cpp Prefill 中得到 1.48 倍端到端提升。<strong>注意：</strong>论文首次发布于 10 月，不是今日新闻，且上述是论文实验，不是独立复测。它值得作为后续深度研究主题，而非重复报道的头条。来源：<a href="https://arxiv.org/abs/2610.17321">GPU Goldmines 原论文</a>。</p>
 <h2>Emerging Tech Radar｜新兴技术雷达</h2>
-<p><strong>本期首次发现：</strong>2026-11-13。以下日期为 GitHub 创建时间（UTC），并非正式 Release；下次重点检查跨平台验证、用户反馈、测试覆盖和真正的版本发布。</p>
+<p><strong>本栏定位修订：</strong>以下是原日报已发现的工程项目候选，不代表新算法或新技术突破。因缺乏足够底层创新证据，本次均降为低优先级跟踪，不进入“今天最值得看”。</p>
+<p><strong>原日报首次发现：</strong>2026-11-13。以下日期为 GitHub 创建时间（UTC），并非正式 Release；下次重点检查跨平台验证、用户反馈、测试覆盖和真正的版本发布。</p>
 <table><thead><tr><th>项目与创建日期</th><th>差异点 / 工程价值</th><th>成熟度及跟踪信号</th></tr></thead><tbody>
 <tr><td><a href="https://github.com/coreylallojr/agentwatch">agentwatch</a><br>11/12 18:08</td><td>已有 Agent 记录 → 本地可观测面板、事件等待、错误分类、候选自身改进</td><td>MIT、早期；关注 Parity、误报、跨 Agent 兼容及真正被采纳的改进</td></tr>
 <tr><td><a href="https://github.com/nemolize/webgpu-particles-bench">webgpu-particles-bench</a><br>11/12 14:41</td><td>JS/WASM/WebGPU 同规则对照，保留 GPU 数值反例和帧时间尾部</td><td>单设备实验；关注 Safari/Firefox 的 GPU 差异与复测</td></tr>
