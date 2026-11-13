@@ -1,0 +1,70 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-13
+date: 2026-11-13 09:12:00
+---
+
+<p><strong>观察窗口：</strong>11 月 12 日 09:12—11 月 13 日 09:12（北京时间）；重要遗漏回溯 7 天。本期先不带已知仓库名开放发现 GitHub 新项目，再检查官方发布、英文社区/论文，最后深挖已知工程仓库。已和最近一周日报去重。仓库创建、PR 合并、产品正式发布和作者自测严格分开。</p>
+<p><strong>主线：</strong>Browser Agent 的正确性正从“工具调用成功”推进到“有归属的浏览器状态 + 跨引擎验证 + 可复演的错误证据”。</p>
+
+<h2>今天最值得看</h2>
+
+<h3>1. Chrome 官方：现代 Web Guidance 让 Coding Agent 默认考虑跨浏览器回退（11/12 新文章）</h3>
+<p><strong>发生了什么：</strong>Chrome for Developers 11 月 12 日发布<a href="https://developer.chrome.com/blog/cross-browser-by-default">《跨浏览器默认兼容：Baseline 回退方案如何工作》</a>，解释 <a href="https://github.com/GoogleChrome/modern-web-guidance">Modern Web Guidance</a> 为 Agent 提供 <code>web-features</code> 的 Baseline 支持状态、支持版本和经过核实的回退实现。<strong>这是新文章，不是新仓库：</strong>项目创建于 3 月 23 日，1.0 已于 11 月 10 日推出。</p>
+<p><strong>为什么重要：</strong>Widely Available API 可直接使用；Newly Available 或 Limited Availability 应提供 Fallback。例如 <code>&lt;dialog closedby&gt;</code> 在 Safari 可能要走 JS 回退，而 Chrome/Firefox 可运行原生功能。文章建议 Agent 同时接入 Chrome DevTools、Firefox DevTools MCP（BiDi）与 Safari <code>safaridriver --mcp</code>，验证原生和回退两条路径。只在 Chrome 测试会漏掉 Safari 的代码。</p>
+<p><strong>工程启发：</strong>把 Baseline 兼容数据作为 Agent 工具输入，并为原生/回退分支各生成可复现 E2E；不要仅靠 Prompt 假定兼容。项目 README 展示 11 月 8 日 Codex 等模型的自有对照评测（如 54%→82%），属于作者结果，尚无独立生产验证。来源：<a href="https://developer.chrome.com/blog/cross-browser-by-default">Chrome 官方</a>、<a href="https://github.com/GoogleChrome/modern-web-guidance">GitHub</a>。</p>
+
+<h3>2. Playwright：多 Agent 标签所有权与可恢复 Tab Group 已合并（11/13 02:54）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/microsoft/playwright/pull/44047">Playwright #44047</a> 于 11 月 12 日 18:54 UTC 合并。浏览器 Extension 维护所有客户端的 Tab Owner 表；客户端只能控制自己拥有的 Tab，不允许更改浏览器级 Cookie 和权限。用户可以选择共享标签或 Tab Group，客户端断开后 Group 保留，其他客户端可接管。</p>
+<p><strong>为什么重要：</strong>真实浏览器/登录态共享不应让 Agent 互相串台。<strong>代码已合并</strong>，但不代表已进入正式 npm/扩展发布，也没有独立权限审计。工程启发：把 Owner、Tab Group、Session 和接管记录建成 Runtime 的明确数据结构，执行前检查权限，执行后回读结果。来源：<a href="https://github.com/microsoft/playwright/pull/44047">PR 与源码</a>。</p>
+
+<h3>3. agentwatch：读现有 Claude Code 记录的 Rust 多 Agent 观察台，并有自我改进提案入口（新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/coreylallojr/agentwatch">agentwatch</a> 创建于 11 月 12 日 18:08 UTC（北京时间 11 月 13 日 02:08）。它从 <code>~/.claude/projects/</code> 读取 Session 和子 Agent 记录，构建本地浏览器时间线、卡住/失败识别与只读 MCP 工具。<code>agentwatch_wait</code> 用事件等待代替 Agent 的重复轮询，<code>agentwatch_errors</code> 分类失败，<code>agentwatch_snapshot</code> 提供结构化上下文。</p>
+<p><strong>为什么重要：</strong>额外的 <code>agentwatch_suggest_improvement</code> 和 <code>agentwatch-evolve</code> 把未满足的需求记录为建议，在用户 Fork 的候选分支上修改代码、运行 Rust/Node 一致性测试，经审批再推动 PR。当前仅是<strong>具备候选改进能力的早期工具</strong>，不是已证明可自主长期学习的系统。</p>
+<p><strong>工程启发：</strong>为 Browser Harness / Agent Manager 提供只读事件索引、等待、故障分类、Parity Oracle 与候选改进工具；既减少 Poll 上下文开销，也让错误可被验证。作者声称约 50 MB 内存、空闲 0.8% 单核，尚无第三方复测。只支持其声明的 Claude Code 记录格式，不能假设兼容 Herdr 等全部运行时。来源：<a href="https://github.com/coreylallojr/agentwatch">README 与测试脚本</a>。</p>
+
+<h3>4. Chrome DevTools MCP：将一次操作期间页面发生的错误与操作回执绑定（待合并）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3431">#3431</a> 于 11 月 12 日更新，提出 <code>click</code>、<code>fill</code>、<code>navigate_page</code>、<code>evaluate_script</code> 等工具响应直接包含该调用期间的 Console Error、资源加载错误、CSP 错误，上限 10 条，剩余错误可通过 Console 工具查询。</p>
+<p><strong>为什么重要：</strong>避免 Agent 把“点击返回成功”误判成“页面业务已成功”。提交者明确指出当前<strong>不能捕获跨进程 iframe</strong> 的错误，也无法覆盖两次调用之间产生的所有事件。当前是<strong>开放 PR</strong>，不能误记成 1.13.0 的正式能力。工程启发：所有操作回执应包含 Action ID、Frame/Worker、起止时间、相关错误和最终状态核验。来源：<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3431">PR</a>。</p>
+
+<h3>5. webgpu-particles-bench：JS/WASM/WebGPU 对照不隐藏数值错误（新仓库）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/nemolize/webgpu-particles-bench">webgpu-particles-bench</a> 创建于 11 月 12 日 14:41 UTC（北京时间 22:41）。它用同一粒子模拟规则分别在 JS、Rust/WASM 与 WebGPU 执行，从百级到千万级粒子测 p50/p99、GPU Timestamp 与数值偏差，并保留 <code>results.json</code>、复现命令、<code>trace-outlier.mjs</code>。</p>
+<p><strong>为什么重要：</strong>作者在 Apple M2 Max / Chrome 157 的 100 万粒子、100 步对比中，WASM 与 JS 一致，但 GPU 有一个粒子的位置/速度误差超出 <code>0.001</code> 容差。它是很好的“加速不等于正确”的例子。工程启发：WebGPU 模型 Kernel 也应保留 CPU Golden Reference、数值容差、失败输入和尾延迟，而非只报告吞吐。属于作者的早期单机实验，未经独立跨浏览器复测。来源：<a href="https://github.com/nemolize/webgpu-particles-bench">源码和原始结果</a>。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p><strong>本期首次发现：</strong>2026-11-13。以下日期为 GitHub 创建时间（UTC），并非正式 Release；下次重点检查跨平台验证、用户反馈、测试覆盖和真正的版本发布。</p>
+<table><thead><tr><th>项目与创建日期</th><th>差异点 / 工程价值</th><th>成熟度及跟踪信号</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/coreylallojr/agentwatch">agentwatch</a><br>11/12 18:08</td><td>已有 Agent 记录 → 本地可观测面板、事件等待、错误分类、候选自身改进</td><td>MIT、早期；关注 Parity、误报、跨 Agent 兼容及真正被采纳的改进</td></tr>
+<tr><td><a href="https://github.com/nemolize/webgpu-particles-bench">webgpu-particles-bench</a><br>11/12 14:41</td><td>JS/WASM/WebGPU 同规则对照，保留 GPU 数值反例和帧时间尾部</td><td>单设备实验；关注 Safari/Firefox 的 GPU 差异与复测</td></tr>
+<tr><td><a href="https://github.com/w3nder/lineage-rust">lineage-rust</a><br>11/12 04:42</td><td>同一 Rust/wgpu 客户端尝试跨桌面、WebGPU/WASM、iOS/Android 及 Bot</td><td>WIP，macOS Apple Silicon 主要已测；Web/iOS/Android 实验性；关注跨端帧时间和资源管理</td></tr>
+<tr><td><a href="https://github.com/andyluu98/agent-browser-own-profile">agent-browser-own-profile</a><br>11/12 09:44</td><td>在专用登录 Chrome Profile 上复用 agent-browser，写入前确认、Captcha 停止、发行文件 SHA-256 校验</td><td>早期，Windows 优先，macOS 未实机验证；关注登录态、审批、操作回执</td></tr>
+</tbody></table>
+<p>官方新宣发的 <a href="https://github.com/GoogleChrome/modern-web-guidance">Modern Web Guidance</a> 创建于 3 月，不能作为今日新仓库；昨日的 browser-mcp-debug 等也不重复入榜。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>Chrome / Firefox / WebKit / Edge：</strong><a href="https://developer.chrome.com/blog/cross-browser-by-default">11 月 12 日 Chrome 官方文章</a>提出以 Baseline 数据识别支持差异，使用 Chrome DevTools、Firefox BiDi 和 Safari <code>safaridriver --mcp</code> 验证本机 Web API 与 Fallback。它是兼容性工程方法，不是当天各浏览器均发布新内核。</p>
+<p><strong>Lightpanda 内存：</strong><a href="https://github.com/lightpanda-io/browser/pull/4608">#4608</a> 11 月 13 日 07:21（北京时间）合并。作者报告在 HTML 规范超大 DOM、<code>--dump semantic_tree_text</code> 下峰值 RSS 从 249 MB 降至 154 MB，Wikipedia 页从 26 MB 降至 22 MB，原因是减少不可回收 Arena 中持有的数据。这是<strong>带作者基准的已合并局部优化</strong>，不是全浏览器/跨设备收益或自主改进闭环。</p>
+<p>本观察窗口没有确认值得单列的 Opera、Brave 官方新架构发布，避免用旧消息或普通修复凑数。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>LiteRT-LM 混合模型状态快照：</strong><a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4582">#4582</a> 于 11 月 13 日 08:55（北京时间）提交，仍<strong>待合并</strong>，尝试为 sliding-window KV Cache 与 recurrent state 保存/恢复上下文，同时避免修改全局 KV Cache。它是移动端混合 Attention 模型恢复、Prefix Cache 的状态正确性基础，尚无公开独立性能结论。</p>
+<p><strong>分段 Prefill 评测：</strong><a href="https://github.com/google-ai-edge/LiteRT-LM/pull/4540">#4540</a> 提议在增长中的 Conversation Context 中测多段追加消息，而非只测一次性 Prefill，仍待合并。WebGPU / WASM 侧可参考 <a href="https://github.com/nemolize/webgpu-particles-bench">粒子对照实验</a> 的精度和尾延迟设计，对 GPU 结果进行独立 CPU 复核。</p>
+
+<h2>浏览器 × AI</h2>
+<p><a href="https://github.com/microsoft/playwright/pull/44047">Playwright</a> 解决多 Agent 标签归属，<a href="https://github.com/coreylallojr/agentwatch">agentwatch</a> 提供运行时间线与故障证据，<a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3431">DevTools MCP 候选改动</a> 让网页错误与操作回执关联。三者适合组合为一个受控 Browser Session：控制前验证 Owner，操作期间收集 Console/Network，完成后由独立会话判断效果。</p>
+<p>另有 <a href="https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/3473">DevTools MCP #3473</a> 提出可选 <code>--repl</code> 批量执行页面操作和检查，试图减少模型轮次与 MCP 往返。目前是<strong>Draft PR</strong>，未发布，需要额外验证脚本权限、取消和失败后副作用。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table><thead><tr><th>案例与状态</th><th>实际闭环进度</th><th>迁移价值与缺口</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/GoogleChrome/modern-web-guidance">Modern Web Guidance</a>（官方发布/自有评测）</td><td>发现 Agent 编码兼容缺口 → Baseline 指导与 Fallback → 浏览器断言/有无指导评测 → 优化指南</td><td>可迁移 Chromium/WebKit/Firefox UI 工程；缺第三方生产验证、长期 Canary 和自动回滚</td></tr>
+<tr><td><a href="https://github.com/coreylallojr/agentwatch">agentwatch</a>（早期开源）</td><td>观察现有 Transcript → 失败与建议 → 候选修改 → Rust/Node 测试与 Parity → 人工 PR</td><td>可迁移 Browser Harness 与多 Agent 管理；缺持续应用效果、跨环境 Learn</td></tr>
+<tr><td><a href="https://github.com/microsoft/playwright/pull/44087">Playwright #44087</a>（11/13 07:34 已合并）</td><td>Playwright Bot Linux Triage → 修正空参数导致的 TypeError → Chromium/Firefox/WebKit 57 项测试通过 → 合并</td><td>有真实 Agent 归因与跨引擎 Verify；仍是单次局部闭环，缺 Canary 与经验长期回流</td></tr>
+<tr><td><a href="https://github.com/browser-use/browser-harness/pull/1007">Browser Harness #1007</a>（Draft）</td><td>发现同名 Daemon 错绑另一个 CDP Browser → 候选拒绝 <code>cdp-mismatch</code> → 作者对照并发测试</td><td>可迁移多 Agent Browser Runtime 的 Session 隔离；尚未合并、无真实生产验证</td></tr>
+</tbody></table>
+<p><strong>边界：</strong>没有发现 Chromium/WebKit/Firefox 内核已经形成完整的自动 Observe → Diagnose → Improve → Verify → Canary → Learn 证据。初期可提供 Browser Revision、Tab Owner、Action ID、Console 错误、独立验证器、评测预算等自由组合工具，让 Agent 自主探索，但补丁或 Skill 的晋级标准与 Agent 自身分离。</p>
+
+<h2>开源与论文</h2>
+<p>本期重点是 Chrome 官方新技术文章、11 月 12 日新建仓库、GitHub PR 与原始数据。检索近期英文学术来源，未确认足够有价值且不与过去一周日报重复的新论文，因此不重复旧研究凑数量。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>让 Agent 用上更先进的 Web API 并不难，难的是证明它在 Chrome、Firefox、Safari 上都按预期工作；让多个 Agent 连接真实浏览器也不难，难的是确认每一次操作属于谁、是否真的生效、失败证据能否重放。</strong> 这两类基础验证能力，比再增加一层固定 Agent 工作流更值得投入。</p>
