@@ -1,0 +1,59 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-15
+date: 2026-11-15 09:43:00
+---
+
+<p><strong>观察窗口：</strong>2026 年 11 月 14 日 09:43—11 月 15 日 09:43（北京时间）；重要技术遗漏回溯至 11 月 8 日。<strong>编辑原则：</strong>技术新颖性优先。本期依次独立调查新机制/论文/标准提案、浏览器厂商发布、端侧模型 Runtime、开放社区项目，最后核对已有仓库工程进展；与最近一周日报及修订内容去重。</p>
+
+<p><strong>本期结论：</strong>周末过去 24 小时没有足以确认已在生产浏览器正式发布的重大新 API。但 11 月 14 日持续讨论的 <strong>WGSL Shader Print</strong> 草案，以及过去一周的 <strong>Subgroup Matrix FP8/BF16</strong> 方案、<strong>CrUX Soft Navigation</strong> 数据口径更新，分别指向浏览器 GPU 调试、端侧矩阵计算能力与 SPA 真实体验度量的机制变化。以下均区分“工作组草案 / 已合并到提案 / 已公开数据”与“浏览器稳定实现”。</p>
+
+<h2>今天最值得看｜3 条（1 条本观察窗口推进，2 条过去 7 日补推）</h2>
+
+<h3>1. WGSL Shader Print：为 WebGPU Shader 增加原生可观察的计算日志（11/13 提案，11/14 继续审查）</h3>
+<p><strong>发生了什么：</strong>W3C GPU for the Web 工作组成员在 <a href="https://github.com/gpuweb/gpuweb/pull/11101">gpuweb #11101</a> 提出 <code>shader-print</code> 草案，起草日期为 11 月 13 日（UTC），11 月 14 日仍有审查活动。提议 WGSL 支持 <code>print</code> 函数和类似 JavaScript 模板字符串的表达式插值，例如把 Shader 中的中间计算值输出到浏览器开发者控制台，而不是只能靠 CPU Readback 或 GPU 平台专用调试器间接检查。</p>
+<p><strong>技术新颖性：</strong>草案不仅定义打印语法，还描述浏览器可移植实现：编译器把日志操作改写为向内部 Storage Buffer 写入含格式 ID、Invocation 元数据和值的记录，使用原子操作预留空间，再由宿主 Readback 和格式化输出；同时比较 Metal shader logging、Vulkan DebugPrintf 与 HLSL 的原生能力。Dawn/Tint 已有相关原型，<strong>不是 WebGPU 标准已通过或 Chrome/Safari/Firefox 均已支持</strong>。</p>
+<p><strong>可验证证据与边界：</strong>PR 提供 134 行完整提案及技术路径，作者明确留下日志输出格式、回调方式、可否静默 no-op、功能开关及 CTS 测试的开放问题。没有给出稳定浏览器支持或性能成本。<strong>工程启发：</strong>Browser Agent 可以在定位 WGSL 推理 Kernel 错误时获取 GPU 内部数值证据，但需要独立控制日志采样、回读开销、敏感数据和超限行为。<strong>值得深入研究/实测：高（先跟踪规范和 Dawn 原型）。</strong>来源：<a href="https://github.com/gpuweb/gpuweb/pull/11101">工作组 PR 原文</a>。</p>
+
+<h3>2. WebGPU Subgroup Matrix：FP8/BF16 被纳入矩阵扩展提案（11/10 合并，7 日补推）</h3>
+<p><strong>发生了什么：</strong><a href="https://github.com/gpuweb/gpuweb/pull/11093">gpuweb #11093</a> 于 11 月 10 日合并到 <a href="https://github.com/gpuweb/gpuweb/blob/main/proposals/subgroup-matrix.md">Subgroup Matrix 提案</a>，新增 <code>bf16</code>、<code>f8&lt;e4m3&gt;</code>、<code>f8&lt;e5m2&gt;</code> 三类有限用途的矩阵运算数据类型，并补充 Vulkan、D3D12、Metal 3/4 的原生类型映射和硬件能力条件。</p>
+<p><strong>技术新颖性：</strong>不是简单让 WGSL 全面支持 FP8 普通标量，而是让浏览器的 Subgroup Matrix/协作矩阵接口可描述低精度输入、特定输出精度和矩阵尺寸，从而让推理 Runtime 有机会直接调用硬件矩阵计算路径。Metal 4 的 <code>matmul2d</code>、Vulkan Cooperative Matrix、D3D12 Wave Matrix 对应能力不同，必须由适配器声明实际支持配置。</p>
+<p><strong>可验证证据与边界：</strong>提案代码已合并，但<strong>并不代表各浏览器已经实现此扩展，也不代表所有 GPU 都能硬件加速 FP8</strong>。尚缺跨 Safari/Chrome/Firefox 的 CTS、数值误差和端到端推理基准。<strong>工程启发：</strong>针对浏览器端小模型矩阵乘，评测应按 GPU 实际支持能力分层，比较原生低精度路径与现有 F16/F32 或 Shader 手写路径，并同时记录误差、加载时间和内存峰值。<strong>值得深入研究/实测：高（API 标准与硬件协同方向）。</strong>来源：<a href="https://github.com/gpuweb/gpuweb/pull/11093">已合并 PR</a>、<a href="https://chromium.googlesource.com/external/github.com/gpuweb/gpuweb/+/10be35c70d7bfc37e0557f2d0e38ec42742aba63">规范镜像提交</a>。</p>
+
+<h3>3. Chrome UX Report：开始用 Soft Navigation 的 FCP 和导航类型观察 SPA 页面（11/11 发布，7 日补推）</h3>
+<p><strong>发生了什么：</strong>Chrome 团队 11 月 11 日更新 2026 年 10 月的 <a href="https://developer.chrome.com/docs/crux/release-notes">CrUX 发布说明</a>：实验性 Soft Navigation 指标新增 FCP 和 Navigation Types，并已进入 CrUX API 与 CrUX Vis，计划下个月进入 BigQuery。之前实验口径已包含 Soft Navigation 的 LCP/CLS/INP。</p>
+<p><strong>技术新颖性：</strong>传统一次导航只观察文档首次加载，而 SPA 内部点击切换内容通常没有完整 Document Navigation。将这种“软导航”纳入真实用户体验指标，意味着浏览器观测开始覆盖长期驻留单页应用的持续交互，而不仅是首屏。</p>
+<p><strong>可验证证据：</strong>Chrome 的 2026 年 10 月数据中，按其试算口径纳入 Soft Navigation 后，Core Web Vitals 达标站点比例由 <strong>56.3% 变为 60.3%</strong>。这<strong>是统计口径改变，不是网站实际性能提升了四个百分点</strong>；官方计划 2027 年 5 月再考虑纳入常规 Core Web Vitals。<strong>工程启发：</strong>浏览器性能采集、AI Agent 性能回归与 SPA 业务转化测量都应区分硬导航和软导航，并保留 Navigation ID 及前后台状态。<strong>值得研究/实测：高（尤其 Web 性能观测）。</strong>来源：<a href="https://developer.chrome.com/docs/crux/release-notes">Chrome CrUX 官方 Release Notes（11/11）</a>。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p><strong>本期首次记录：2026-11-15。</strong>开放发现检索没有筛出技术独特性证据足够的新 GitHub 仓库，故不为凑数收录 CDP/MCP 包装项目。本次跟踪的是有原始设计文档的技术机制，具体发布时间与成熟度分别标注。</p>
+<table><thead><tr><th>机制与原始来源</th><th>本期发现的差异 / 工程价值</th><th>成熟度、后续跟踪信号</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/gpuweb/gpuweb/pull/11101">WGSL Shader Print</a><br>11/13 创建，11/14 审查</td><td>Shader 原生值日志，允许记录 GPU Kernel 内部中间状态；提升浏览器 GPU 调试与 Agent 证据质量</td><td>Draft PR；跟踪 CTS、Dawn/Tint 原型、Chrome DevTools 消费与日志开销</td></tr>
+<tr><td><a href="https://github.com/gpuweb/gpuweb/pull/11093">Subgroup Matrix FP8/BF16</a><br>11/10 合并到提案</td><td>跨 Vulkan/Metal/D3D12 描述低精度矩阵硬件能力，有机会减少模型 Kernel 适配碎片</td><td>Proposal 已合并，非浏览器稳定 API；跟踪适配器声明、CTS、设备矩阵能力与数值</td></tr>
+<tr><td><a href="https://github.com/gpuweb/gpuweb/pull/11100">WGSL unrestricted_aliasing</a><br>11/13 开放 PR</td><td>允许更多具有别名关系的指针参数调用，仍保留 Uniformity 约束；降低复杂 Shader 代码重构成本</td><td>标准 PR 未合并；Dawn/Tint 11/13 已有实现提交。跟踪代码生成兼容与跨编译器差异</td></tr>
+</tbody></table>
+
+<h2>浏览器技术</h2>
+<p><strong>WGSL unrestricted_aliasing：</strong><a href="https://github.com/gpuweb/gpuweb/pull/11100">PR #11100</a> 提议解除大部分指针参数别名限制，同时在会影响 Uniformity 的情况下保留诊断。Dawn/Tint 于 11 月 13 日已经<a href="https://dawn.googlesource.com/dawn/+/89c82aaeaa0c016c1bdae167dc5549e7cbc20e92">提交相关编译器支持</a>。这是<strong>实现中的可选语言能力</strong>，不是标准完成或 Safari/Firefox 支持声明。它对编译器与复杂 WGSL 代码生成值得研究，但目前没有可信性能提升数据。</p>
+<p><strong>Chromium 遥测安全边界：</strong>11 月 13 日的<a href="https://chromium.googlesource.com/chromium/src/tools/+/0ec8f88d8c8d5cfb650983e919abb81fe46c3641">GPU.WebGPU.Support 指标恢复提交</a>解释了此前为什么在 Windows/Android/Linux 默认关闭枚举式探测：Windows 枚举 D3D12 适配器可能唤醒休眠独显并卡住 GPU 进程，Android/Linux 旧枚举路径可能崩溃。新实现优先检查正在使用的适配器，处理 EGLContext 恢复。这是重要的<strong>“遥测不能破坏被观测环境”工程风险</strong>，不属于新 GPU 算法。</p>
+<p><strong>其他引擎：</strong>本观察窗口未验证 WebKit/Safari、Firefox、Edge、Brave、Opera 具有同等重要且未被本周重复报道的架构首发；不填充常规版本修补。</p>
+
+<h2>端侧 AI</h2>
+<p>GPU 侧新信息以 <strong>FP8/BF16 Subgroup Matrix</strong> 为主。它将“浏览器内用 Shader 模拟矩阵算子”进一步推向“通过可移植 GPU API 描述不同硬件的矩阵指令”。这仍是规范提案层，想证明对端侧 AI 有意义，需要实测 M/N/K、Batch=1、Quantization 格式、显存、数值精度以及真实模型 Prefill/Decode，而不是只跑裸矩阵乘。</p>
+
+<h2>浏览器 × AI</h2>
+<p>Shader Print 有可能成为“Agent 调试 WebGPU Runtime”所缺失的观察工具：执行已知输入，收集 Shader 中间值，与 CPU Golden Reference 对照，再形成候选代码修改。但该自动化闭环只是<strong>可迁移的工程设计建议</strong>，目前没有证据表明工作组已发布一个能够自动修复 GPU Kernel 的 Browser Agent。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table><thead><tr><th>案例</th><th>当前到达的闭环阶段</th><th>缺失环节 / 迁移价值</th></tr></thead><tbody>
+<tr><td>CrUX Soft Navigation</td><td>Observe：新增真实用户软导航体验指标</td><td>尚非自动 Diagnose/Improve/Verify/Learn；可作为 Chrome/其他 SPA Harness 的客观输入，跨浏览器需自建对照</td></tr>
+<tr><td>WGSL Shader Print</td><td>Observe/Diagnose 工具设计：可获取 GPU 中间值的候选接口</td><td>草案阶段，缺真实 CTS、性能测量与自动优化链；适合 Chrome/Dawn 优先原型，WebKit/Firefox 需另行实现</td></tr>
+<tr><td>Chromium WebGPU Support 遥测</td><td>Observe 机制风险定位 → 改写采样方式 → 代码提交</td><td>没有 AI 自主改善或 Canary / Learn 证据；可迁移原则是低侵入地记录能力，避免枚举唤醒不活跃 GPU</td></tr>
+</tbody></table>
+<p>本期不把普通 PR、CI 测试或人工修 Bug 强行归类为“完成 Browser 自我改进”；相关案例最多是可供未来自主系统调用的观测与校验能力。</p>
+
+<h2>开源与论文</h2>
+<p>主要可信原始材料是 W3C/GPUWeb 标准提案、Dawn/Tint 代码提交及 Chrome CrUX 公开指标，没有查到过去 24 小时内足以新增、又未与近一周日报重复的高质量浏览器/端侧 AI 论文。<strong>没有新仓库推荐不代表没有技术进展。</strong></p>
+
+<h2>今天的一个判断</h2>
+<p><strong>未来一代浏览器内 AI Runtime 的关键差异，不只是模型算得快，而是低精度矩阵计算能否对接硬件、计算内部能否被可靠观测，以及长时间驻留的 Web 应用能否被正确度量。</strong>本期三个机制分别补上这三个方向的一块拼图，但距离跨浏览器正式交付仍有明显差距。</p>
