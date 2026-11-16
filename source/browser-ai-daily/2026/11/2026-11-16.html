@@ -1,0 +1,61 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-16
+date: 2026-11-16 09:38:00
+---
+
+<p><strong>观察窗口：</strong>2026 年 11 月 15 日 09:38—11 月 16 日 09:38（北京时间）；重要技术遗漏回溯至 11 月 9 日。<strong>编辑原则：</strong>技术新颖性优先。独立检索新算法/标准提案、浏览器厂商技术发布、端侧 AI Runtime、开源/英文社区，再核对已知工程仓库。与最近一周日报去重；日期以原始论文提交或官方发文为准，不将旧论文当作当日首发。</p>
+
+<p><strong>本期判断：</strong>过去 24 小时没有核实到足以称为重大突破的首次发布；本期补推三项 11 月 9—12 日遗漏的重要成果：<strong>Brave 的隐私保护搜索跳转协议、Browser Immune System 的 WebGPU 本地安全判别、WebTrap Farm 的跨 Harness 安全评测</strong>。它们分别从密码学协议、端侧推理架构和系统级评测方法改变 Browser/Agent 能力边界。</p>
+
+<h2>今天最值得看｜3 条（均为过去 7 日补推，不是 11/16 新发布）</h2>
+
+<h3>1. Brave：用部分盲化伪随机函数保护搜索点击，同时提高批量抓取成本（11/11 官方方案）</h3>
+<p><strong>发生了什么：</strong>Brave Search 11 月 11 日介绍一套准备推出的结果链接保护方案：结果的真实目标地址先加密，用户浏览器通过 <code>partially oblivious pseudorandom function</code>（部分盲化伪随机函数，POPRF）取得仅能解开一个链接的密钥。浏览器在客户端解密并直接访问目标网站，Brave 服务器可计数密钥请求，却无法得知用户究竟点击了结果页中的哪一条链接。</p>
+<p><strong>技术究竟新在哪里：</strong>普通搜索跳转链接由服务器看到目标 URL，而这套设计将“控制每个结果的解密成本”和“服务端不知道具体点击目标”结合起来。它不是发明全新的密码学原语，而是对 Web 搜索的隐私与反爬需求做出了新的协议级组合。<strong>工程启发：</strong>Browser Agent 和搜索系统可以研究如何在提高批量自动访问成本时，避免把人的点击轨迹集中采集到服务端。</p>
+<p><strong>证据与成熟度：</strong>这是 <strong>Brave 官方技术设计与上线预告</strong>，不是已通过第三方生产流量审计的部署结论。没有 JavaScript 时会回退至传统重定向，Brave 将可能看到目的地址；复制出来的跳转链接可能过期，也有被滥用于钓鱼的风险。<strong>新颖性：高；值得深挖：高。</strong>应验证密钥请求与会话关联、客户端不可追踪性、真实机器人经济成本及兼容性。来源：<a href="https://brave.com/blog/google-goto-anti-scraping/">Brave 官方架构文章（2026-11-11）</a>。</p>
+
+<h3>2. Browser Immune System：一个 WebGPU 端内 4B 安全模型，在浏览器执行快速分类与按需解释（11/11 论文）</h3>
+<p><strong>发生了什么：</strong>研究者在 11 月 11 日提交 <a href="https://arxiv.org/abs/2611.15302">Browser Immune System (BIS)</a>，把 40 亿参数的安全模型 <code>alias-web</code> 量化到 4-bit，编译成约 2.44 GB 的 WebGPU 图，在 Chrome 和 Firefox 扩展中本地执行。每个威胁类别使用一次定向判别（System 1），需要时才用同一权重生成文字解释（System 2）。</p>
+<p><strong>技术究竟新在哪里：</strong>不是“浏览器里运行一个 Chat 模型”，而是把固定类别安全判断改成<strong>单次前向判别、无 Token 解码</strong>，让大模型先在本地快速回答有类型的问题，昂贵的解释延后到需要时。作者报告单个类别问题约 150 ms；<strong>整页扫描为 0.9—6.4 秒</strong>，不能把单次决策延迟误写成整页检测延迟。</p>
+<p><strong>验证与限制：</strong>作者的 8 个合成网页中判对 7 个，micro-F1 为 0.71；11 个真实网页的初步实验显示，部分正常脚本和登录表单被误报。它仍是<strong>论文和实验扩展</strong>，不能当作生产级防护；模型下载、显存、能耗与误报需要进一步评估。<strong>新颖性：高；值得实测：高。</strong>建议对比固定规则与本地模型的误报、端侧热启动、每页总耗时，并在 Android/Safari WebGPU 场景检验。来源：<a href="https://arxiv.org/abs/2611.15302">原始论文</a>、<a href="https://huggingface.co/aliasrobotics/alias3-web">模型权重</a>、<a href="https://github.com/eduardoworrel/ct0-edge">相关端侧 Runtime 研究代码（前期项目，非 11/11 新仓库）</a>。</p>
+
+<h3>3. WebTrap Farm：把 Browser Agent 的安全问题归因到 Harness，而非只测模型（11/09 论文）</h3>
+<p><strong>发生了什么：</strong>11 月 9 日提交的 <a href="https://arxiv.org/abs/2611.11971">Harness Matters</a> 提出 <code>WebTrap Farm</code>，将 Web Agent 拆为目标解释、网页感知、规划决策和动作执行四个阶段，对恶意用户指令、页面提示注入和欺骗性界面进行跨 Harness 评估。</p>
+<p><strong>技术究竟新在哪里：</strong>它加入成对的<strong>可用性校准任务</strong>：Agent 没有做危险动作，可能只是不会操作页面，而非真的抵挡了攻击。通过先校准正常任务能否成功，再统计防御结果，可以避免把无能力误判成安全。研究报告开源 Harness 样本的总体攻击成功率为 32.55%，统计模型也发现 Harness、底层模型及两者交互均影响安全结果。</p>
+<p><strong>证据与限制：</strong>这是<strong>论文的实验结论</strong>，不能推导出所有 Browser Agent 具有同样风险，亦不是已在 Chromium/WebKit/Firefox 内核完成的安全改造。<strong>新颖性：中高；值得深入研究：高。</strong>最适合迁移为 Browser Agent 验证基建：同一模型、同一任务，在不同 Harness 或策略下进行配对测试；分离任务成功率与危险动作率。来源：<a href="https://arxiv.org/abs/2611.11971">原始论文与实验方法</a>。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p><strong>首次发现记录：2026-11-16。</strong>本期只有研究原型与新协议达到新颖性门槛；未找到值得单独推荐的新创建 GitHub 仓库。不存在“有仓库才能入榜”的要求。</p>
+<table><thead><tr><th>项目 / 原始日期</th><th>差异点与工程价值</th><th>成熟度与下次跟踪信号</th></tr></thead><tbody>
+<tr><td><a href="https://arxiv.org/abs/2611.15302">BIS / alias-web</a><br>论文 11/11</td><td>WebGPU 4B 本地安全模型；无解码的分类与按需解释分离，适合本地页面安全检测</td><td>研究原型；跨站误报率、真实设备显存与功耗、跨浏览器回归</td></tr>
+<tr><td><a href="https://brave.com/blog/google-goto-anti-scraping/">Brave POPRF 搜索跳转</a><br>官方 11/11</td><td>加密结果目标，私密领取单链接密钥，限制批量提取但不回传具体点击目标</td><td>官方上线预告；公开可验证部署、隐私审计、JS 禁用回退与反滥用效果</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2611.11971">WebTrap Farm</a><br>论文 11/09</td><td>跨 Harness 的安全/可用性配对评测，避免将“不会执行”当成“安全防御”</td><td>论文研究；公开评测数据/代码、扩展到真实 Browser Runtime、复验</td></tr>
+</tbody></table>
+
+<h2>浏览器技术</h2>
+<p><strong>Brave 端侧隐私：</strong>11 月 12 日正式介绍 Brave 桌面版 1.98 起在图片<strong>下载和上传两个环节</strong>去除 Meta 图片 IPTC 字段中的 <code>FBMD</code> 标识。下载保护保存的文件，上传则使用清理后的副本而不修改本地原文件；这是资源进出浏览器时的隐私边界改造。Brave 说明尚不清楚 Meta 是否实际把该字段用于跟踪，不能写成已证实追踪行为。建议检查 JPEG/IPTC 内容保留、破损文件回退与上传兼容；iOS/Android 仍是后续计划。来源：<a href="https://brave.com/privacy-updates/40-remove-tracking-metadata/">Brave 官方技术说明（11/12）</a>。</p>
+<p><strong>Chromium / WebKit / Firefox / Edge / Opera：</strong>本观察窗口未核实出比上述三项更值得报道的正式新架构发布，不用常规版本更新和修复补齐。昨日已报道的 WGSL Shader Print、Subgroup Matrix FP8/BF16、CrUX Soft Navigation 不再重复作为今日头条。Chrome 158 计划于 11 月 17 日在 Stable 移除 XSLT（保留 Origin Trial/企业政策例外），是<strong>已有计划的临近兼容性里程碑</strong>，不是 11/16 首发；需要关注遗留 XML/XSLT 站点。来源：<a href="https://developer.chrome.com/docs/web-platform/deprecating-xslt">Chrome XSLT 迁移说明</a>。</p>
+
+<h2>端侧 AI</h2>
+<p>BIS 展示了<strong>分类判别与生成解释分离</strong>的具体端侧系统实现。对于浏览器/移动端推理，应把单次模型判断延迟、整页检测耗时、4-bit 量化后结果一致性、GPU 常驻内存、冷加载和误报分开度量。它验证了研究可行性，但不构成真实站点广泛安全准确率的证据。过去 24 小时未核实到更高优先级的新型推理算法或 Runtime 正式发布。来源：<a href="https://arxiv.org/abs/2611.15302">BIS 论文</a>。</p>
+
+<h2>浏览器 × AI</h2>
+<p>Brave 的私密搜索跳转提醒我们：Browser Agent 的海量查询和抓取会反向推动 Web 服务重构访问协议。BIS 则提示另一个方向——浏览器可以在页面数据离开设备前，由本地模型完成初步威胁判断。两者都不是传统“给浏览器加一个 MCP 封装”，分别代表协议层和计算层变化。浏览器产品、Agent 和内容服务需要分别处理隐私、成本与误报，而不是靠 Prompt 解决。</p>
+
+<h2>Browser Self-Improvement</h2>
+<p><strong>保留独立主线，但不把评测框架强行称为完整 RSI。</strong></p>
+<table><thead><tr><th>案例</th><th>达到的环节</th><th>缺口与迁移性</th></tr></thead><tbody>
+<tr><td>WebTrap Farm</td><td>Observe（任务/风险记录）＋ Diagnose（分阶段归因）＋ Verify（配对测试）</td><td>尚无自主代码改进与 Learn；可直接迁移到 Chromium/WebKit/Firefox 上层 Agent Harness 评测，不能简单视为引擎自改进</td></tr>
+<tr><td>BIS</td><td>Observe（网页特征）＋ Diagnose（安全判别）＋ 作者实验 Verify</td><td>缺 Improve、长期反馈/Canary 与学习；可研究浏览器扩展跨引擎适配，但误报是关键阻碍</td></tr>
+<tr><td>Brave POPRF</td><td>官方协议设计及隐私目标分析</td><td>非 Browser Self-Improvement 闭环；需要实装观测与隐私独立验证</td></tr>
+</tbody></table>
+<p><strong>工程可迁移方法：</strong>在 Harness 评估时使用相同正常任务与攻击任务成对测试，分别输出任务成功、危险操作、拒绝原因与实际后端状态。只有经过独立验证后的结果，才作为策略、Skill 或运行时改进的证据。</p>
+
+<h2>开源与论文</h2>
+<p>本期推荐原始论文 <a href="https://arxiv.org/abs/2611.15302">BIS（11/11）</a> 与 <a href="https://arxiv.org/abs/2611.11971">Harness Matters（11/09）</a>。二者都包含可供工程验证的明确机制与失败边界。相关开源 <a href="https://github.com/eduardoworrel/ct0-edge">ct0-edge</a> 是既有研究代码，不作为今日新仓库；BIS 的 <a href="https://huggingface.co/aliasrobotics/alias3-web">模型权重</a>可供研究复现。暂无第三方完整复测证据。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>浏览器 × AI 真正值得投入的方向，不是更多控制按钮，而是把安全和性能要求做进协议、推理执行路径与独立评估器。</strong>今天的三个补推分别提供了：隐私不依赖服务器自律的协议尝试、本地 GPU 安全判别的实验路径，以及防止评测高估安全性的校准方法。推荐优先精读 Brave POPRF 协议和 WebTrap Farm 实验设计，再决定是否复测 BIS。</p>
+
+<p><small>来源优先为 2026 年 11 月英文官方博客、研究论文及原始模型/代码地址。所有数字均标记来源性质；本期并未独立进行浏览器或模型测试。</small></p>
