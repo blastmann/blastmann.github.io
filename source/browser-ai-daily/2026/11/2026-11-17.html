@@ -1,0 +1,56 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-17
+date: 2026-11-17 09:36:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-16 09:36—11-17 09:36（北京时间）；重要遗漏回溯至 11 月 10 日。<strong>技术新颖性优先：</strong>先开放搜索标准/论文与新机制，再独立核查浏览器厂商、端侧 AI Runtime、开放源码和英文社区，最后才查已有工程仓库。11/16 官方案例未给出具体发表时刻，因此以原始日历日期报道，不伪称可精确落在 24 小时窗口内。下文论文的 11/13 是首次提交日，不是 11/17 首发。</p>
+<p><strong>本期判断：</strong>真正的新方向来自 <strong>WebKit Spatial CSS 的声明式三维布局</strong>。同时补推两项过去一周未在日报收录的系统研究：<strong>Superfluid 多设备端侧推理调度</strong>与 <strong>ModHarness-RL 可学习且可执行的 Agent Harness</strong>。不以新仓库数量为目标，不把一般修复、MCP 包装或 CI 更新放入头条。</p>
+
+<h2>今天最值得看｜3 条（1 项 11/16 官方发布、2 项 11/13 论文补推）</h2>
+
+<h3>1. WebKit Spatial CSS：让真正的 3D 场景服从 CSS 的声明式布局（11/16 官方技术预览）</h3>
+<p><strong>发生了什么：</strong>WebKit 在 11 月 16 日介绍 <a href="https://webkit.org/blog/18621/introducing-spatial-css-a-developer-preview/">Spatial CSS 开发者预览</a>。visionOS 27.3 中 Safari 的实验能力围绕 <code>&lt;model&gt;</code> 提供 <code>spatial: portal</code>，将多个 3D 模型放进同一空间；沿用 CSS <code>transform</code> 和 <code>position-anchor</code> 进行 3D 变换和锚点对齐；以 <code>@environment-map</code> 复用环境光照、<code>portal-action:orbit</code> 配置旋转交互，调用 <code>requestVolumetricScene()</code> 将网页场景转为与页面保持联系的空间场景。</p>
+<p><strong>技术究竟新在哪里：</strong>过去为 3D 交互写 WebGL/WebGPU 应用往往自己管理场景节点、灯光和更新状态；这次尝试让布局、锚点、动画、媒体查询和交互跟随 Web 平台既有的声明式 CSS 机制。<strong>区别于此前报道的 HTML-in-Canvas：</strong>这里重点不是将普通 DOM 绘入 GPU 纹理，而是让 3D 模型的组合和布局进入浏览器样式系统。规范草案见 <a href="https://drafts.csswg.org/css-spatial-1/">CSS Spatial Layout Module Level 1</a>。</p>
+<p><strong>证据、状态及局限：</strong>WebKit 官方实现演示与标准草案；目前是 <strong>visionOS 27.3 Safari 中需通过 CSS Portals feature flag 开启的开发者预览</strong>，不是 Chrome/Firefox/Safari 全平台稳定 API。文中只证明官方演示及语法设计，未见跨引擎 WPT、无障碍、移动 GPU 耗电验证。<strong>技术新颖性：高；值得研究/实测：高。</strong>建议用 visionOS Simulator 对比 HTML/CSS Portal 与 three.js/WebGPU 自建布局的交互、动画、锚点跟随以及性能。来源：<a href="https://webkit.org/blog/18621/introducing-spatial-css-a-developer-preview/">WebKit 原文（2026-11-16）</a>、<a href="https://drafts.csswg.org/css-spatial-1/">CSSWG 草案</a>。</p>
+
+<h3>2. Superfluid：单台与多台本地设备统一调度，优先满足交互请求（11/13 论文，7 日补推）</h3>
+<p><strong>发生了什么：</strong><a href="https://arxiv.org/abs/2611.17753">Superfluid: Local AI Server for Distributed LLM Inference</a> 于 11 月 13 日首次提交，研究如何让同一台设备上并行运行的多个 Agent 与用户交互共享推理，以及让跨 Apple、NVIDIA、AMD 设备的本地模型以一个 API 提供服务。<a href="https://github.com/basecompute/superfluid">basecompute/superfluid</a> 是真实可访问的 Apache-2.0 代码仓库，支持 llama.cpp、MLX 和 BaseRT 等后端。</p>
+<p><strong>技术究竟新在哪里：</strong>不是再加一层兼容 OpenAI API 的代理，而是在推理执行层同时组合交互请求优先调度、共享 Prompt 前缀只计算一次、Token 在发给客户端前持久记账，以及跨异构机器按速度调度与失败接管。关键问题从“跑得动模型”变成“多个 Agent 竞争模型时如何维持首 Token 延迟和任务可靠性”。</p>
+<p><strong>验证与边界：</strong>作者在 Apple M5 Pro、Qwen3.8-27B 与八个并行 Agent 的测试中报告，交互请求首 Token 约 <strong>1.5s</strong>，比较对象的等待时间为 <strong>291—612s</strong>；跨六台不同芯片设备、64 个模拟用户、1 小时共完成 <strong>5,041</strong> 次请求；12 台 Mac Studio M3 Ultra 集群报告 <strong>10,656 tok/s</strong>。这些是论文作者的指定负载实验，不是独立验证，也不能概括为模型计算本身数百倍加速。多设备方案通常以设备保有相同模型副本进行请求调度，<strong>不等同于把一个模型的权重拆开在所有设备上联合运算</strong>。<strong>新颖性：中高（系统级组合）；值得实测：高。</strong>适合对比单 Mac 上多人/多 Agent 并发场景的 TTFT p50/p95、抢占公平性、取消与故障恢复。来源：<a href="https://arxiv.org/abs/2611.17753">原论文（2026-11-13）</a>、<a href="https://github.com/basecompute/superfluid">原始仓库</a>。</p>
+
+<h3>3. ModHarness-RL：把 Agent 的上下文压缩和纠偏逻辑当作可学习程序（11/13 论文，7 日补推）</h3>
+<p><strong>发生了什么：</strong>论文 <a href="https://arxiv.org/abs/2611.18533">ModHarness-RL: Recasting Harnesses as Learnable and Evolving Programs for Agentic RL</a> 于 11 月 13 日提交。作者把 Agent 运行时历史组织成结构化的 State 和有类型的块，用两个可执行程序操作这些记录：<code>Compression</code> 决定哪些历史信息进入上下文，<code>Steering</code> 仅在行为偏离或失败条件成立时注入指导。候选逻辑来自执行轨迹，在沙箱里运行检查、重放旧轨迹，再通过保留任务评测门禁；模型训练过程中可以更新 Harness。</p>
+<p><strong>技术究竟新在哪里：</strong>相对固定的 Prompt 模板、每日 Reflector 文字总结，改变的是<strong>运行环境中的可执行控制逻辑</strong>，并随模型行为变化更新，而不是每次在线调用另一个 LLM 总结历史。论文以 CodeSearch 为主，并分析 ALFWorld、BIRD SQL，涵盖 1.5B—8B 模型。作者报告多数设置比固定 Harness 获得更好的未见任务表现，但非独立复现。</p>
+<p><strong>边界与工程价值：</strong>这是 <strong>Agent RL 训练中的 Harness 共演化研究</strong>，不是已证明 Chromium/WebKit/Firefox 能自动修改浏览器内核。候选变更的安全与收益取决于旧轨迹回放范围和保留评测集；真实环境漂移、工具副作用与长期失效仍需解决。<strong>新颖性：高；值得深挖：高。</strong>可先脱离模型训练，构造 Browser Runtime 上的 typed traces、可回放的 Compression/Steering 候选和冻结评测集，再测 Token 消耗、失败率、回归与撤销。来源：<a href="https://arxiv.org/abs/2611.18533">原论文与提交记录</a>。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p><strong>本期首次发现：2026-11-17。</strong>本栏同时收录具实际技术差异的开源系统和前沿标准，不将论文发布日期误写成 GitHub 创建日。没有足够证据支持的新仓库不凑数。</p>
+<table><thead><tr><th>技术 / 原始来源</th><th>差异点与工程价值</th><th>成熟度 / 下次跟踪信号</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/basecompute/superfluid">Superfluid</a><br>11/13 论文，仓库创建日未独立核实</td><td>交互优先的本地多 Agent 调度、Prompt 共享、持久输出与异构设备容错；适合端云协同与团队共享推理</td><td>研究 + 开源实现；看真实负载 p95、取消和模型/硬件成本、第三方复测</td></tr>
+<tr><td><a href="https://webkit.org/blog/18621/introducing-spatial-css-a-developer-preview/">Spatial CSS</a><br>11/16 官方开发者预览</td><td>3D 对象以 CSS Portal/锚点/环境光组合，而非完全由应用私有场景图管理</td><td>visionOS 限定、实验 flag；看 CSSWG 标准讨论、Interop/WPT、无障碍与功耗</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2611.18533">ModHarness-RL</a><br>11/13 研究论文</td><td>让 Context Compression 与 Steering 成为从轨迹学习、回放验证并随策略演化的程序</td><td>研究阶段；看开源复现、未见任务泛化、回放门禁与部署回滚</td></tr>
+</tbody></table>
+
+<h2>浏览器技术</h2>
+<p><strong>WebKit/Safari：</strong>11/16 Spatial CSS 是今天确认的新技术主线；<a href="https://drafts.csswg.org/css-spatial-1/">CSSWG 草案</a>提供进一步的语法和开放问题。上周的 Safari HomeView 语义页面、HTML-in-Canvas、WebGPU Shader Print 等已报道，本期不再按新发布重复。<strong>Chromium/Chrome、Firefox、Edge、Opera、Brave：</strong>已检查官方信息通道，当前观察窗口未核实新的同等重要架构首发；不以常规维护新闻充数。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>本期关注从单模型算力转向多任务推理调度。</strong>Superfluid 的交互抢占与共享前缀计算回答的是“多个本地 Agent 共用模型，用户聊天仍能及时响应吗”。论文中的队列等待显著缩短不应被等同为 GPU Kernel 加速；建议同样观察显存占用、模型副本开销、TTFT 尾延迟和公平性。原始资料：<a href="https://arxiv.org/abs/2611.17753">论文</a>、<a href="https://github.com/basecompute/superfluid">仓库</a>。</p>
+
+<h2>浏览器 × AI</h2>
+<p>Spatial CSS 的意义不是已经实现 AI Native Browser，而是将来 AI 生成的空间 UI 可以复用 CSS 的布局与响应式机制，减少专有三维 UI 代码。Superfluid 则使端内 Browser Agent、用户会话及后台任务共享本地推理服务成为更可评测的系统架构。二者都未在本期进行独立部署验证，不应把潜在用途写成已落地产品。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table><thead><tr><th>案例</th><th>Observe → Diagnose → Improve → Verify → Learn 到哪里</th><th>能迁移什么 / 还缺什么</th></tr></thead><tbody>
+<tr><td><a href="https://arxiv.org/abs/2611.18533">ModHarness-RL</a></td><td>轨迹观察 → 偏差提取 → 生成 Compression/Steering 程序 → 执行与历史重放、保留集验证 → RL 中持续更新；论文级局部闭环</td><td>可迁移至 Browser Runtime 的上下文与策略改进；还缺真实浏览器副作用、WPT/设备/Canary、自动回滚和独立复现</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2611.17440">Agent 行为轨迹研究（11/12）</a></td><td>143,209 条运行轨迹 → 规则解析成搜索、修改、测试等行为 → 比较 Agent 配置；主要完成 Observe/Diagnose</td><td>可迁移为 Chromium/WebKit/Firefox 工程 Agent 的行为计量；没有自动 Improve、回归 Verify、长期 Learn</td></tr>
+<tr><td><a href="https://webkit.org/blog/18621/introducing-spatial-css-a-developer-preview/">Spatial CSS</a></td><td>浏览器新能力和标准探索，本身并非自我改进闭环</td><td>可为未来 UI 验证提供对象，但不能强行归为 RSI 案例</td></tr>
+</tbody></table>
+
+<h2>开源与论文</h2>
+<p>优先精读：<a href="https://arxiv.org/abs/2611.17753">Superfluid</a>（端侧与异构推理系统）、<a href="https://arxiv.org/abs/2611.18533">ModHarness-RL</a>（可执行的 Harness 自我改进）、<a href="https://arxiv.org/abs/2611.17440">Interpreting Coding Agents Through Their Behavioral Trajectories</a>（同成功率下不同 Agent 的行为差异）。相关 Web 标准原文：<a href="https://drafts.csswg.org/css-spatial-1/">CSS Spatial Layout Module Level 1</a>。论文的结果均为作者报告，本文未进行独立实验。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>今天最值得研究的是“浏览器原生能力做声明式化，端侧 AI Runtime 做调度化，Agent Harness 做可执行且可验证的演化”。</strong> 三者分别减少 UI、推理和 Agent 控制层的应用私有逻辑。工程建议的优先级：先用 visionOS Simulator 验证 Spatial CSS 的语义/交互边界；再用真实多 Agent 并发复测 Superfluid 的 TTFT；最后把 ModHarness-RL 的 typed trace + replay gate 抽象为独立可组合的 ERSI 工具，而不是直接复制论文训练流程。</p>
+<p><small>来源均为英文官方文章、CSSWG 草案、arXiv 原始论文和 GitHub 源码。状态按官方实验预览、作者论文结果及开源可读代码区分；没有宣称第三方性能验证。</small></p>
