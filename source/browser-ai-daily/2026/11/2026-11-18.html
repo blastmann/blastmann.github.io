@@ -1,0 +1,58 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-18
+date: 2026-11-18 09:06:00
+---
+
+<p><strong>观察窗口：</strong>2026 年 11 月 17 日 09:00—11 月 18 日 09:00（北京时间）；重大遗漏回看至 11 月 11 日 09:00。本期以“技术新颖性”筛选，先开放发现新机制/标准/论文，再核查浏览器厂商和端侧 AI 技术宣发，独立筛选开源/英文社区，最后检查已知仓库 PR/Issue。官方文章只有发布日期、没有精确发文时刻的，按<strong>日期</strong>注明，不伪称精确落入观察窗口。与最近一周归档去重，不将仓库创建日当作技术首发。</p>
+<p><strong>本期判断：</strong>过去 24 小时最明确的新方向是 Edge 把独立 Agent 身份纳入受管理浏览器；过去五天被日报漏掉的两项机制是 Cloudflare <strong>Kitesurf 的无 Chromium、Workers/WASM 浏览器引擎</strong>，以及 <strong>WebArena-Pro 的跨应用、音视频、可复测 Browser Agent 评测环境</strong>。本期不强行收录普通 CDP/MCP 工具。</p>
+
+<h2>今天最值得看｜3 条（1 项 11/17 官方发布，2 项 11/13 重要补推）</h2>
+
+<h3>1. Microsoft Edge for Business：每个 Browser Agent 都有单独的企业身份与受控窗口（11/17 官方发布）</h3>
+<p><strong>发生了什么：</strong>微软 11 月 17 日 Ignite 技术公告中公布 Managed Agent Browsing，允许 Microsoft 及其他提供商的 Agent 进入企业统一管理的 Edge。每个 Agent 在独立窗口中运行，携带自己的 <code>Microsoft Entra agent identity</code>，但仍受用户现有授权和组织策略限制。<strong>状态：</strong>受控 Agent Browsing 是 <strong>Preview</strong>，要求 Microsoft 365 E5；Cowork 中 Agent 浏览能力则宣称已 GA，且涉及 Copilot 许可与按量计费。</p>
+<p><strong>技术究竟新在哪里：</strong>不同于让多个 Agent 共用 CDP Session 或为 Tab 添加所有权标识，微软把 Agent 身份与浏览器访问策略绑定，成为企业身份系统可管理的执行主体。这给 Browser Runtime 提出可迁移的设计：Agent 身份、代表哪个用户、允许访问哪些网站/数据、操作审计，应由浏览器和权限基础设施承载，而非依靠 Prompt。<strong>计划与现状分开：</strong>Agent 365 集中管理、Entra 日志识别代理操作，以及阻断/隔离有风险 Agent 仍被描述为未来愿景，不能算已经上线。</p>
+<p><strong>可验证证据：</strong>微软同时宣称其常见网站动作优化在早期内部测试中平均节约约 30% Token，但未给出任务集、基线与误差。该优化仍处研发阶段，不能直接当作正式产品表现。<strong>技术新颖性：中高（浏览器和企业身份集成）；值得研究/实测：高。</strong>建议使用一个只读企业 Web App，在同样任务下比较多 Agent 身份隔离、权限继承、审计回执、失败恢复及 Token 消耗。来源：<a href="https://blogs.windows.com/msedgedev/2026/11/17/edge-for-business-ignite-2026-innovations/">微软 Edge 官方 Ignite 2026 文章（11/17）</a>。</p>
+
+<h3>2. Cloudflare Kitesurf：无需 Chromium 容器的 Workers/WASM 浏览器引擎正式开源（11/13，七日补推）</h3>
+<p><strong>发生了什么：</strong>Cloudflare 11 月 13 日将已在今年 8 月首次介绍的 Kitesurf 引擎以 Apache-2.0 开源。这是<strong>开源里程碑，不是引擎 11/13 才首次发明</strong>。Kitesurf 在 Cloudflare Workers 中解析 HTML、计算 CSS、执行页面 JavaScript 并绘制截图，无需启动 Chrome/Chromium 容器，仍对外提供 CDP 接口以复用 Puppeteer 等客户端。</p>
+<p><strong>技术究竟新在哪里：</strong>不只是套一层代理：它把浏览器内核拆分为 <code>Engine</code>、<code>PageScript</code>、<code>PageRenderer</code>；由 Rust/WASM 的 Blitz 实现 DOM、布局及绘制，Stylo 处理 CSS，Boa 在无法使用 Dynamic Workers 运行 JS 时作备用，结合 Linebender 字体/2D 和 Krilla PDF。核心选择是把浏览器运行环境转成可在 Serverless Isolate 中按需扩展的组件化 Runtime。</p>
+<p><strong>证据、风险与成熟度：</strong>Cloudflare 原始代码与构建说明可查，项目明确标为实验性，正在改善 WPT 兼容性；它不是已具备 Chromium 全站兼容性的替代品。远端部署需 Workers Paid（Dynamic Workers）；仓库特别警告<strong>本地 workerd 不是经过加固的不可信网页执行沙箱</strong>。README 还记录了长时间连续导航在垃圾回收方面的内存边界：一项作者测试中，未暴露 GC 时约 300 页后 OOM，启用显式 GC 后 5 个并发连接累计 940 页、内存低于 4 GB。这是作者指定负载实验，非对 Chromium 的独立公平 Benchmark。</p>
+<p><strong>技术新颖性：高（新的轻量浏览器架构组合）；值得实测：非常高。</strong>建议同样脚本分别用 Kitesurf、Chromium、Lightpanda 跑复杂 JS、SPA、多 iframe、媒体、下载上传、跨站身份；记录 WPT 子集、成功率、P95 延迟、内存与故障分类。来源：<a href="https://blog.cloudflare.com/kitesurf-open-source/">Cloudflare 官方文章（11/13）</a>、<a href="https://github.com/cloudflare/kitesurf">开源仓库及构建说明</a>。</p>
+
+<h3>3. WebArena-Pro：把音频/视频与跨站真实业务纳入可复测 Browser Agent 基准（11/13，七日补推）</h3>
+<p><strong>发生了什么：</strong>研究团队在 11 月 13 日提交 <a href="https://arxiv.org/abs/2611.17955">WebArena-Pro</a> 论文，覆盖 20 个自行部署的 Web 应用、6 类业务。论文报告的核心测试集有 <strong>300 个任务</strong>，其中 96 个跨网站任务、79 个需要处理音频/视频；目前仓库 README 展示<strong>400 个任务（100 dev + 300 test）</strong>，两种计数口径不冲突。</p>
+<p><strong>技术究竟新在哪里：</strong>传统网页 Agent 评测要么是真网站但内容漂移、无法复现，要么是假网站但单一且局限于点击/文本。WebArena-Pro 把可重置的容器化后台状态、音视频工具（<code>transcribe()</code>、<code>extract_frames()</code>，全模态 Agent 则可 <code>listen()</code>/<code>watch()</code>）、跨多站操作和人工校验任务组合起来。各任务隔离、状态可恢复，支持并发复测。</p>
+<p><strong>验证与边界：</strong>论文的被测配置最佳任务成功率为 <strong>62.3%</strong>，这是作者的基准结果，不是所有 Browser Agent 的普适成功率，也不能直接外推到真实生产网站。任务覆盖更广但仍是受控应用；维护容器和判分逻辑存在成本。<strong>技术新颖性：中高（可复现多模态评测）；值得实测：高。</strong>建议用于独立验证 Agent 工具/Harness 的真正收益：冻结任务版本，分别比较 Chromium、WebKit/Firefox（若适配）、Kitesurf 上的完整成功率、独立最终状态、端侧音视频处理成本。来源：<a href="https://arxiv.org/abs/2611.17955">原论文（11/13）</a>、<a href="https://github.com/McGill-NLP/webarena-pro">原始仓库</a>。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p><strong>本期首次发现记录：2026-11-18。</strong>优先纳入出现机制变化的系统与评测，不按 GitHub 创建时间凑仓库数量。下表日期是<strong>原始公开日期</strong>，不是本期首次发现日。</p>
+<table><thead><tr><th>项目 / 原始日期</th><th>差异点与工程价值</th><th>成熟度、跟踪信号</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/cloudflare/kitesurf">Kitesurf</a><br>11/13 开源；原始引擎 8 月已介绍</td><td>Workers 中独立 HTML/CSS/JS/WASM 渲染栈，提供 CDP，跳过 Chromium 容器</td><td>实验性；WPT 子集、复杂网站兼容、隔离安全、资源消耗和发行进度</td></tr>
+<tr><td><a href="https://github.com/McGill-NLP/webarena-pro">WebArena-Pro</a><br>11/13 论文，仓库现可查</td><td>20 个可重置应用 + 音视频 + 跨站状态判分，评测不同 Browser Runtime/Harness</td><td>研究基准/开源；400 任务 dev/test 分层、第三方重放、一致性及评分准确率</td></tr>
+<tr><td><a href="https://blogs.windows.com/msedgedev/2026/11/17/edge-for-business-ignite-2026-innovations/">Managed Agent Browsing</a><br>11/17 官方发布</td><td>受管窗口与独立 Entra Agent 身份，身份/授权/策略进入浏览器执行层</td><td>Preview；企业权限隔离、审计完整性、跨 Agent 提供商兼容、Token 对照</td></tr>
+</tbody></table>
+
+<h2>浏览器技术</h2>
+<p><strong>Edge：</strong>同一 11 月 17 日 Ignite 公告还提到预览版 <em>Extension leak control</em>，可以阻止企业安装的扩展读取受保护网页；它是浏览器内的细粒度数据边界，而不只是扩展安装白名单。<em>Remix</em> 可通过自然语言改变网页的本地展示与部分操作体验，官方称 GA；这些是产品能力与安全策略的更新，并不代表已有独立新 Web API 标准。详情见 <a href="https://blogs.windows.com/msedgedev/2026/11/17/edge-for-business-ignite-2026-innovations/">原文</a>。</p>
+<p><strong>Chromium、WebKit/Safari、Firefox、Opera、Brave：</strong>本期独立检索未核实到足够重大的、可明确判定为 11/17—18 首发的底层标准或引擎机制。过去几期的 Spatial CSS、HTML-in-Canvas、WGSL Shader Print/FP8、Brave POPRF 不重复上头条。Kitesurf 补推属于 Browser Runtime 架构线，不应被误称为 Chromium 内核演进。</p>
+
+<h2>端侧 AI</h2>
+<p>过去 24 小时未核实到可与上期 Superfluid 相比的新端侧模型推理算法/Runtime 发布。本期不复制旧研究填栏。与端侧 AI 最相关的工程变量仍是：多任务争抢推理资源时的 TTFT p95、缓存正确性、低精度数值一致性及浏览器硬件能力差异。对 Edge 所宣称的 Token 节省，先取得任务集和独立对照后才可升级为技术结论。</p>
+
+<h2>浏览器 × AI</h2>
+<p>本期三个方向恰好回答 Browser Agent Runtime 的三个不同问题：<strong>谁有权执行</strong>（Edge 身份与策略）、<strong>由什么轻量引擎执行</strong>（Kitesurf Workers/WASM）、<strong>怎么判断真的执行成功</strong>（WebArena-Pro 可重置多模态任务与状态评分）。三者可以组合成为开放式的验证台，但这是工程建议，不是现成的一体化产品。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table><thead><tr><th>案例</th><th>目前具备的环节</th><th>缺失与迁移建议</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/McGill-NLP/webarena-pro">WebArena-Pro</a></td><td>Observe（真实交互、媒体信号）→ Verify（隔离状态、独立评分）</td><td>不含自动 Diagnose/Improve/Learn；可作为 Chromium、WebKit、Firefox 或其他 Runtime 的外部评价器，但需适配且验证兼容</td></tr>
+<tr><td><a href="https://github.com/cloudflare/kitesurf">Kitesurf</a></td><td>运行环境、WPT 兼容反馈及重放候选基础设施</td><td>未见可证明持续自主改进的完整闭环；适合与 Chromium 比较同一任务失败原因，不应将常规修复称 RSI</td></tr>
+<tr><td><a href="https://blogs.windows.com/msedgedev/2026/11/17/edge-for-business-ignite-2026-innovations/">Edge 管理 Agent</a></td><td>执行边界与身份/策略标识，提供审计前提</td><td>未来 Agent 365/Entra 统一日志尚属路线图；并非 Observe→Improve→Learn 实现</td></tr>
+</tbody></table>
+<p><strong>可落地的局部闭环：</strong>在同一个冻结任务上，Agent 自选工具运行 → 采集 DOM/Network/Console/Trace → 独立评估最终状态 → 生成候选 Harness/Runtime 改动 → 重放三引擎对照 → 保留或撤销。此处是<strong>建议的实验设计</strong>，不能算今日任何项目已证明完整实现。</p>
+
+<h2>开源与论文</h2>
+<p><strong>推荐精读：</strong><a href="https://arxiv.org/abs/2611.17955">WebArena-Pro（11/13）</a> 的任务隔离、音视频观测、人工最终验证，以及 <a href="https://github.com/cloudflare/kitesurf">Kitesurf</a> 的 Rust/WASM 组件拆分、Dynamic Workers 隔离和内存回收限制。与过去几期已报道的 ModHarness-RL、Superfluid、GPU Goldmines 去重。本期不人为补充缺乏日期证据的新论文。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Agent 下一阶段的技术分界线，可能不是再增加浏览器操作工具，而是把执行环境做得更小、身份边界做得更明确、验收做得更独立。</strong>其中 Kitesurf 最值得安排一次架构级对照实验；Edge 的 Agent 身份值得作为受管理浏览器运行时的设计参考；WebArena-Pro 则适合作为验证“自动改进是否真的有效”的基础设施。三个项目的官方宣发、开源事实、论文结果和独立实测仍严格分开。</p>
