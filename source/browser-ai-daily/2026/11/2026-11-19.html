@@ -1,0 +1,61 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-19
+date: 2026-11-19 09:23:00
+---
+
+<p><strong>观察窗口：</strong>2026 年 11 月 18 日 09:00—11 月 19 日 09:00（北京时间）；重要遗漏回溯 7 天。搜索顺序：不带已知仓库名的开放发现、标准与论文；浏览器厂商官方发布；端侧 AI Runtime；GitHub/英文社区；最后才检查既有工程项目。与 11/12—11/18 归档去重。官方仅给发布日期而没有发文时刻时，不伪造发布时间。</p>
+<p><strong>本期结论：</strong>没有证据证明过去 24 小时出现颠覆性的新浏览器内核，但有两项值得立即关注的<strong>平台能力里程碑</strong>：Android AppFunctions 1.0 正式稳定，以及 Edge 158 文档中新的 WebTransport 会话迁移、增量离线音频处理；另有 Google 11/18 新发布的 Stitch Loop，首次明确将产品现场指标与 Agent 的改进建议、代码 PR 和后续反馈联成闭环。Stitch Loop 尚处候补名单与实验阶段，不能当作已经验证的 RSI 系统。</p>
+
+<h2>今天最值得看｜3 条（按机制及可验证证据筛选）</h2>
+
+<h3>1. Android AppFunctions 1.0：把 App 功能变成系统可发现、受权限管理的 Agent 操作（11/18 正式稳定）</h3>
+<p><strong>发生了什么：</strong>Google 11 月 18 日正式发布 <code>androidx.appfunctions:appfunctions:1.0.0</code>、<code>appfunctions-compiler:1.0.0</code> 和 <code>appfunctions-testing:1.0.0</code>。应用通过声明结构化函数与 KSP 生成服务/元数据，让授权的系统智能体发现并执行 App 的具体功能。Android 官方将其定位为 Android 应用内、类似 MCP 工具的机制；设备需支持 AppFunctions（Android 16 及更高版本且有对应平台支持）。</p>
+<p><strong>新在哪里：</strong>相对基于截图、Accessibility 或 UI Automator 的“看屏幕再点按钮”，Agent 可以调用声明式、具备参数约束和返回结构的 App 原生能力。权限由平台控制，跨 App 调用需要受限的 <code>EXECUTE_APP_FUNCTIONS</code> 权限；普通第三方 Agent 并不能因为依赖 Jetpack 1.0 就任意调用其他 App。<strong>这次是既有 API 进入 stable，不是 11/18 新发明协议。</strong></p>
+<p><strong>证据与成熟度：</strong>Android 官方发布记录、代码和权限文档已提供；与 Gemini 的端到端 Connected Apps 集成仍在开发者预览/测试者阶段。<strong>技术新颖性：中高（移动端 Agent 原生接口成为稳定开发层）；值得实测：高。</strong>建议以 Android 客户端的只读搜索/创建草稿 API 做 PoC，检查权限拒绝、参数校验、真实完成状态和与 UI 自动化的调用成本对比。</p>
+<p>原始来源：<a href="https://developer.android.com/jetpack/androidx/releases/appfunctions">AndroidX AppFunctions 1.0 发布记录（11/18）</a>；<a href="https://developer.android.com/ai/appfunctions">Google 官方机制与授权说明</a>；<a href="https://developer.android.com/ai/appfunctions/add-appfunctions">集成与安全建议</a>。</p>
+
+<h3>2. Google Stitch Loop：把代码 Agent 的优化目标连接到真实产品指标（11/18 官方新实验）</h3>
+<p><strong>发生了什么：</strong>Google Labs 11 月 18 日公布 Stitch Loop。它连接 GitHub 源码、日志、用户行为和反馈，通过 180+ 数据集成或自定义 MCP/CLI 导入持续分析可改进项，提出候选方案，在隔离云沙箱修改代码并创建 PR，人工审核合并；随后观察线上指标是否变化，必要时再次产生建议。预置的目标包括安全、延迟和无障碍，安全模块宣称结合 Gemini 4 Carbon 与既有 CodeMender。</p>
+<p><strong>新在哪里：</strong>不是又一个接单写 PR 的 coding agent，而是将<strong>现场观察 → 建议与取舍 → 候选修改 → 人工审查 → 上线指标反馈</strong>作为长期产品循环；持久产品上下文还可以通过 Stitch CLI/MCP 供其他 Agent 使用。这与“给定 Issue 后自动修 Bug”不同，触发信号来自真实产品目标。</p>
+<p><strong>证据与成熟度：</strong>这是 Google 官方新实验公告，11/18 开放全球 Waitlist，符合条件的 Google AI Ultra 用户可获优先访问；<strong>没有独立成功率、误报率、改进成本或因果 A/B 证明</strong>。人工选择方向和审核 PR 是必要控制点，不能称为无人值守自动生产部署。<strong>技术新颖性：中高（现有积木组成目标驱动闭环）；值得深入研究：高、当前可直接实测：受访问权限限制。</strong>建议关注每条建议的证据链、实验对照、是否存在指标波动误判和 Learn 资产如何沉淀。</p>
+<p>原始来源：<a href="https://blog.google/innovation-and-ai/models-and-research/google-labs/stitch-loop/">Google Labs 11/18 官方发布</a>；<a href="https://www.npmjs.com/package/@google/stitch">官方 Stitch CLI 的实验 Loop 工作区命令</a>。</p>
+
+<h3>3. Edge 158：WebTransport 提前接收流配额与会话 draining，加上 WebAudio 增量离线渲染（11/18 更新文档，11/19 计划发布）</h3>
+<p><strong>发生了什么：</strong>微软 Edge 158 Web 平台说明最后更新于 11 月 18 日，标明 11 月 19 日版本发布。WebTransport 开始公布 <code>reliability</code>、<code>supportsReliableOnly</code>，允许通过构造参数提示预计的并发入站流数量，以减少服务端被初始 QUIC stream limit 卡住的风险；<code>transport.draining</code> 可提示应用提前创建新连接，并在旧连接仍可用时迁移流。WebAudio 的 <code>OfflineAudioContext</code> 可分块渲染，避免处理长音频时一次性分配整段输出 Buffer。</p>
+<p><strong>新在哪里：</strong>这些是对<strong>长期连接生命周期、初始流并发及受内存限制的音频计算</strong>提供底层 API 支持，适合语音 Agent、实时媒体与端云协同。与此同时，Edge 158 文档列出了声明式 <code>&lt;install&gt;</code> 元素和 <code>navigator.install()</code>，由浏览器接收更明确的 PWA 安装意图；需要用户确认。</p>
+<p><strong>证据与成熟度：</strong>官方文档明确记录这些能力，但截至本期整理时<strong>未独立确认 Edge 158 稳定版已在所有平台实际推送</strong>。它们是新版本中的实现/行为能力，不是今日首次提出的协议。<strong>技术新颖性：中（重要平台落地而非新计算范式）；值得实验：中高。</strong>建议模拟 QUIC 流耗尽、服务端 draining、语音长音频合成峰值内存，检查版本兼容和降级路径。</p>
+<p>原始来源：<a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/158">Microsoft Edge 158 官方 Web 平台发布说明（最后更新 11/18）</a>。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p><strong>本期首次发现：2026-11-19。</strong>按“机制是否改变技术路线”而非仓库创建时间收录；本期<strong>没有核实到足以单列的新 GitHub 技术内核仓库</strong>，避免用重复 CDP/MCP 封装凑数。以下为本期新纳入跟踪的机制及原始发布日期。</p>
+<table><thead><tr><th>项目 / 首次公开时间</th><th>技术差异与工程价值</th><th>成熟度 / 跟踪信号</th></tr></thead><tbody>
+<tr><td><a href="https://developer.android.com/jetpack/androidx/releases/appfunctions">AppFunctions 1.0</a><br>11/18 Stable；之前已有预览</td><td>Android App 原生能力被系统索引、授权发现、结构化执行；减少依赖屏幕操作</td><td>Jetpack 稳定版；跟踪设备覆盖、权限限制、Gemini Connected Apps 从 Preview 到 GA、真实任务验收</td></tr>
+<tr><td><a href="https://blog.google/innovation-and-ai/models-and-research/google-labs/stitch-loop/">Stitch Loop</a><br>11/18 官方首次宣布</td><td>从运行日志和用户指标发现优化机会，自动提出 PR 并观察上线结果</td><td>Waitlist/产品实验；跟踪真实前后对照、错误建议率、审查成本、Learn 与回滚</td></tr>
+<tr><td><a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/158">Edge 158 传输/音频机制</a><br>11/18 文档更新，11/19 计划发布</td><td>WebTransport 会话迁移信号、流并发提示、增量 OfflineAudioContext</td><td>版本文档；跟踪实际稳定推送、跨 Chrome/Firefox/Safari 支持、QUIC 和内存对照实验</td></tr>
+</tbody></table>
+
+<h2>浏览器技术</h2>
+<p><strong>Edge：</strong>除了 WebTransport 和增量音频，158 还记录 <code>&lt;install&gt;</code>、<code>navigator.install()</code> 的安装触发机制，明确必须用户确认；及 <code>focus-without-user-activation</code> Permissions Policy 限制 iframe 在没有用户激活时抢占焦点。这些对于多组件 Web App 和 Agent 控制页面有安全与可用性意义。来源：<a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/158">官方版本说明</a>。</p>
+<p><strong>标准：</strong>W3C 在 11 月 16 日发布 WebGPU Candidate Recommendation Draft；这是规范阶段的正式文档更新，但缺乏证据证明新增了足以称为重大突破的机制，不能以“规范更新”代替实质技术内容。来源：<a href="https://www.w3.org/TR/webgpu/">W3C WebGPU 11/16 草案</a>。</p>
+<p><strong>Chromium/Chrome、WebKit/Safari、Firefox、Opera、Brave：</strong>独立搜索官方与社区渠道后，未找到本观察窗口里日期和机制均足够可靠、又未在近期日报报道的重大新架构首发。过去一周已讲过的 Spatial CSS、Kitesurf、Brave POPRF、WGSL Shader Print、WebArena-Pro 不重复提为今日头条。</p>
+
+<h2>端侧 AI</h2>
+<p>今日更有实质性的变化是<strong>端侧智能体操作接口进入稳定发布</strong>，而不是新的 WebGPU 模型解码倍数。AppFunctions 提供系统权限和原生 App 动作边界；对有本地大模型的 Android 客户端，可以让模型选择受约束的操作，但执行仍由系统/应用授权检查。今天没有找到能够独立复核、值得头条报道的新端侧推理算法论文。</p>
+
+<h2>浏览器 × AI</h2>
+<p>Web 应用的 <code>WebMCP</code> 提案与 Android AppFunctions 指向相近的架构趋势：应用通过声明自己可执行的操作供受权 Agent 使用，减少靠截图猜测 UI。但二者属于不同平台、不同权限模型，不能直接互操作，也不能暗示 WebMCP 已成为所有浏览器标准正式能力。对 AI Native Browser，应保留结构化工具与 UI 可视化交互两条验证路径。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table><thead><tr><th>案例</th><th>闭环已到哪里</th><th>尚缺什么 / 可迁移性</th></tr></thead><tbody>
+<tr><td><a href="https://blog.google/innovation-and-ai/models-and-research/google-labs/stitch-loop/">Stitch Loop</a></td><td>宣称 Observe（日志/行为）→ Diagnose（建议）→ Improve（Sandbox PR）→ Verify（人工审查/线上指标）→ Learn（根据结果更新建议）</td><td>缺独立真实系统数据、因果对照、持续回滚/回归证明；原则可以迁移到 Chromium/WebKit/Firefox 的 Telemetry→候选补丁→WPT/Benchmark→Canary，但不代表已在浏览器内核验证</td></tr>
+<tr><td><a href="https://developer.android.com/jetpack/androidx/releases/appfunctions">AppFunctions</a></td><td>提供 Agent 可调用工具的权限与执行层，不是自我改进 Loop</td><td>可作端侧 Harness 的操作工具；仍需单独建立 Observe/Verify/Learn</td></tr>
+<tr><td><a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/release-notes/158">Edge 158</a></td><td>传输/音频 API 可辅助 Observe 和改进方案验证，不是自治改进实例</td><td>需端到端负载、准确的性能基线和回归门禁</td></tr>
+</tbody></table>
+<p><strong>具体落地判断：</strong>下一步最应验证 Stitch Loop 是否真的知道“指标变化由这次代码引起”，以及它能否把失败方案变成长期回归。闭环有五个动词不等于具备因果和独立验证。</p>
+
+<h2>开源与论文</h2>
+<p>本期把 <a href="https://www.npmjs.com/package/@google/stitch">Stitch CLI 的 Loop workspaces（实验功能，非 11/18 新独立仓库）</a> 作为代码级线索，用于检查 <code>workspace/loop/insight/solution</code> 等对象与支持的操作。没有选择无法核实日期、或只是修改包装层的“新仓库”填充。论文方向未发现过去 24 小时未重复且具有充分浏览器/端侧新机制证据的候选。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Agent 生态真正发生变化的底层方向，是让应用“明确声明可做什么”，让运行时“明确决定谁能做”，再用可验证的生产结果判断“做得有没有更好”。</strong>Android AppFunctions 提供第一、二层的稳定移动接口，Edge 158 给长连接/音频场景补上平台生命周期机制，Stitch Loop 尝试让第三层成为长时间运行的产品改进系统。今天优先建议实测 AppFunctions 授权与真实操作验收；Stitch Loop 等开放真实试用与数据再判断是否值得引入工程链路。</p>
