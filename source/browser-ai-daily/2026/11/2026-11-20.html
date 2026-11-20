@@ -1,0 +1,54 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-20
+date: 2026-11-20 09:27:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-19 09:27—2026-11-20 09:27（北京时间），真正重要的遗漏追溯至 11 月 13 日。遵循“技术新颖性优先”，依次独立搜索新机制/标准/论文、厂商官方技术、端侧 AI Runtime、英文社区与新开源，再检查已知仓库 PR/Issue。与 11/13—11/19 日报和聚合页去重。原始日期与本期发现日期分开；原始来源优先。</p>
+<p><strong>本期判断：</strong>今天真正值得看的是 Chrome 官方公布的<strong>Mirror Dimension 合成互联网验证架构</strong>；另补推 11/16 提交的 <strong>WebAgents 可移植签名 Agent 包与运行时授权边界</strong>。未发现足以确认的新浏览器底层计算算法首发，不用普通 MCP 包装或 GitHub 新仓库填充头条。</p>
+
+<h2>今天最值得看｜2 条（宁缺毋滥）</h2>
+<h3>1. Chrome Mirror Dimension：把“完整可交互互联网”搬进隔离环境做 Agent 安全回归（11/19 官方公开）</h3>
+<p><strong>发生了什么：</strong>Google Chrome AI Security 的 Aaron Selya 与 Charles Qian 11 月 19 日介绍 <em>Mirror Dimension for Agents</em>。它不是在几个静态页面上让 Agent 点按钮，而是构造数千个模拟网站和可持久交互的业务流程，让真实 headless Chrome 在不触及外部互联网的隔离环境中反复执行跨页面动作。其目标是既避免测试时产生真实购买等副作用，又使每次测试都能从完全一致的状态出发。</p>
+<p><strong>技术新在哪里：</strong>（1）用 <code>gVisor</code> 隔离 Chrome，网络请求经受控代理转到合成站点；Agent 仍看到普通网站域名，减少模型识破“这是测试环境”（<em>eval awareness</em>）导致的行为偏差。（2）在隔离 Chrome 内置入专用受信任根证书，代理为合成站点动态提供 TLS 证书；<strong>这是受完全控制的测试网络手段，绝不意味着可在普通用户浏览器里绕过 TLS</strong>。（3）由 research、builder、critic 多种开发 Agent 构造功能完整的站点，再通过 Chrome DevTools for Agents 验收表单、ARIA、Console、响应式和交互流程。（4）攻击载荷可落在文字、图像、无障碍标签乃至 <code>WebMCP</code> 返回值，通过后台 <code>X-Sandbox-Injection-Key</code> 选择变体，避免 URL 明显暴露测试身份。</p>
+<p><strong>证据与局限：</strong>Google 官方披露每位安全工程师每天可以生成并精炼 <strong>1000 多个候选攻击测试</strong>，称约为单人手工效率 30 倍以上。<strong>这是 Google 内部产能数字，不是 Agent 防护成功率</strong>；没有公开完整测试集、攻击成功率或第三方复现实测。系统本身也没有公开完整部署代码，不能把设计说明当作可直接安装的 SDK。与此前的可重置 WebArena-Pro 不同，Mirror Dimension 的关键在于让真实域名、真实浏览器行为和动态注入在隔离层统一工作，而非仅增加任务数量。</p>
+<p><strong>技术新颖性：高（验证环境、真实协议与对抗样本结合）；值得深入研究：非常高。</strong>工程启发：给 Browser Runtime / ERSI 验证台建立 <code>environment snapshot → task → trace → adversarial mutation → independent final-state oracle → regression corpus</code>。先在一两个完全自有的合成站点复刻网络拦截与状态重置，再分别用 Chromium、WebKit、Firefox 比较执行轨迹和隐式测试意识；不应直接复用完整真实网站账户数据。</p>
+<p>原始来源：<a href="https://blog.google/security/mirror-dimension-for-agents/">Google Chrome Security 官方技术文章（11/19）</a>；<a href="https://www.wired.com/story/google-built-a-giant-mirror-dimension-internet-to-test-its-chrome-ai-agents/">WIRED 11/19 原始采访与补充报道</a>。</p>
+
+<h3>2. WebAgents / WebAgentica：Agent 包可以跨托管方传递，但执行权限必须留在用户 Runtime（11/16 论文，7 日补推）</h3>
+<p><strong>发生了什么：</strong>11 月 16 日 23:05 UTC（北京时间 11 月 17 日 07:05）提交的论文 <em>WebAgents: Unbundling Agent Creation, Hosting, and Execution for an Agent-Native Web</em>，提出让作者生成签名 <code>agent.pkg</code>，网站只负责分发，用户自己的 Agent Browser/Runtime 负责校验、授权、模型和工具绑定、预算及执行记录。研究实现已有可查看的 GitHub 源码；仓库 README 当前以 <strong>WebAgentica</strong> 名称维护，不能将它称为 11/20 新仓库。</p>
+<p><strong>技术新在哪里：</strong>不是新 MCP 包装。它将<strong>发布一个 Agent 的行为描述</strong>与<strong>授予这个 Agent 实际能力</strong>拆开：包仅包含声明式流程、Skills、Schema 和工具要求，不包含可以任意执行的 Python/脚本；包内容以 SHA-256 验证，发行者签名使用 Ed25519。运行时先独立确认签名和信任，再把用户批准的模型、工具、权限与预算冻结成哈希绑定的不可变 <code>Run Plan</code>。在真正执行前再次核对，防止用户审批之后包或工具绑定被悄悄替换。<code>Run Record</code> 单独保留执行结果和审计记录。</p>
+<p><strong>证据与局限：</strong>论文在自身受控测试中拒绝全部 <strong>716</strong> 个构造的越权输入，同时允许 <strong>295</strong> 个配对的正常输入；三类示例包在相同 OpenClaw 解释器中切换本地 Ollama 与 API 模型执行。实验并未证明所有恶意 Agent 都被阻止，也没有证明跨独立实现 Runtime 的通用互操作性。当前开源 README 另记载 Chrome Extension/TypeScript Runtime 与一致性测试，这是仓库后续状态，<strong>不能直接回填为原论文已验证的结果</strong>。包格式为 <code>agent.pkg 0.1</code>、执行接口为 <code>workflow.v0</code>，均属研究原型。</p>
+<p><strong>技术新颖性：中高（可移植 Agent 的权限与发布边界）；值得研究：高，值得直接产品化：暂不建议。</strong>建议把“不可变 Run Plan + 执行前二次核验 + 独立 Run Record”加入 Browser Agent Harness 的可验证实验，而不是让分发 Agent Skill 的网站间接拥有用户凭据。还要测试包撤销、发布者密钥轮换、工具重定向、预算耗尽、跨浏览器执行一致性。</p>
+<p>原始来源：<a href="https://arxiv.org/abs/2611.21978">arXiv 2611.21978 原论文（11/16 UTC）</a>；<a href="https://github.com/dariofenoglio98/WebAgents">论文关联原始实现</a>；<a href="https://github.com/projnanda/webagentica">WebAgentica 研究原型与当前状态</a>。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p><strong>本期首次发现记录：2026-11-20。</strong>只收录真正有机制差异的方向。此表的“首次发现”是本日报的记录日期，不是声称当日创建 GitHub 仓库。</p>
+<table><thead><tr><th>项目 / 原始时间</th><th>核心差异与工程价值</th><th>成熟度与下次观察信号</th></tr></thead><tbody>
+<tr><td><a href="https://blog.google/security/mirror-dimension-for-agents/">Mirror Dimension</a><br>11/19 官方技术公开</td><td>真实 Chrome + 隔离合成互联网 + 真实域名映射 + 动态对抗注入，保证安全重放与环境一致性</td><td>Google 内部设施/未开放完整源码；跟踪可用实现、任务覆盖、独立攻击成功率及跨引擎重放</td></tr>
+<tr><td><a href="https://github.com/projnanda/webagentica">WebAgentica / agent.pkg</a><br>11/16 UTC 论文；早期源码可查</td><td>签名可移植行为包与用户 Runtime 授权分离，冻结 Run Plan 与审计记录</td><td>论文实验 + 开源原型；跟踪不同 Runtime 的一致性、包撤销、授权绕过与兼容性</td></tr>
+</tbody></table>
+<p>在 GitHub Trending、英文开发社区与已知仓库 PR 的检索中，未确认第三个在创新和证据上达到同等门槛的新项目；普通 CDP/MCP 包装、常规 WebGPU 修复与自动化 CI 改动均不入榜。</p>
+
+<h2>浏览器技术</h2>
+<p><strong>Chromium/Chrome：</strong>Mirror Dimension 在浏览器外部的真实网络、TLS 信任与测试隔离层解决真实 Browser Agent 回归的核心难题，而不是 Chrome 新增了某个网页可调用的标准 API。原文明确要求测试状态完全重置，以避免前一条轨迹污染后一条结果。来源：<a href="https://blog.google/security/mirror-dimension-for-agents/">Chrome Security</a>。</p>
+<p><strong>WebKit/Safari、Firefox、Edge、Opera、Brave：</strong>本期分别查询厂商博客、标准和工程线索，未核实到有明确原创机制、过去 24 小时首次发布且未在近期日报报道的同等级新能力。已经在近七天报道的 Spatial CSS、Edge 158、Brave POPRF 与 WebGPU 草案变化不重复作为新闻。本期也没有把 W3C WebGPU 11/16 例行候选建议更新误记成 11/19 新算法。</p>
+
+<h2>端侧 AI</h2>
+<p>独立检索模型推理、WebGPU/WASM、手机/边缘 NPU Runtime，过去 24 小时未核实到可以给出原始日期和可信对照数据的重大新推理机制。因此这一栏不制造“今日加速倍数”。值得排入次级核查队列的是 <a href="https://ieeexplore.ieee.org/abstract/document/11779656">Adaptive Guard：动态量化与 Android ART GC 协同（IEEE Xplore 11/16 收录，会议 10/28—30）</a>：作者报告内存压力下在精度档位间切换，并对 GC 暂停与 KV Cache 做协调；但独立真机复测、额外内存与加载开销尚未确认，暂不列头条。</p>
+
+<h2>浏览器 × AI</h2>
+<p>今天两个方向分别补齐 Browser Agent 的两个基础边界。Mirror Dimension 解决<strong>“不伤害真实世界，如何验证 Agent 在真实浏览器里是否安全可靠？”</strong>；WebAgentica 解决<strong>“第三方发布的 Agent 能否在用户自己的模型、工具与权限下执行，而无需移交权限？”</strong>。二者不是已经兼容的产品，但可以组合实验：在签名 Run Plan 授权的情况下，进入隔离虚拟站点执行，再由独立最终状态检查器判定任务完成与权限违规。</p>
+
+<h2>Browser Self-Improvement</h2>
+<table><thead><tr><th>案例</th><th>已证实的环节</th><th>欠缺的部分 / 能否迁移</th></tr></thead><tbody>
+<tr><td><a href="https://blog.google/security/mirror-dimension-for-agents/">Chrome Mirror Dimension</a></td><td>Observe（真实 Chrome 任务轨迹/页面信号）→ Diagnose（critic/红队检查）→ Improve（合成网站、攻击样本和验证环境迭代）→ Verify（重放测试和攻击测试）</td><td>Learn 的长期资产格式、Agent 本体/浏览器内核自动补丁与 Canary 没有公开足够证据。可迁移验证理念到 Chromium/WebKit/Firefox；网络沙箱、证书与引擎行为需各自适配。<strong>这是评测环境自改进，不是浏览器内核自治改进成功案例。</strong></td></tr>
+<tr><td><a href="https://arxiv.org/abs/2611.21978">WebAgents</a></td><td>执行前 Verify（包/权限/绑定）及执行 Run Record；部分审计与复测输入</td><td>没有 Observe→Diagnose→Improve→Learn 的自改进闭环；可作为不同 Browser Runtime 共享的权限/证据协议参考，不应归类为 RSI 论文</td></tr>
+</tbody></table>
+<p><strong>可验证的下一步：</strong>在相同快照与冻结授权下改变 Agent 的 Skill 或 Browser Runtime 策略，分别重放正常任务和注入任务；一旦误拒绝或未授权动作增加，拒绝推广候选。把失败轨迹、攻击样本、环境版本、最终状态一起存档，才开始形成 Learn，而不是只有一个“测试通过”标签。</p>
+
+<h2>开源与论文</h2>
+<p><strong>本期推荐精读：</strong><a href="https://arxiv.org/abs/2611.21978">WebAgents：分离创建、托管与执行</a>，重点看 data-only package、授权 Run Plan 与作者实验边界；配合<a href="https://github.com/projnanda/webagentica">开源研究代码</a>检查包解析器、一致性测试和 Chrome 扩展的后续实现。Chrome Mirror Dimension 的<a href="https://blog.google/security/mirror-dimension-for-agents/">官方架构文章</a>也是最具操作价值的技术资料，虽然尚无完整公开代码。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>Browser Agent 的关键新基础设施，正从“能操作网页”向“隔离可重复验证”和“可签名、可授权、可审计的执行契约”演进。</strong>最值得优先实验的是 Mirror Dimension 所代表的隔离真实浏览器评测：先证明 Agent 行为能被安全、稳定地重放，再讨论自动优化 Harness 和浏览器内核。WebAgentica 则值得作为执行授权边界参考，避免把网页发布方和用户的执行权限混为一谈。</p>
