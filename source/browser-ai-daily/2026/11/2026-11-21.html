@@ -1,0 +1,58 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-21
+date: 2026-11-21 09:55:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-20 09:55—2026-11-21 09:55（北京时间）；重要遗漏回溯至 11 月 14 日。本期先独立检索新机制/标准/论文，再检索浏览器厂商官方、端侧 AI Runtime 和新开源/英文开发社区，最后检查已知仓库；与此前一周日报及聚合页去重。明确区分原始发表日期、首次发现日期、实验实现及独立验证。</p>
+<p><strong>今日结论：</strong>过去 24 小时没有核实到足以称为重大突破的浏览器底层技术首发。七日窗口里最值得补推的是 <strong>11/19 Edge Decisions API 与 Aion Instruct</strong>、<strong>11/17 NVIDIA 长上下文稀疏注意力的硬件协同分析</strong>、<strong>11/18 WebKit 的 GPC 导航级权限入口</strong>。三者侧重不同：浏览器原生 AI 计算接口、模型计算效率、WebView 隐私协议。以下均不是 11/21 首发。</p>
+
+<h2>今天最值得看｜3 项七日补推</h2>
+<h3>1. Edge Decisions API：浏览器内 AI 从“逐字生成答案”走向“单次计算返回结构化判断”（11/19 官方）</h3>
+<p><strong>发生了什么：</strong>Microsoft Edge 于 11 月 19 日正式公布 2.3B 参数的 <strong>Aion Instruct</strong> 开放权重，成为 Edge 内置小语言模型并替换 Phi-4-mini；同时将 <strong>Prompt API</strong> 从 Canary/Dev 开发预览推进到可供真实网站注册的 <strong>Origin Trial</strong>。更值得关注的是实验性的 <strong>Decisions API</strong>：允许网页用 <code>DecisionModel.create()</code> 声明 <code>boolean</code>、<code>choice</code>、<code>score</code> 问题，通过 <code>model.decide(input)</code> 返回选项、概率、置信度及预期评分，不需要逐 Token 生成文本。Decisions API 目前仅在 Edge Canary/Dev 开发者预览，尚非正式标准。</p>
+<p><strong>技术新在哪里：</strong>将语义判断作为浏览器受控、带 Schema 的推理原语。对于页面工具选择、表单分类、输入检查、内容排序，应用可以限定输出范围，一次计算多个问题，并按不确定性选择是否继续请求更强模型。相比 Prompt API 再生成 JSON，这种设计减少生成式输出解析与连续解码成本。不过“概率已充分校准”“在所有设备都更快”仍需实测，不能直接当作事实。</p>
+<p><strong>重要去重：</strong>这不是 11/19 才出现的新算法或 Edge 首创的跨浏览器 API。Opera 早在 <strong>10/27</strong> 的 WebAI 预览里就宣布支持 Decisions API；Google Chrome Built-in AI 团队也维护相关早期 Explainer，明确尚未批准在 Chrome 正式发布。11/19 的新进展是 Edge 的开发预览、Aion 开放权重及 Prompt API Origin Trial，不能写成 Decisions API 首次诞生。</p>
+<p><strong>验证及成熟度：</strong>微软公布了 Aion 模型卡：MIT 许可、2.29B 参数、32K 上下文、21 层 sliding-window 与 7 层 full-attention；这些参数可独立检查，但 Edge 实际延迟、内存、功耗以及分类概率校准尚无本期独立复测。实际执行高风险操作仍须独立权限检查，模型高置信度不能当授权。</p>
+<p><strong>技术新颖性：高（浏览器内计算接口与系统集成），并非新模型算法；值得深入研究/实测：非常高。</strong>建议用 100—500 条相同页面意图，在 Edge 预览中比较 Decisions API、Prompt API JSON 输出与传统规则，在 P50/P95、冷启动、峰值内存、错误分类、概率校准、授权隔离上做对照；记录硬件和模型下载状态。</p>
+<p>原始来源：<a href="https://blogs.windows.com/msedgedev/2026/11/19/hybrid-intelligence-on-the-web-introducing-aion-instruct-and-prompt-api-in-microsoft-edge/">Microsoft Edge 官方（11/19）</a>、<a href="https://github.com/explainers-by-googlers/decisions-api">Decisions API Explainer</a>、<a href="https://huggingface.co/microsoft/Aion-1.0-Instruct-2.3B">Aion 开放权重与模型卡</a>、<a href="https://investor.opera.com/news-releases/news-release-details/opera-doubles-down-local-ai-shipping-models-directly-its/">Opera 10/27 先前预览的独立时间线</a>。</p>
+
+<h3>2. NVIDIA：稀疏注意力的瓶颈从 Attention 移到了“寻找该关注哪些 Token”（11/17 官方工程深挖）</h3>
+<p><strong>发生了什么：</strong>NVIDIA 11 月 17 日发表 <em>Co-Designing Sparse Attention for Efficient Long-Context Inference</em>，比较生产级 FP8 Kernel 的 Indexer、Top-k 与 Core Attention。它不是 11 月 17 日发明 Sparse Attention，而是用硬件性能测量，说明何种模型结构能让 GPU 真正得到收益。在作者的 128K 输入长度示例里，DeepSeek V3.2 稀疏注意力的 Indexer + Top-k 占单层 Prefill 约 47%，说明计算量减少后，选择工作反而成为新的成本中心。</p>
+<p><strong>技术差异：</strong>减少选择器要扫描的 Key、缓存或共享索引、复用前一步 Top-k 结果，以及把 Top-k 与 Indexer 融合，往往比简单调小选出的 k 更有效。作者的特定 CUDA Decode Kernel 实验报告 Guess-Verify-Refine Top-k 比通常的 radix select 快 <strong>2.1—2.4 倍</strong>；选中连续大块而不是分散 Token 也更适合 GPU 合并读取。这些都是特定组件及硬件上的作者测量，并非端到端模型 2.4 倍加速，更不能推广为手机/WebGPU 效果。</p>
+<p><strong>技术新颖性：中高（系统分析与模型/硬件协同设计，不是新算法首发）；值得研究：高。</strong>工程启发：在端侧模型 Profiling 中把 Attention 拆分成 Indexer、Top-k、KV 访问、实际 Attention 四类独立耗时，分别评估 Decode 与 Prefill。若探索 WebGPU，需按设备支持重写 Kernel，并重新验证精度、内存与功耗，不能照搬 CUDA 数据。</p>
+<p>来源：<a href="https://developer.nvidia.com/blog/co-designing-sparse-attention-for-efficient-long-context-inference">NVIDIA 11/17 原始技术分析与性能数据</a>；文中给出 <a href="https://github.com/flashinfer-ai/flashinfer">FlashInfer</a> 的选择器融合相关实现供进一步复核。</p>
+
+<h3>3. WebKit：WKWebView 开始在每次导航时原生表达 GPC 隐私偏好（11/18 官方 API）</h3>
+<p><strong>发生了什么：</strong>WebKit 11 月 18 日公开在 iOS/iPadOS/visionOS/macOS 27 中的 Global Privacy Control（GPC）WebKit 接口。原生应用可在导航决策返回的 <code>WKWebpagePreferences.globalPrivacyControlEnabled</code> 设值；SwiftUI 的 <code>WebPage.NavigationPreferences.isGlobalPrivacyControlEnabled</code> 也提供对应入口。启用后，浏览器在主文档、子框架及子资源请求中带 <code>Sec-GPC: 1</code>，并通过 <code>navigator.globalPrivacyControl</code> 暴露一致的偏好。</p>
+<p><strong>为什么重要：</strong>隐私偏好不必由页面 JavaScript 事后注入，WebView 宿主可以把它作为导航级策略，覆盖请求头和 DOM。它为浏览器内跟踪防护、App 内嵌网页和不同导航策略的可验证一致性提供了更原生的接口。</p>
+<p><strong>成熟度与边界：</strong>GPC 标准早已存在，W3C 2026-09-24 文档仍为 <strong>Working Draft</strong>；本次新的是 WebKit 宿主 API，而不是首次发明 GPC。发送偏好信号并不自动阻断追踪代码，也不能保证服务器一定遵守。不能把 27 平台 API 宣称为所有当前稳定设备均已支持。</p>
+<p><strong>技术新颖性：中高（WebKit 宿主导航策略与网络层整合）；值得实测：高。</strong>验证导航前设置、跨域 iframe、资源请求、重定向与页面内再次导航时 Header/JS 是否一致，并检查更改偏好后的页面缓存行为。</p>
+<p>来源：<a href="https://webkit.org/blog/18646/global-privacy-control-gpc-webkit-api/">WebKit 官方 API 说明（11/18）</a>、<a href="https://www.w3.org/TR/gpc/">W3C GPC Working Draft</a>。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p><strong>首次记录：</strong>2026-11-21。记录的是技术线索的本日报首次发现日，而不是它们的首发日期。本期没有找到有充分新技术差异、值得推荐的近七日新建 GitHub 仓库，因此不设“新仓库数量”目标。</p>
+<table><thead><tr><th>技术项目与原始日期</th><th>相对现有方法的新差异 / 工程价值</th><th>当前成熟度与跟踪信号</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/explainers-by-googlers/decisions-api">Decisions API</a><br>Edge 11/19 预览；Opera 10/27 已提及</td><td>单次推理回答多个有 Schema 的分类/评分问题；适合 Browser Agent 低成本工具选择和 UI 意图识别</td><td>草案 + Edge Canary/Dev Preview；关注 W3C 标准化、跨浏览器兼容、延迟/功耗/概率校准</td></tr>
+<tr><td><a href="https://huggingface.co/microsoft/Aion-1.0-Instruct-2.3B">Aion Instruct 2.3B</a><br>11/19 开放权重</td><td>在浏览器层统一管理的小模型资源，可服务 Prompt/Decisions 等能力；模型权重公开便于复现比较</td><td>模型权重已公开、Edge 集成由官方声明；关注真实设备加载成本、量化版本、跨硬件一致性</td></tr>
+<tr><td><a href="https://developer.nvidia.com/blog/co-designing-sparse-attention-for-efficient-long-context-inference">稀疏注意力硬件协同设计</a><br>11/17 工程分析</td><td>从核心 Attention 转向 Indexer/Top-k 的端到端瓶颈分解；为模型结构与 GPU Kernel 协同优化提供依据</td><td>生产 Kernel 对照作者数据；关注独立平台复现、端侧/WebGPU 可迁移性</td></tr>
+<tr><td><a href="https://webkit.org/blog/18646/global-privacy-control-gpc-webkit-api/">WebKit GPC 宿主接口</a><br>11/18 新 WebKit API</td><td>导航级偏好统一关联请求 Header 与 DOM，包括子框架资源</td><td>Apple 27 平台 API；关注 WKWebView 真机验证、缓存及多导航策略行为</td></tr>
+</tbody></table>
+
+<h2>浏览器技术</h2>
+<p><strong>WebKit/Safari：</strong>本期新增可验证的 GPC 宿主 API 设计，适合研究内嵌 WebView 的隐私边界，细节见上。<strong>Chromium/Chrome、Firefox、Edge、Opera、Brave：</strong>在本 24 小时窗口内未独立核实足以作为全新浏览器内核算法的首发。Edge 11/19 的 AI API 是七日补推；Opera 的 10/27 先发已经明确去重，Mozilla 11/20 的 iOS 浏览器引擎政策文章属平台政策观察，不冒充引擎技术发布。</p>
+
+<h2>端侧 AI</h2>
+<p><strong>Aion：</strong>2.3B 开放权重（MIT）使系统内置模型的精度、内存及热/冷启动性能具备进一步独立测量基础；目前不能拿 Edge 的“更快、更广泛可用”宣传语代替跨设备数据。<strong>稀疏推理：</strong>NVIDIA 的工程分析提醒我们：Attention 变稀疏之后，还必须测量谁来决定“稀疏到哪里”。尤其对移动端与 WebGPU，数据搬运可能比算法 FLOPs 更关键。</p>
+
+<h2>浏览器 × AI</h2>
+<p><strong>低成本决策层：</strong>可以构建 <code>input → fixed schema → local decision/confidence → policy gate → execute/ask</code>，用内置模型做低风险分类，保留云端模型或人工确认作为复杂和高风险场景的后备。该结构是工程建议，不是 Edge 已提供完整 Agent Runtime。 <strong>权限约束：</strong>即使分类输出置信度 0.99，也必须单独经过工具授权、业务检查及最终状态核对。</p>
+
+<h2>Browser Self-Improvement</h2>
+<p><strong>本期没有确认新的完整 Observe → Diagnose → Improve → Verify → Learn 自主闭环。</strong>Decisions API 可成为 Diagnose/策略选择的低成本能力，GPC 可以成为 WebView 安全和隐私验证的一项回归信号，NVIDIA 的指标分解可帮助诊断模型运行效率；但三者都没有证据表明已实现自动提交浏览器补丁、独立 Benchmark/Canary 和经验回流，因此绝不称为 Browser RSI 成果。</p>
+<p>此前 11/20 已报道的 Chrome Mirror Dimension 仍是有价值的验证环境参考，本期不重复当作新发布。下一步值得观察的是：是否存在系统能够凭真实 Trace/Crash/浏览器 WPT，自动提出改动，再经跨引擎回归、Canary 和长期证据沉淀。如果只做到推荐修改，没有可信的独立结果检查，仍不是完整闭环。</p>
+
+<h2>开源与论文</h2>
+<p>本期优先精读 <a href="https://github.com/explainers-by-googlers/decisions-api">Decisions API 设计草案</a>、<a href="https://huggingface.co/microsoft/Aion-1.0-Instruct-2.3B">Aion 模型卡</a> 及 <a href="https://developer.nvidia.com/blog/co-designing-sparse-attention-for-efficient-long-context-inference">NVIDIA 稀疏 Attention 性能分析</a>。没有核实到过去 24 小时内未重复、且达到创新门槛的重要新论文，不用普通 Issue/仓库填充。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>浏览器端侧 AI 值得优先建设的是“不生成文本的快速判断层”，但它只有在权限、置信度和实测成本都可控时才是真正的新平台能力。</strong>本期我最建议实测 <strong>Decisions API 与 Prompt API 在相同页面任务上的 P95、冷启动和错误率</strong>；其次研究 NVIDIA 的 Indexer/Top-k 拆解方法。对 WKWebView 工程，GPC 的真机网络/DOM 一致性也值得作为明确的回归测试。</p>
