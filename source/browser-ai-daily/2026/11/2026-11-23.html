@@ -1,0 +1,49 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-23
+date: 2026-11-23 09:08:00
+---
+
+<p><strong>观察窗口：</strong>2026-11-22 09:08—2026-11-23 09:08（北京时间）；重要遗漏回溯至 11 月 16 日。严格按技术新颖性筛选：独立检索新机制/标准/论文、浏览器厂商架构与技术公告、端侧 AI Runtime、开放项目与英文开发社区，最后检查已知仓库工程更新。对照 11 月 16—22 日日报及聚合页去重；发布日、代码合并日与日报首次发现日严格区分。</p>
+<p><strong>今日结论：</strong>过去 24 小时没有确认值得称为浏览器/端侧 AI 底层重大突破的新首发。本期补推过去一周两项未进入此前日报的实质进展：<strong>11/18 Cloudflare Clairic 新版采用并行槽位自回归抽取并开放模型权重</strong>，以及 <strong>11/19 WebMCP 的 Tool 身份机制规范合并</strong>。前者是模型架构与推理方式的改变；后者解决工具重新注册引起的身份混淆和竞态，而非新的 MCP 封装。</p>
+
+<h2>今天最值得看｜两项七日补推</h2>
+<h3>1. Cloudflare Clairic：多字段并行解码，而非把大模型当 JSON 生成器（11/18 官方发布）</h3>
+<p><strong>发生了什么：</strong>Cloudflare 于 11 月 18 日发布重新设计的 Clairic 27B 和 Clairic-flash 9B，并开放完整权重（Apache-2.0）及本地 Python 加载辅助代码。新的 Clairic 从预览版的单次前向计算改为<strong>parallel slot autoregressive generation（并行槽位自回归生成）</strong>：每个待抽取字段有独立的输出序列和停止标记，所有字段在同一服务批次里推进。计算、估计、日期和预测使用专门训练的输出头，回应还包含来源字符位置、置信度和空值概率；新版能读取图片与 PDF（合计最多四个图片或页面）。</p>
+<p><strong>技术究竟新在哪里：</strong>不是新建一个提取 JSON 的 Prompt 包装，而是让受限字段结构直接参与模型的解码调度。相对预览版的单次决策，新版允许文本字段持续生成，同时多个字段并行推进；相对一般 LLM 逐 Token 输出整份 JSON，它返回可单独验收的字段和来源证据。核心并不是“零自回归”——新架构明确<strong>使用</strong>自回归，只是让各个字段并行而非全部字段串行生成。</p>
+<p><strong>可检查证据：</strong>Cloudflare 内部评测中，336 个新文本字段预览版答对 295 个，新版 335 个，flash 328 个；96 次文本字段请求中，Clairic-flash 的服务端 HTTP p50/p95 为 155/328 毫秒，27B 为 358/736 毫秒。全部为厂商指定任务、指定服务器的自报数据，不能推断手机或 WebGPU 的延迟；也没有统一公开的提取基准。模型卡可检查 9B 版本基于 Qwen3.5-9B、具有独立的 typed head、权重和请求实现。另有 11/18 的小规模社区 M5 Pro 试验报告 34/34 字段（PyTorch）及 MLX 文本 33/34，但样本量极小、MLX 图片/PDF 路径未正常工作，不能据此推断通用准确率。</p>
+<p><strong>技术新颖性：高（面向结构化抽取的并行槽位解码和可追溯字段），值得深入研究：高；值得在手机直接部署：低至中（9B 仍偏大，缺乏移动 NPU/功耗验证）。</strong>建议在 Browser Agent 的网页表单、账单和错误日志提取场景，使用同一批网页内容比较 Clairic、通用小模型加 JSON Schema 和规则抽取；同时测字段准确率、漏报率、来源 span 一致性、p50/p95、内存和输入截断。高置信度不等于事实正确，应由程序再核验关键字段。</p>
+<p><strong>原始来源：</strong><a href="https://blog.cloudflare.com/open-clairic/">Cloudflare 官方研发文章（11/18）</a>、<a href="https://huggingface.co/Cloudflare/clairic-flash">Clairic-flash 权重、模型卡及代码</a>、<a href="https://huggingface.co/Cloudflare/clairic">Clairic 27B 权重</a>。小样本社区实验：<a href="https://huggingface.co/datasets/pratikgx/clairic-flash-m5-pro-mac-mini-bench">M5 Pro 本地实验数据（未独立复测）</a>。</p>
+
+<h3>2. WebMCP Tool 身份：同名工具重注册也不能误调用旧能力（11/19 规范 PR 合并）</h3>
+<p><strong>发生了什么：</strong>Web Machine Learning Community Group 的 WebMCP 提案于 11 月 19 日合并 <a href="https://github.com/webmachinelearning/webmcp/pull/348">#348</a>：将原来的 <code>RegisteredTool</code> 字典改成 <code>Tool</code> 接口，底层以每次注册独有的 ID 标识工具，而不是仅按名称匹配。11 月 19 日版本的 <a href="https://webmachinelearning.github.io/webmcp/">WebMCP 社区草案</a> 还规范了跨文档工具执行、生命周期取消以及浏览器侧待执行状态的管理。</p>
+<p><strong>技术究竟新在哪里：</strong>同一网页可能在登录切换、导航或重新渲染时注销、再注册同名工具。如果 Agent 缓存的是工具名称，而不是注册身份，便可能把旧授权或旧上下文套用到新能力。新 <code>Tool</code> 是一次注册的专属句柄；旧句柄在注销后失效，即使同名工具重新出现也不应成为旧调用的目标。这是典型的执行身份与生命周期正确性问题，不是普通接口重命名。PR 也明确它解决竞态并为 opaque-origin 文档的后续执行能力铺路；后者仍有独立未合并工作，不能写成已经支持。</p>
+<p><strong>可验证证据：</strong>规范 PR 已合并；草案已经定义 <code>executeTool()</code>、<code>getTools()</code>、<code>AbortSignal</code>、<code>toolcancel</code>、<code>toolactivated</code> 及待执行映射，但<strong>社区组草案不是 W3C 正式标准</strong>。PR 明确说明新接口对 <code>JSON.stringify(tool)</code>、<code>structuredClone(tool)</code> 等存在兼容性变化。可利用 <a href="https://wpt.fyi/results/webmcp">WebMCP WPT</a> 对同名工具替换、跨 iframe 撤销、页面卸载和并发取消进行复演；本期没有独立跑通这些测试，也没有证明 Chrome、Safari、Firefox 正式一致支持。</p>
+<p><strong>技术新颖性：中高（Web 平台工具身份和竞态安全机制），值得深入研究/实测：高。</strong>Browser Harness 应把工具注册身份、来源 Frame/Origin、注册版本和生命周期状态一同保存。测试应让旧操作在新工具注册后继续完成或取消，确认无法“借尸还魂”；不可仅凭返回成功就认定真实业务状态已被正确修改。</p>
+<p><strong>原始来源：</strong><a href="https://github.com/webmachinelearning/webmcp/pull/348">WebMCP #348（11/19 merged）</a>、<a href="https://webmachinelearning.github.io/webmcp/">11/19 WebMCP Draft Community Group Report</a>、<a href="https://github.com/webmachinelearning/webmcp/issues/349">Opaque-origin 工具执行的后续问题 #349</a>。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p><strong>本期首次发现：</strong>2026-11-23；以下原始进展分别发生在 11/18 和 11/19，并非 11/23 首发。没有发现同时满足新颖性与证据要求的 11/22—23 新创建仓库，因此不按仓库数凑配额。</p>
+<table><thead><tr><th>候选与原始时间</th><th>真正差异及成熟度</th><th>后续信号</th></tr></thead><tbody>
+<tr><td><a href="https://huggingface.co/Cloudflare/clairic-flash">Clairic-flash</a>（11/18）</td><td>9B 开放权重模型，多字段并行槽位解码、可信度与来源定位；可本地运行但不是已验证手机端 Runtime</td><td>独立大样本数据集、移动/桌面内存和功耗、字段置信度校准、PDF 复测</td></tr>
+<tr><td><a href="https://github.com/webmachinelearning/webmcp/pull/348">WebMCP Tool 身份</a>（11/19）</td><td>社区草案 PR 已合并；注册专属 ID 替代易混淆的同名工具对象；没有浏览器稳定版跨引擎结论</td><td>WPT 多引擎结果、opaque-origin 后续方案、Agent 工具取消的跨版本兼容性</td></tr>
+</tbody></table>
+
+<h2>浏览器技术</h2>
+<p><strong>标准侧：</strong><a href="https://webmachinelearning.github.io/webmcp/">11/19 WebMCP 草案</a>将注册工具的唯一身份、跨 Frame 可见范围、调用取消和卸载状态描述为平台级行为。对于 Chromium、WebKit、Firefox、Edge 乃至任何嵌入式 Browser Runtime，技术价值主要来自正确的权限边界和执行生命周期；不是“多加一个 MCP 接口”。必须以浏览器实际实现和 WPT 作为支持依据，而不是依据规范发布就称各引擎已上线。</p>
+<p><strong>其他厂商：</strong>本次检查了 Chromium/Chrome、WebKit/Safari、Firefox、Edge、Opera、Brave 的近期原始发布、WebGPU/WASM 和网络/媒体相关线索。没有核实到符合选题门槛且未被前七天日报覆盖的过去 24 小时新架构首发。11/20 W3C WebNN 候选草案更新已在 11/22 日报记录，不重复抬升为新闻。</p>
+
+<h2>端侧 AI</h2>
+<p>Clairic-flash 的开源权重和 Python 推理代码允许在本地服务器或大内存设备做对照；但 9B BF16 权重、图像路径和运行时支持都不等于手机端低成本可部署，更不等于浏览器 WebGPU 原生运行。测试应分别记录模型权重常驻内存、首请求延迟、序列批处理效果和内存峰值。当前未发现经独立核实的 11/22—23 新 NPU 算法或 WebGPU Kernel 首发。</p>
+
+<h2>浏览器 × AI</h2>
+<p>可组合出一种工程实验：网页通过 WebMCP 提供有来源身份的操作，Agent 用类似 Clairic 的结构化抽取从页面、邮件、PDF 获取字段，动作前独立校验字段证据、工具句柄及用户权限，再回读目标页面确认副作用。<strong>这只是建议的系统组合，不是 Cloudflare 或 WebMCP 已发布的端到端产品。</strong>重点防止同名 Tool 被重注册后误执行，以及从未被证实的字段被带入有副作用的操作。</p>
+
+<h2>Browser Self-Improvement</h2>
+<p><strong>本期未发现新的完整 Observe → Diagnose → Improve → Verify → Learn 自主改进闭环。</strong>WebMCP Tool 身份与取消语义可作为 Verify 环节的回归测试用例；Clairic 的字段来源与置信度可为 Observe/Diagnose 产生可检查证据，但两者均不会自动修改 Harness，也不会自动学习。可迁移方法是固定一组跨 Frame / 取消竞态回归，逐次修改 Browser Runtime 后独立重放，保留失败输入与版本；尚缺自动诊断改进、Canary 和跨引擎验证。</p>
+
+<h2>开源与论文</h2>
+<p>首选阅读 <a href="https://huggingface.co/Cloudflare/clairic-flash">Clairic-flash 模型卡和发布的 typed head / Python 实现</a>，以及 <a href="https://github.com/webmachinelearning/webmcp/pull/348">WebMCP #348 的规范差异</a>。本期没有找到日期和机制均经核实、符合门槛且未报道的过去 24 小时新论文；不使用旧论文填充栏目。Cloudflare 的内部指标与社区小样本验证分开标记。</p>
+
+<h2>今天的一个判断</h2>
+<p><strong>真正值得跟踪的变化，是把 Agent 不稳定的文字输入和工具名称变成可检查的字段证据与不可混淆的执行身份。</strong>本期优先尝试 WebMCP 同名工具重新注册/取消的 WPT 回归；Cloudflare Clairic-flash 适合做网页数据抽取的基准实验，但不能因为有开放权重就直接判断它适合手机端。</p>
