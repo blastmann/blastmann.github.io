@@ -1,0 +1,40 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-24
+date: 2026-11-24 09:42:00
+---
+
+<p><strong>观察窗口：</strong>11 月 23 日 09:42—11 月 24 日 09:42（北京时间）；重要遗漏回溯七日。本期重点是一项真正的新浏览器引擎发布，以及一项有源码的端侧多模态模型压缩研究。核对过去七天日报及聚合页去重；首发日期与技术形成时间分开。</p>
+<h2>今天最值得看｜Ladybird 首次 Alpha 与 MoMoVL 模态感知量化</h2>
+<h3>1. Ladybird 首次 Alpha：独立浏览器引擎终于进入可持续分发阶段</h3>
+<p><strong>发生了什么：</strong>11 月 23 日（UTC），Ladybird 发布首个 Alpha，GitHub Release 标签为 <code>2026.47.7</code>，对应提交 <code>4e9acf4</code>。macOS 和 Linux 已有下载包，采用滚动更新；Windows 不属于这次正式分发范围。项目自主实现 HTML、CSS、DOM、布局、JavaScript 和 WASM，并非 Blink、WebKit 或 Gecko 的 fork。</p>
+<p><strong>技术新在哪里：</strong>这次发布不是单日创造新算法，而是使多年积累的独立架构可以直接下载实测。10 月 31 日工程月报记录了三项关键机制：样式和布局移至独立线程，绘制记录也独立于 JS 主线程；LibJS 引入基于运行时类型信息的 JIT；LibWasm 改用自有解释器和 JIT。尤其值得看的是主线程长任务期间，涉及 width/font-size 等布局的动画及 CSS :hover 仍可更新；JS 同步读取布局时必须等待相应工作，避免陈旧数据。与传统浏览器仅让部分合成动画脱离主线程不同，这是更深的渲染并行化实验。上述机制来自 10 月背景材料，不是本周才提出。</p>
+<p>Alpha 的多进程设计还包括跨站 Renderer 隔离、按站点划分的网络进程，以及进程外图像解码。WebDriver 和 Firefox DevTools 协议为已有自动化与调试工具提供入口，但不应假定 CDP 兼容或全部 WebDriver 能力已经完善。</p>
+<p><strong>证据：</strong><a href="https://ladybird.org/posts/alpha/">官方 11/23 发布</a>与<a href="https://github.com/LadybirdBrowser/ladybird/releases">带签名标签的 Release</a>一致；<a href="https://ladybird.org/newsletter/2026-10-31/">10 月工程月报</a>提供代码 PR、演示和自报基准。<a href="https://www.phoronix.com/news/Ladybird-Browser-Alpha">Phoronix</a>实际进行了短时间试用，<a href="https://www.theverge.com/tech/1040872/ladybird-indie-browser-engine-alpha-testing">The Verge</a>确认发布。独立报道不等于性能、兼容和安全全面验证，本期没有运行安装包。项目明确不作当前安全保证，不建议用 Alpha 登录敏感账号。</p>
+<p><strong>技术新颖性：高（独立引擎与渲染架构）；值得实测：非常高。</strong>在隔离测试环境用相同页面、同一硬件和版本记录，对比 Ladybird、Chromium、WebKit 和 Gecko：主线程长任务期间的布局动画、输入延迟、同步读取 layout 的等待时间、CPU/内存、WebDriver 兼容性，以及复杂 SPA 的功能正确性。单纯 WPT 通过数量不能代替这些指标。</p>
+<h3>2. MoMoVL：根据视觉和文本的不同敏感性，为 MoE 专家分配不同精度（11/18 论文，七日补推）</h3>
+<p><strong>发生了什么：</strong>研究者 Dongkeun Lee 与 Wonjun Lee 于 11 月 18 日提交 MoMoVL，论文注明获 WSDM 2027 Findings 接收。其目标是在有限内存中部署混合专家视觉语言模型。不是只按整体专家访问频率分配 INT2/INT4，而是分别测量视觉和文本 token 的专家路由，再结合由损失梯度估计的量化敏感性形成重要性评分，离线生成每个专家的精度配置。推理时不必逐请求动态重新决定所有专家的精度。</p>
+<p><strong>相对现有方法：</strong>Fate、MoE-APEX 等依据路由频率或权重分配精度，MoMoVL 额外处理模态差异。实验以 MolmoE-1B（总参数 7.2B）和 DeepSeek-VL2-Tiny（3.4B）为对象，覆盖八项视觉语言基准。相对统一 INT4 的全 LLM 骨干量化基线，MoMoVL-Weight 的模型内存指标分别下降 15.44% 和 10.49%；多数测试有一定准确率损失，较小的 DeepSeek 模型在部分基准也落后于其他混合精度方法。只量化 LLM 骨干，不代表整机峰值内存同比下降。</p>
+<p><strong>证据与限制：</strong><a href="https://arxiv.org/abs/2611.23695">论文</a>、<a href="https://arxiv.org/html/2611.23695v1">全文与实验表</a>及<a href="https://github.com/sco-edge/MoMoVL">MIT 研究代码</a>可检查；代码提供校准脚本、精度配置和评测脚本，MolmoE 校准要求超过 40GB GPU 显存。校准与部署应分开看，尚未独立复现手机 NPU、WebGPU 或能耗结果，也未确认混合 INT2/INT4 kernel 在目标 Runtime 的效率。仓库创建日期未核实，不称为今日新仓库。</p>
+<p><strong>技术新颖性：中高；值得研究：高；移动端直接部署成熟度：低。</strong>建议在网页截图、OCR、表单理解与纯文本指令组成的保留集上，固定内存预算比较均匀量化、普通专家重要性量化和模态感知量化，测正确率、权重内存、运行峰值、TTFT、吞吐和功耗；优先使用已公布的配置复现，避免从手机上重新校准。</p>
+
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p>本期首次记录日期：2026-11-24（指日报本次纳入，不指项目创建）。</p>
+<table><thead><tr><th>候选与原始时间</th><th>差异与成熟度</th><th>后续跟踪信号</th></tr></thead><tbody>
+<tr><td><a href="https://github.com/LadybirdBrowser/ladybird/releases">Ladybird</a>，11/23 首个 Alpha</td><td>独立引擎，渲染线程拆分，自有 JS/WASM；可下载但不作安全保证</td><td>跨站回归、线程同步正确性、崩溃率、内存、WebDriver 实装</td></tr>
+<tr><td><a href="https://github.com/sco-edge/MoMoVL">MoMoVL</a>，11/18 论文</td><td>模态感知混合精度；开源研究原型</td><td>独立复现、低比特算子、真实设备内存与功耗</td></tr>
+</tbody></table>
+<p>没有为新仓库数量凑配额。开放发现与社区检索还出现了并行移动 QA Agent 和实时生成 UI 原型，但未证明新的浏览器底层机制，不列头条。</p>
+<h2>浏览器技术</h2>
+<p>Ladybird 是今天最明确的新里程碑。检索 Chromium/Chrome、WebKit/Safari、Firefox、Edge、Opera、Brave、Web API、WebGPU/WASM、网络和媒体相关公开线索后，没有确认同等级且未报道的另一项新机制首发。Chrome 的 <a href="https://developer.chrome.com/blog/new-in-devtools-november-2026">November DevTools</a> 原文实际发表于 10 月 20 日，不能因抓取日期当作今天新闻。<a href="https://webkit.org/blog/18652/release-notes-for-safari-technology-preview-257/">Safari TP 257</a> 是 11/18 的预览版，普通修复不升格。</p>
+<h2>端侧 AI</h2>
+<p>MoMoVL 的启发是多模态任务的精度分配应考虑不同输入模态对模型质量的影响，而非只看全局访问频率。需要将压缩后权重的体积与真实 Runtime 的峰值内存、反量化成本及设备功耗分开评价。已知 Runtime 的常规 Release、Issue 检索没有提供本期另一项足够明确的新机制；例如 LiteRT-LM <a href="https://github.com/google-ai-edge/LiteRT-LM/issues/4743">#4743</a> 仍为开放的 Android 结构化输出崩溃报告，未验证修复。</p>
+<h2>浏览器 × AI</h2>
+<p>Ladybird 的 WebDriver 入口使相同的 Agent 任务有机会在独立引擎上执行，检测 Harness 是否暗中依赖 Chromium 特有行为；MoMoVL 则提供端侧视觉感知压缩的实验方向。两者并非已完成的集成产品。</p>
+<h2>Browser Self-Improvement</h2>
+<p>与 Alpha 发布相关的历史证据特别值得看：Ladybird 10 月月报披露团队以 WPT 为目标，让 AI coding agents 补齐功能。10 月 22—27 日通过子测试数约从 212 万增至 218 万，10 月全月增加 75,650 项，月底为 2,184,722 项。<a href="https://ladybird.org/newsletter/2026-10-31/">官方月报</a>明确描述该过程，<a href="https://feeds.simonwillison.net/2026/Nov/23/ladybird/">Simon Willison 11/23 的文章</a>也重点讨论这项历史数据；后者不是独立重跑。不能将这些数量等同于 6 万个不同缺陷或生产兼容率。</p>
+<p><strong>闭环：</strong>Observe（WPT 失败）→ Diagnose（Agent 定位缺失功能，诊断细节未公开）→ Improve（Agent 参与修改实现）→ Verify（WPT 通过数量）→ Learn（没有公开持续经验沉淀、自主选择目标或长期 Canary 的证据）。Alpha 的自愿崩溃报告、网站问题报告和滚动更新可补充真实使用反馈，但未证实这些反馈自动回流 Agent。可迁移方法：使用固定版本 WPT 与独立保留集，记录每个改动新增通过与新增失败，并检查性能和安全约束；不要仅优化通过数。</p>
+<h2>开源与论文</h2>
+<p>优先阅读 <a href="https://ladybird.org/newsletter/2026-10-31/">Ladybird 线程架构、JIT 和 WPT 月报</a>（历史背景）、<a href="https://github.com/LadybirdBrowser/ladybird/releases">Alpha Release</a>（本期新发布）及 <a href="https://arxiv.org/html/2611.23695v1">MoMoVL 全文</a>、<a href="https://github.com/sco-edge/MoMoVL">代码</a>（七日补推）。来源包括官方、研究者和独立英文媒体；没有取得独立性能复现。去重对照 11/17—23 日报，Kitesurf、WebMCP Tool 身份、Clairic、Decisions API 等不重复。</p>
+<h2>今天的一个判断</h2>
+<p><strong>独立浏览器引擎的出现，比新增一批 Chromium 包装项目更值得关注。</strong>建议优先用 Ladybird 测长 JS 任务期间布局动画与 hover 的响应，以及以 WebDriver 运行跨引擎保留任务。它既能检验渲染并行化的真实收益，也能为 Browser Agent 验证环境提供另一种独立实现。MoMoVL 则值得作为端侧视觉模型内存预算实验的候选。</p>
