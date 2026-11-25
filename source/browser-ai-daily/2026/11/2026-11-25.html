@@ -1,0 +1,38 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-25
+date: 2026-11-25 09:06:00
+---
+
+<p><strong>观察窗口：</strong>11 月 24 日 09:06—25 日 09:06（北京时间）；重大遗漏回溯七日。今天有两项值得关注的 Web 平台进展：Firefox 161 正式支持 HTTP 外部字典压缩，W3C 首次发布指针驱动动画工作草案。它们分别是既有协议的跨引擎落地和候选标准的里程碑，不是当天发明的新算法。</p>
+<h2>今天最值得看｜Firefox 字典压缩正式落地与 PointerTimeline 首份工作草案</h2>
+<h3>1. Firefox 161：Compression Dictionary Transport 进入稳定版（11/24）</h3>
+<p><strong>发生了什么：</strong>Firefox 161 于 11 月 24 日发布，开发者说明确认支持 Compression Dictionary Transport。服务端用 <code>Use-As-Dictionary</code> 标记可作为字典的响应，浏览器在适用请求中通过 <code>Available-Dictionary</code> 声明已存储的字典，服务端再使用 <code>dcb</code>（Brotli）或 <code>dcz</code>（Zstandard）编码传输新资源。普通压缩主要利用当前响应自身的重复信息；外部字典则能复用上一版本资源等共有信息，尤其适合内容变化较少的 JS Bundle、CSS 等。协议早在 2025 年 9 月成为 RFC 9842，不是今天新发明；今天的增量是 Gecko 稳定版支持。</p>
+<p><strong>证据：</strong><a href="https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/161">Firefox 161 开发者说明</a>与<a href="https://www.rfc-editor.org/rfc/rfc9842.html">RFC 9842</a>。未运行 Firefox 161 实机或跨引擎测试，不宣称实际节省比例或全平台支持。</p>
+<p><strong>技术新颖性：高（协议机制），本次新进展：跨引擎落地。值得实测：非常高。</strong>在自有域名部署两版真实 Bundle，比较无字典的 Brotli/Zstd 与预热字典后的 dcb/dcz；独立记录冷启动、字典命中率、字典下载成本、传输字节、服务端压缩 CPU、客户端解压与端到端 TTFB/P95。测试缓存清空、字典失效、CDN 回退及跨站隔离，避免只测理想命中情况。浏览器获得能力并不意味着所有站点自动受益。</p>
+<h3>2. W3C Pointer-driven Animations Level 1：把指针位置直接作为动画时间轴（11/24）</h3>
+<p><strong>发生了什么：</strong>CSSWG 发布首份公开工作草案。现有传统动画以时间为驱动，滚动动画以滚动进度为驱动；新草案让指针在元素或视口一定范围内的相对位置决定动画进度。<code>animation-timeline: pointer(x self)</code> 是草案语法示例；也可通过 <code>PointerTimeline</code> 接入 Web Animations API，或使用 <code>pointer-timeline-name</code> 定义命名时间轴。草案还讨论通过 <code>animation-range-center</code> 调整动画中心。</p>
+<p><strong>技术差异：</strong>网页不必为每次指针移动自行编写事件回调、坐标归一化与动画状态更新代码，浏览器可在统一动画模型下处理这些关系。但规范并未保证一定运行在合成器线程或摆脱主线程阻塞；这些是待实现与实测的问题。</p>
+<p><strong>证据：</strong><a href="https://www.w3.org/TR/2026/WD-pointer-animations-1-20261124/">11/24 固定版本草案</a>、<a href="https://www.w3.org/standards/history/pointer-animations-1/">W3C 发布历史</a>。<a href="https://drafts.csswg.org/pointer-animations/">编辑草案</a>早在今年已有版本，因此今天是标准化节点而非概念首次提出。</p>
+<p><strong>技术新颖性：中高；值得研究：高；实测优先级取决于实现。</strong>关注 Blink/WebKit/Gecko 的实现意向、WPT 和动画线程模型。使用 JS pointermove + requestAnimationFrame 作为对照，测主线程长任务下的帧延迟、事件处理 CPU 和动画正确性，检查触屏、不同坐标范围与 reduced-motion 策略。尚未核实稳定版实现。</p>
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p>本期记录日期：2026-11-25；不是项目创建时间。</p>
+<table><thead><tr><th>机制或候选</th><th>差异与成熟度</th><th>后续跟踪</th></tr></thead><tbody>
+<tr><td><a href="https://www.rfc-editor.org/rfc/rfc9842.html">Compression Dictionary Transport</a></td><td>2025 年标准，11/24 Firefox 161 稳定版支持</td><td>跨引擎、CDN、字典命中与流量实测</td></tr>
+<tr><td><a href="https://www.w3.org/TR/pointer-animations-1/">PointerTimeline</a></td><td>11/24 首份公开工作草案；声明式指针动画</td><td>实现意向、WPT、主线程与合成器行为</td></tr>
+</tbody></table>
+<p>开放发现中出现 <a href="https://github.com/0xShug0/audio.cpp">audio.cpp</a>（ggml 统一音频推理）；尚未确认原始首发日期及相对于现有语音 Runtime 的独特算法，不升格。<a href="https://github.com/expo/exact">Expo Exact</a> 的跨端运行与确定性测试值得关注，但<a href="https://rnw.kazutoyo.jp/en/posts/expo-exact-first-impression/">11/11 独立试用</a>表明它不是今日或七日内首发，暂不作为新闻。没有用新仓库数量凑头条。</p>
+<h2>浏览器技术</h2>
+<p>同日 Firefox 161 还稳定支持 CSS Typed OM、WebTransport 入站流并发额度提示与 WebRTC 编码参数变更时主动生成关键帧。WebTransport 机制此前 Edge 158 已报道，不重复作为头条。<a href="https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/161">开发者说明</a>同时列出 WebDriver BiDi 的导航竞态与长会话 viewport 性能修复，属于工程更新。</p>
+<p>W3C 同日发布 <a href="https://www.w3.org/TR/2026/WD-filter-effects-2-20261124/">Filter Effects Level 2 首份公开工作草案</a>，涉及 backdrop-filter 与 Backdrop Root；这些并非新出现的滤镜能力，值得跟踪 WPT 和跨引擎行为一致性，而不是称为新的渲染算法。<a href="https://planet.webkit.org/">Planet WebKit 11/24 工程周报</a>记录 WPE 不可见视图节流等改进，未确认足以升格为头条的新架构。Chrome/Chromium、Edge、Opera、Brave、WebGPU/WASM 的本轮公开检索没有核实其他同等级且未报道的首发；检索覆盖有限，不表示没有进展。</p>
+<h2>端侧 AI</h2>
+<p>11/24 NVIDIA 发布 <a href="https://developer.nvidia.com/blog/how-to-run-nvidia-cosmos-3-on-local-ai-devices-using-hugging-face-diffusers/">Cosmos 3 Nano 本地部署指南</a>：在 Diffusers group offloading 基础上从系统 RAM 分组搬运权重，并提供 FP8 权重，支持最低 12GB 显存的目标 GPU。测试消费级主机约有 128GB RAM（不是测得的最低值），且官方明确不是交互延迟。技术属于既有卸载策略的工程应用，不是新算法，不宜称为移动端实时视频生成突破。<a href="https://github.com/NVIDIA/cosmos-framework">实现源码</a>可研究 PCIe 传输、显存峰值和端到端延迟的权衡。11/23 Google Research 的 <a href="https://research.google/blog/supercharging-transformer-residual-connections/">DeepCrossAttention</a> 是 ICML 2025 研究的回顾，而非新论文。已知 <a href="https://github.com/ggml-org/llama.cpp/pulls">llama.cpp PR</a>中出现 Hexagon 分块与成本式 tile solver 的候选改动，仍是待审工程线索，未验证性能，不列为突破。</p>
+<h2>浏览器 × AI</h2>
+<p>字典压缩可以降低反复分发变化较少的 Web AI 应用静态资源的成本，但不能直接等同于 SSE Token、模型权重或 KV Cache 压缩。PointerTimeline 可减少部分交互状态在 JS 中的重复实现，适合生成式 UI 的确定性测试；两者都不是已经完成的 AI Browser 新架构。</p>
+<h2>Browser Self-Improvement</h2>
+<p>未核实新的完整 Observe → Diagnose → Improve → Verify → Learn 自主改进闭环。Firefox 161 的 WebDriver BiDi 修复提供测试场景，但没有公开证据表明由 AI 自主发现、修复并学习，因此不归类为 RSI 成果。可迁移的实验是建立固定两版 Bundle 和字典协商测试站，采集网络 Trace、命中率、耗时与解压正确性，再允许 Agent 自主选择压缩与缓存策略；独立验证器检查真实传输成本和内容一致性，保留失败样本。此为建议，不是已完成系统。</p>
+<h2>开源与论文</h2>
+<p>优先精读 <a href="https://www.rfc-editor.org/rfc/rfc9842.html">RFC 9842</a> 和 <a href="https://www.w3.org/TR/2026/WD-pointer-animations-1-20261124/">Pointer-driven Animations 草案</a>。本轮论文检索返回多项早期研究，没有核实七日内未重复且足以成为重点的新论文。检索依次覆盖开放项目与社区、官方标准与厂商、研究与推理技术、已知仓库 PR；对照 source 聚合页 11/18—24 归档，避免重复 Ladybird、MoMoVL、Clairic、WebMCP Tool 身份、Decisions API、Mirror Dimension 等。未进行独立真机复现。</p>
+<h2>今天的一个判断</h2>
+<p><strong>值得投入的方向是既有机制真正进入跨引擎部署，而非仅统计新提案或新仓库数量。</strong>今天最推荐对 Compression Dictionary Transport 做两版资源的实际网络对照实验。PointerTimeline 则先跟踪实现与兼容性，不预先假定线程架构带来的性能收益。</p>
+<p><a href="/browser-ai-daily/">返回日报聚合页</a></p>
