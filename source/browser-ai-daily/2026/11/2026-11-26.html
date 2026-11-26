@@ -1,0 +1,43 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-26
+date: 2026-11-26 09:41:00
+---
+
+<p><strong>观察窗口：</strong>11 月 25 日 09:41—26 日 09:41（北京时间）；重要遗漏回溯七日。本期重点是两种推理效率改进，以及 iOS WebKit 120Hz 渲染的社区工程实验。没有核实新的重大浏览器标准首发。论文提交于 11/24 UTC，列入 11/25 arXiv 公告；与前期归档去重后补推。</p>
+<h2>今天最值得看｜Shifter Quantization、Safari 120Hz 工程实验与 Draft Calibration</h2>
+<h3>1. Shifter Quantization：让低比特权重直接适配硬件整数矩阵运算</h3>
+<p><strong>发生了什么：</strong>11/24 UTC 提交、11/25 公告的 <a href="https://arxiv.org/abs/2611.33080">Shifter Quantization</a> 提出一种新的量化表示。传统分组量化的缩放参数随权重组变化，容易切断原生整数矩阵乘加（MMA）的完整点积。SQ 通过附加共享比特、移位和截断重建硬件原生整数宽度操作数；SHI 变体进一步使用 INT4 Kernel。它优化的是数据表示与算子之间的关系，而不只是把模型文件压得更小。</p>
+<table><thead><tr><th>作者实验</th><th>Prefill 吞吐相对基线</th></tr></thead><tbody><tr><td>SQ2 / SHI2 对 llama.cpp Q2_K（4096 token）</td><td>2.71–3.77 倍</td></tr><tr><td>SQ4 对 NInfer 分组整数基线</td><td>1.43–2.47 倍</td></tr><tr><td>SQ8 对 vLLM 在线 FP8（batch=1）</td><td>提高 27.4%</td></tr></tbody></table>
+<p><strong>证据与限制：</strong><a href="https://arxiv.org/html/2611.33080v1">论文全文</a>还给出 WikiText-2 KL 散度与 RTX A6000、3090、4090、5090 跨 GPU 测量。这是作者特定模型与配置的结果，不能解释为手机端或任意模型的加速倍数；未核实独立实现、代码公开或移动 NPU 复现。</p>
+<p><strong>技术新颖性：高；值得研究：非常高；直接移动部署成熟度：低。</strong>在同一模型、同等权重预算和相同精度约束下比较普通 INT4、SQ、SHI；分开测量 Prefill、Decode、重建成本、内存和能耗，确认目标 GPU/NPU 能否高效执行整数算子。</p>
+<h3>2. iOS Safari 120Hz：利用合成器滚动与 OffscreenCanvas 获得高频交互</h3>
+<p><strong>发生了什么：</strong>Rida F’kih 于 11/20 发布 <a href="https://rida.dev/blog/bypassing-ios-safari-60-fps-limit">可交互工程文章</a>，11/25 进入 <a href="https://news.ycombinator.com/front?day=2026-11-25">Hacker News 热门</a>。作者用浏览器合成器原生滚动承接交互，分析 UI Process 与 Web Process 的滚动位置 IPC；利用空 requestAnimationFrame 循环触发位置刷新，按需激活 ProMotion，再通过 transferControlToOffscreen 取得 OffscreenCanvas，让 Canvas 更新绕过普通页面渲染节奏。作者报告演示获得 120Hz 输入和 Canvas 输出。</p>
+<p><strong>技术差异：</strong>这不是 Safari 新 API 或关闭 60fps 限制的通用开关，而是组合既有滚动合成器与 OffscreenCanvas 呈现路径。普通 DOM 仍可能受 60Hz 更新限制，设备刷新率、低电量模式与页面可见性也会影响结果。文章包含交互演示；社区讨论不是独立的仪器测量，本期未真机验证。</p>
+<p><strong>技术新颖性：中高（工程路径）；值得实测：非常高。</strong>在 iPhone ProMotion 与普通 60Hz 设备上分别比较 Safari 和 WKWebView 的 DOM、Canvas、OffscreenCanvas，采集输入采样率、实际呈现帧、掉帧、CPU/GPU、功耗与内存，尤其避免把 JS 回调频率误当成屏幕真实呈现频率。只在必要交互期间启用高刷新，关注非标准组合未来的兼容性。</p>
+<h3>3. Draft Calibration：不重新训练模型，通过概率校准提升推测解码接受率</h3>
+<p><strong>发生了什么：</strong>UIUC 与 Microsoft 的 <a href="https://arxiv.org/abs/2611.33111">研究</a>（11/24 UTC 提交、11/25 公告）发现，部分 Draft Model 虽能预测最可能的 token，却往往给它过低的概率，降低与 Target Model 的分布重叠。对 Draft logits 使用事后温度缩放即可改善接受率；保持目标分布与正确的接受/拒绝采样算法不变。论文也研究更复杂的校准头。</p>
+<p><strong>证据：</strong><a href="https://arxiv.org/html/2611.33111v1">全文附录 B.3</a>在九种模型/并发配置中报告平均每轮接受长度增加 8.82%–10.89%，输出吞吐增加 5.13%–22.08%。属于作者服务端实验，不代表手机端结果或所有单次运行均有收益。</p>
+<p><strong>技术新颖性：中高；值得实测：高。</strong>温度缩放本身不是新算法，价值是把校准用于 Draft 与 Target 的概率匹配。建议固定采样参数和任务保留集，测试不同 Draft 温度，比较接受长度、TTFT、Decode 吞吐和实际能耗；不能把提高接受率当作模型能力提升。</p>
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<p>本期首次记录：2026-11-26；原始公开日期另列。没有为仓库数量补入普通 Agent UI、CDP/MCP 封装。</p>
+<table><thead><tr><th>机制</th><th>成熟度及差异</th><th>跟踪信号</th></tr></thead><tbody>
+<tr><td><a href="https://arxiv.org/abs/2611.33080">Shifter Quantization</a>（11/24 UTC）</td><td>预印本；共享比特重建原生整数操作数</td><td>代码、独立 GPU/NPU 算子和量化精度复现</td></tr>
+<tr><td><a href="https://rida.dev/blog/bypassing-ios-safari-60-fps-limit">Safari 120Hz</a>（11/20）</td><td>社区可交互演示；合成器与 Canvas 呈现路径</td><td>WKWebView 真机、呈现帧与能耗</td></tr>
+<tr><td><a href="https://arxiv.org/abs/2611.33111">Draft Calibration</a>（11/24 UTC）</td><td>预印本；Draft 概率分布校准</td><td>独立复现、本地单会话延迟及内存</td></tr>
+</tbody></table>
+<p>开源候选：<a href="https://github.com/tetherto/qvac/pulls">QVAC #5955</a> 11/25 开放 PR 标题显示尝试在 WebGPU 浏览器运行 SDK；未取得该 PR 的完整差异与独立性能证据，不认定为新架构或已发布能力。</p>
+<h2>浏览器技术</h2>
+<p>Safari 120Hz 是本期直接可实验的浏览器工程线索。<a href="https://bcd-watch.igalia.com/weekly/2026-11-23.html">Igalia 11/23 BCD 周报</a>还记录 Chrome 对 WebTransport sendGroup、sendOrder 与 Service Worker 路由观测字段的兼容数据更新，属于跨引擎落地线索，不是当日首次提出。Chromium、WebKit、Mozilla、Edge、Opera、Brave、W3C 及 WebGPU/WASM 的可访问公开资料未筛出其他同等级且未报道的首发；检索不是穷尽证明。</p>
+<h2>端侧 AI</h2>
+<p>Shifter 与 Draft Calibration 分别针对整数计算效率、推测解码的有效工作量，二者不应简单相乘估算收益。最后检查已知仓库时，<a href="https://github.com/ggml-org/llama.cpp/pull/33069">llama.cpp #33069</a> 11/25 提交 Adreno A850 OpenCL MoE INT8 cooperative matrix host 侧改动，<a href="https://github.com/ggml-org/llama.cpp/pull/33072">#33072</a> 尝试去重循环 MoE 的物理专家 Tensor；两者在查询时为开放 PR，不代表已合并或性能验证。</p>
+<h2>浏览器 × AI</h2>
+<p>Safari 的高频输入与 Canvas 呈现路径可用于端侧生成式 UI 的交互性能实验；Draft 校准则可能降低端侧 Agent 多步决策等待。需要分别测量真实渲染帧与模型延迟，不把两者当作已集成产品能力。</p>
+<h2>Browser Self-Improvement</h2>
+<p><strong>MetaFORGE：执行证据驱动持久 Skill 和跨任务记忆优化。</strong> 11/24 UTC 提交的 <a href="https://arxiv.org/abs/2611.33119">论文</a>研究 MPI C 并行程序生成，以正确性、编译诊断、静态分析、运行时与负载不均衡构造奖励，使用文本反馈重写 Skill，并从有效结果提炼外部记忆。六个任务、三种负载规模的作者实验中，跨任务保留集使用冻结记忆；另有 zero-update 实验，只使用迁移后的 Skill，不检索、不重写，三个保留任务的运行时间分别降低约 11.8%、18.0%、25.0%，全部通过正确性测试。<a href="https://arxiv.org/html/2611.33119v1">全文 B.9/B.10</a>说明训练结果每折只产生一次，统计结论受共享训练结果和任务样本约束。</p>
+<p><strong>闭环：</strong>Observe（测试及运行时测量）→ Diagnose（基于诊断与反馈分析）→ Improve（改写 Skill）→ Verify（编译、正确性及性能评估）→ Learn（提炼记忆并验证迁移）。属于研究环境的 Harness 改进闭环，不是浏览器内核或生产 Canary 的实证。迁移建议：固定浏览器回归集，独立评估规则正确性、内存和性能；训练与保留任务隔离，冻结 Skill 和记忆后再测新站点，分别评估 Skill、记忆检索和迭代的贡献。未核实独立复现或完整开源代码。</p>
+<h2>开源与论文</h2>
+<p>优先精读 Shifter 的量化格式与算子、Draft Calibration 的附录 B.3，以及 MetaFORGE 的保留集设计。开放发现、厂商/标准、社区/论文、已知仓库 PR 四轮检索后，与 source 聚合页比对，未重复报道 Firefox 字典压缩、PointerTimeline、Ladybird、MoMoVL 或 WebMCP Tool 身份。没有符合门槛的新仓库则不补数。</p>
+<h2>今天的一个判断</h2>
+<p><strong>端侧计算优化的关键是减少实际无效工作，而不仅是降低模型参数位数。</strong> 最容易安排的实验是 iOS Safari/WKWebView OffscreenCanvas 的真实帧率和功耗对照；推理方面优先研究 Shifter 的硬件映射，Draft Calibration 可作为低成本验证候选。对自主改进，MetaFORGE 的冻结 Skill 与保留集验证比单看训练奖励更有价值。</p>
+<p><a href="/browser-ai-daily/">返回日报聚合页</a></p>
