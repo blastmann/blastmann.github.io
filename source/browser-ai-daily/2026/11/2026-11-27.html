@@ -1,0 +1,36 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-27
+date: 2026-11-27 09:03:00
+---
+
+<p><strong>观察窗口：</strong>11 月 26 日 09:03—27 日 09:03（北京时间）；重要遗漏回溯七日。今天最值得关注的是手机 GPU/NPU 协同推理，以及针对 KV 共享模型的 NPU Prefill 计算裁剪。未确认新的重大浏览器架构或 Web 标准首发。</p>
+<h2>今天最值得看</h2>
+<h3>1. MixMoMo：在手机上动态决定 MoE 专家的量化精度与执行设备</h3>
+<p>11 月 25 日 UTC 首次提交的 <a href="https://arxiv.org/abs/2611.33981">MixMoMo</a> 研究以当前 token 的激活值和离线量化敏感度估计误差风险，而非单凭专家路由分数选择精度；再依据设备实际执行耗时，把不同精度的专家分配至 GPU 和 NPU 并行执行。NPU 端将可共享配置的反量化 tile 合并，用 Hexagon HVX 批量处理，减少准备开销。</p>
+<p>作者扩展 llama.cpp 的 OpenCL 与 Hexagon HTP 后端，在 OnePlus 15（16GB RAM）和 OnePlus 13（24GB RAM）上测试。专家权重按需加载，并非全部常驻内存。</p>
+<table><thead><tr><th>模型</th><th>相对统一 Q4_0 的 Decode 加速</th><th>相对该模型最强混合精度基线</th></tr></thead><tbody><tr><td>Qwen3-Next-80B-A3B</td><td>3.61×</td><td>1.50×</td></tr><tr><td>Kimi-Linear-48B-A3B</td><td>4.06×</td><td>1.61×</td></tr><tr><td>Qwen3.6-35B-A3B</td><td>3.49×</td><td>1.48×</td></tr></tbody></table>
+<p>平均分别为 3.72× 和 1.53×；混合精度比较约束平均专家位宽为 4 bit。Qwen3-Next 的 GSM8K 准确率为 84.48%，FP16 为 84.53%。均为论文作者实验，不代表所有任务等精度，也没有独立复测。<a href="https://arxiv.org/html/2611.33981v1">论文正文与实验</a>。</p>
+<p><strong>技术新颖性：高；值得研究：非常高；成熟度：真机研究原型。</strong>与此前 MoMoVL 的模态感知量化不同，此处重点是按 token 估算量化风险、异构设备调度和向量反量化协同。未核实完整实现公开或上游合并。建议复测绝对 TPOT、TTFT、闪存 I/O、内存峰值、长时间温控和电量，而非仅看相对倍数。</p>
+<h3>2. llama.cpp OpenVINO：KV-only Prefill 跳过不必要的计算图</h3>
+<p>11 月 26 日的 <a href="https://github.com/ggml-org/llama.cpp/pull/33088">PR #33088</a> 提出对具有 KV 共享注意力的模型进行静态图裁剪：Prefill 只输出 KV Cache 写入结果，去掉仅用于 logits 的后段层及 LM Head；需要最终 logits 时，再用 Decode 图处理输出 token。另将大型 embedding table 的行查找放在 Host，避免 NPU 重复搬运整个表。</p>
+<table><thead><tr><th>作者 NPU 实验</th><th>原始</th><th>KV-only Prefill</th></tr></thead><tbody><tr><td>Gemma 4 E2B Q4_0，pp512</td><td>1320–1375 tok/s</td><td>2349–2454 tok/s</td></tr><tr><td>pp2048</td><td>1146–1202 tok/s</td><td>2268–2513 tok/s</td></tr></tbody></table>
+<p>适用于特定 KV 共享图、每批至多一个输出 token 等条件；4 个 needle prompt 中有一个近似并列 token 与基线不同（基线自身亦有波动）。这不是通用无损加速证明。PR 仍开放，数据来自贡献者，未独立复测。</p>
+<p><strong>技术新颖性：中高；值得实测：高。</strong>区别于一般 kernel 加速，它直接按阶段输出依赖删除无用计算。可研究类似裁剪能否移植到其他静态推理后端，但需验证缓存状态、输出一致性和编译缓存失效。</p>
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table><thead><tr><th>首次纳入本期</th><th>成熟度与差异</th><th>后续信号</th></tr></thead><tbody><tr><td><a href="https://arxiv.org/abs/2611.33981">MixMoMo</a>（11/25 UTC）</td><td>真机研究；动态精度与 GPU/NPU 调度</td><td>实现公开、独立复测、温控和能耗</td></tr><tr><td><a href="https://github.com/ggml-org/llama.cpp/pull/33088">KV-only Prefill</a>（11/26）</td><td>开放 PR；按输出依赖裁剪静态图</td><td>合并、跨模型正确性、端侧延迟</td></tr></tbody></table>
+<p>开放项目检索发现 <a href="https://github.com/clocksmith/fawn">Fawn/Doe</a>（独立 WebGPU Runtime、WGSL 编译器和 Chromium fork）及 <a href="https://github.com/paulrobello/webllm">paulrobello/webllm</a>（llama.cpp WebGPU 后端与帧预算调度）。未核实本周首次发布及独立性能证据，暂作待核实候选，不算今天新技术首发。Hacker News 当日归档读取失败，社区覆盖不完整。</p>
+<h2>浏览器技术</h2>
+<p>检索 Chromium Intent、Chrome、<a href="https://webkit.org/blog/">WebKit</a>、Mozilla、Edge、Opera、Brave、<a href="https://www.w3.org/news/2026/">W3C</a>、WebGPU/WASM 相关公开资料，未核实本窗口达到门槛且此前未报道的重大新机制。Ladybird Alpha、Firefox 字典压缩及 PointerTimeline 已报道，不重复收录。检索不是穷尽证明。</p>
+<h2>端侧 AI</h2>
+<p>已知仓库深挖：<a href="https://github.com/ggml-org/llama.cpp/pull/33098">llama.cpp #33098</a> 11/26 已合并 OpenCL 多 token F32 GEMV，用于推测解码验证；作者 Gemma 4 E4B 示例 Decode 32.959 → 34.280 tok/s，接受率均为 41.720%。这是验证算子优化，不是 Draft Calibration 本身。<a href="https://github.com/ggml-org/llama.cpp/pull/33090">#33090</a> 同日 Draft，针对 Adreno 850、head size 128、FP16 K/V 的 MALU Flash Attention，依赖驱动二进制 kernel；Decode KV 长度上限 6656，未独立测量。</p>
+<h2>浏览器 × AI</h2>
+<p>建议将 Browser Agent 的 UI 帧延迟、内存占用、推理 TPOT 与闪存读写一并采集，比较 NPU-only、GPU-only、GPU/NPU 协同。GPU 并行推理可能与浏览器合成器争抢资源；MixMoMo 的结果不能直接等同于 WebGPU/WebNN 可用能力。</p>
+<h2>Browser Self-Improvement</h2>
+<p>本期无确认的新完整自主改进案例。#33098 披露 Codex 参与，作者提供前后 benchmark，PR 有人工审批及 23 项检查通过：Observe/Diagnose 的自动化程度未知，Improve 与 Verify 有局部证据，Learn 与自动生产反馈未证实。可借鉴为固定模型、输入、采样参数及接受率的 Runtime 优化评估器，不称其为 RSI。#33088 也披露 Claude 辅助，但仍待合并。</p>
+<h2>开源与论文</h2>
+<p>优先精读 <a href="https://arxiv.org/html/2611.33981v1">MixMoMo 全文</a> 的 IV、V、VI 节，以及 <a href="https://github.com/ggml-org/llama.cpp/pull/33088">OpenVINO PR 的静态图裁剪和 Host Gather</a>。未找到完整 MixMoMo 开源实现，不能把其研究代码视为已进入 llama.cpp。</p>
+<h2>今天的一个判断</h2>
+<p><strong>端侧推理优化越来越需要在每个计算阶段决定哪些工作真正必要、哪些设备最适合执行，而不是仅降低模型位宽。</strong>今天最值得研究 MixMoMo 的量化风险与异构调度，最值得尝试复现 KV-only Prefill 的正确性及延迟收益。两者均需独立验证。</p>
+<p>检索过程：开放技术发现 → 官方与标准渠道 → 社区与论文 → 已知仓库 PR。对照近一周归档摘要去重；未为数量收录普通封装或 Bug Fix。</p>
+<p><a href="../../../index.html">返回日报聚合页</a></p>
