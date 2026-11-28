@@ -1,0 +1,39 @@
+---
+layout: page
+title: 浏览器 × 端侧 AI 技术雷达日报｜2026-11-28
+date: 2026-11-28 09:59:00
+---
+
+<p><strong>观察窗口：</strong>11 月 27 日 09:59—28 日 09:59（北京时间）；重要遗漏回溯七日。本窗口未核实达到头条门槛的重大浏览器底层首发。本期补推 11/24 NVIDIA 可实时分叉的容器 Runtime 与 11/25 NVFP4 Attention 寄存器复用；另独立跟踪 ReproCue 的内核缺陷复现证据，以及 Chrome 的端侧 AI API 收敛方向。</p>
+<h2>今天最值得看</h2>
+<h3>1. TimeTravelContainer：让 Agent 的运行环境像代码一样分叉</h3>
+<p>NVIDIA Research 的 <a href="https://arxiv.org/abs/2611.32255">TimeTravelContainer（TTC）</a> 于 11/24 UTC 首次提交论文。基于 gVisor 用户态内核，TTC 在同一运行环境中复制进程、线程、文件描述符、文件系统和受支持的内部网络状态；多个分支共享未修改的内存页，首次写入时才复制 4 KiB 页面。与 Git worktree 只处理文件、普通容器重启丢失内存状态不同，它支持保留已初始化工具的运行状态，进行并行尝试、暂停恢复及按需跨节点迁移。</p>
+<table><thead><tr><th>作者实验</th><th>传统方案</th><th>TTC</th></tr></thead><tbody><tr><td>MAGE 环境克隆</td><td>86.5 s</td><td>1.03 s（84.1×）</td></tr><tr><td>Ariane133 六分支，刚创建</td><td>25.1 GB</td><td>7.5 GB</td></tr><tr><td>Ariane133 六分支，多轮编辑后</td><td>27.9 GB</td><td>12.2 GB</td></tr></tbody></table>
+<p>这些是 EDA 工具实验，不是浏览器任务测试；固定工具调用回放不含 LLM 推理耗时。注意内存节省取决于分支写入及状态差异。<a href="https://arxiv.org/html/2611.32255v1">完整论文</a>、<a href="https://github.com/NVlabs/TimeTravelContainer">Apache-2.0 源码</a>。仓库创建于 10/22（GitHub 元数据），本周新进展是论文及实验证据，而非新建仓库。</p>
+<p><strong>技术新颖性：高；值得实测：非常高；成熟度：开源研究原型。</strong>在 Linux 上可无需 KVM 或 root 运行；Apple Silicon 后端使用 Hypervisor.framework，Windows 经 WSL 2，运行的均是 Linux 环境，不代表原生 macOS/iOS 进程可克隆。仓库描述了 Vulkan/CUDA 与 Android 示例，但不是完整 Agent 安全边界。浏览器 GPU、跨容器服务、外部 TCP/TLS 连接与远端副作用需另行验证。</p>
+<p>工程启发：在测试站点中启动 Chromium，加载页面并建立本地状态后分叉多个任务，测量 clone 延迟、RSS/PSS、页面及存储隔离、渲染正确性和最终任务成功率；禁止将外部真实网站操作当成可自动回滚。</p>
+<h3>2. NVIDIA × Reactor：利用 Attention 寄存器生命周期消除 GPU 流水线空档</h3>
+<p><a href="https://developer.nvidia.com/blog/how-to-optimize-nvfp4-attention-on-nvidia-rtx-blackwell-through-register-recycling/">11/25 技术文章</a> 对 SageAttention3 的 NVFP4 Kernel 进行重新调度。原实现每个 N128 tile 顺序计算 QK、Softmax/量化、PV，寄存器用量已占 SM 容量约 95.3%，无法直接额外分配完整 tile。新实现将 score tile 拆为两个 N64 slot，在前半部分量化完成后复用已无后续用途的 score 寄存器，提前计算下一 tile 的 QK；保持 N128 的 K/V 读取及完整 tile 的在线 Softmax 状态更新。</p>
+<table><thead><tr><th>核心 Kernel（同输入、同量化）</th><th>原始</th><th>优化后</th></tr></thead><tbody><tr><td>4096 causal</td><td>0.212 ms</td><td>0.161 ms</td></tr><tr><td>8192 causal</td><td>0.765 ms</td><td>0.467 ms</td></tr><tr><td>16384 causal</td><td>2.206 ms</td><td>1.782 ms</td></tr></tbody></table>
+<p>Reactor 在 RTX PRO 6000 Blackwell 96 GB 上报告核心 Kernel 1.17–1.64× 加速；整模型相对 BF16 的延迟改善因场景而异，例如 LongLive 32 帧 5.13→4.79 s，OmniDreams 长序列约 15%。整模型对照同时包含量化和其他路径差异，不能归因于寄存器调度；厂商及合作方实验，非独立复测，也不代表手机 GPU 或 WebGPU 可直接获得收益。</p>
+<p><strong>技术新颖性：中高；值得研究：高；成熟度：合作方已集成生产服务的报告。</strong>区别于此前 Shifter Quantization 的数值表示改造，此处优化的是寄存器存活区间和指令调度。建议用 GPU profiler 观察 Tensor Core 空档、寄存器压力、占用率及端到端延迟，再判断能否迁移其他后端。</p>
+<h2>Emerging Tech Radar｜新兴技术雷达</h2>
+<table><thead><tr><th>本期首次纳入 11/28</th><th>原始日期、差异与成熟度</th><th>后续信号</th></tr></thead><tbody><tr><td><a href="https://github.com/NVlabs/TimeTravelContainer">TimeTravelContainer</a></td><td>11/24 论文；开源；运行中容器 CoW 分叉</td><td>Chromium/Android 图形状态、内存隔离、远端副作用、独立基准</td></tr><tr><td><a href="https://arxiv.org/abs/2611.34142">ReproCue</a></td><td>11/25 论文；从历史成功复现学习状态机</td><td>独立复现、浏览器最小回归用例、保留集</td></tr><tr><td><a href="https://developer.nvidia.com/blog/how-to-optimize-nvfp4-attention-on-nvidia-rtx-blackwell-through-register-recycling/">NVFP4 Register Recycling</a></td><td>11/25 技术文章；跨 tile 调度</td><td>公开实现、其他 GPU 架构和实际收益</td></tr></tbody></table>
+<p>检查 GitHub Trending、近期新建 WebGPU/browser/runtime 仓库及论文关联代码，没有将普通封装作为重点新项目。对照近一周聚合归档摘要，上述主题未见重复；Hacker News 当日归档无法读取，社区覆盖不完整。</p>
+<h2>浏览器技术</h2>
+<p>11/26 Chrome 团队在 <a href="https://groups.google.com/a/chromium.org/g/blink-dev/c/xAO0hmTFF3Y">Intent to Deprecate and Remove</a> 中解释，Writer/Rewriter 原本只是端侧模型的任务专用 Prompt 封装，需求不足，拟最早在 M161（2027 年 1 月）移除实验 API，转向基础 Prompt API；它们从未正式 GA。Summarizer、Translator 以及 Embeddings、Tool Calling、Decisions 仍是独立方向，不代表后几项已经正式支持。</p>
+<p>11/25 <a href="https://groups.google.com/a/chromium.org/g/blink-dev/c/VPTW2uuRKx4">Prompt API Sampling Mode 讨论</a> 对跨模型校准和长期兼容性提出疑问。原提案是 11/9，七种语义预设由浏览器映射到模型采样参数，不是本周新提案或确定性保证。值得关注浏览器能否用独立 eval suite 约束不同模型及版本的行为。<a href="https://blogs.opera.com/desktop/2026/11/opera-141-stable/">Opera 141</a> 11/27 稳定发布主要为 Chromium 更新与稳定性改善，不列头条。WebKit、Mozilla、Edge、Brave、W3C、Chrome 公开渠道未核实其他达到门槛的本窗口新机制；覆盖并非穷尽。</p>
+<h2>端侧 AI</h2>
+<p>本期 NVFP4 技术来自 RTX GPU，不是移动 NPU 算法。对昨天的 <a href="https://github.com/ggml-org/llama.cpp/pull/33088">KV-only Prefill PR</a> 复查，不重复列为新头条。建议将寄存器复用与低位宽算子分别评估：同输入、同精度、同后端对比，再用真实模型验证输出与端到端收益。</p>
+<h2>浏览器 × AI</h2>
+<p>TTC 为 Browser Agent 的探索提供另一种可能：把模型上下文的分支与浏览器内部运行状态的分支一一对应。相比重开 Tab 并重放操作，可能节省页面加载和会话准备成本。它目前没有论文级浏览器验证，外部服务状态也不会自动回滚。优先使用可重置的模拟网站和独立结果检查器做实验。</p>
+<h2>Browser Self-Improvement</h2>
+<h3>ReproCue：从 AI 代码审查的文字怀疑生成可验证复现证据</h3>
+<p><a href="https://arxiv.org/abs/2611.34142">11/25 UTC 提交的论文</a> 先重放历史内核缺陷，从成功案例提取各子系统的复现状态机（FSM），再针对新审查报告按执行结果调整测试与运行环境。100 条近期 Sashiko 审查中，作者报告 52 个触发崩溃的案例，其中 49 个与原报告匹配；重实现 K-Repro 为 10，SyzDirect 为 9。49 个匹配案例提交维护者后，34 个被确认并修复（69.4% 是 34/49，不是全部 100 个报告的确认率）。对照的 Sashiko 纯文本确认率 9.3% 来自另一组邮件采样，非严格随机 A/B。</p>
+<p>闭环证据：Observe（审查报告、历史复现）→ Diagnose（状态机及环境适配）→ Improve（生成或修正复现测试，而非自动修复内核）→ Verify（执行证据与报告匹配、人工复核）→ Learn（从历史成功复现提炼 FSM）；尚无持续自动回流或浏览器生产 Canary 证据。<a href="https://arxiv.org/html/2611.34142v1">论文方法和完整结果</a>。<strong>技术新颖性：中高；值得研究：高。</strong>可迁移到 Chromium/WebKit/Firefox 的 Crash/WPT/Trace 验证：必须核对原始故障签名，不以任意崩溃或 LLM 自评为通过条件。没有复现不能直接认定报告错误。</p>
+<h2>开源与论文</h2>
+<p>优先阅读 <a href="https://arxiv.org/html/2611.32255v1">TTC 的 III、IV 节</a> 和 <a href="https://github.com/NVlabs/TimeTravelContainer">源码</a>，其次是 <a href="https://arxiv.org/html/2611.34142v1">ReproCue 的复现与维护者验证</a>，再看 NVFP4 调度文章。上述数据均已对照原始公开材料，未在本期独立运行。</p>
+<h2>今天的一个判断</h2>
+<p><strong>Agent 的自主探索成本不仅取决于模型 Token，还取决于环境是否能低成本分叉，以及每个分支能否产生可信、可重复的结果。</strong> TTC 降低尝试成本，ReproCue 改善验证证据，两者可以启发独立探索环境和 Verifier 的设计，但并非已集成或验证的 Browser RSI 系统。建议优先做本地浏览器状态分叉与隔离对照实验，再接入实际优化目标。</p>
+<p>检索过程：开放发现 → 官方与标准渠道 → 社区、论文和开源研究代码 → 已知仓库深挖。Hacker News 当日归档读取失败；未为凑数收录普通 Bug Fix 和包装项目。</p>
+<p><a href="../../index.html">返回日报聚合页</a></p>
